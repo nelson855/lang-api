@@ -1,3 +1,25 @@
 .idea
 /.claude/
 /.agents/
+
+# Maven 构建产物
+target/
+*.jar
+*.war
+*.class
+
+# Node.js / 前端构建产物
+node_modules/
+frontend/node/
+frontend/dist/
+dist/
+
+# Vite / 测试报告
+coverage/
+*.log
+
+# IDE 与系统文件
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

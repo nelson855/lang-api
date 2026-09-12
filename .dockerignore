@@ -1,0 +1,33 @@
+# 版本控制与 IDE
+.git
+.gitignore
+.idea
+.vscode
+.claude
+.agents
+
+# 本地构建产物（构建阶段重新生成，不进上下文）
+target
+*/target
+frontend/dist
+frontend/node
+node_modules
+coverage
+
+# 测试报告与日志
+*.log
+surefire-reports
+
+# 文档与变更记录（运行不需要）
+docs
+openspec
+integration-tests
+
+# 系统与潜在密钥文件
+.DS_Store
+Thumbs.db
+.env
+*.pem
+*.key
+*secret*
+settings.xml
