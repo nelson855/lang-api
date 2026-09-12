@@ -23,3 +23,11 @@ coverage/
 *.iml
 .DS_Store
 Thumbs.db
+
+# LANG-P1-02 本地环境：真实密钥与原始证据不得入库
+deploy/.env
+*.sql
+*.dump
+docs/new-api/samples-tmp/
+integration-tests/new-api/tmp/
+*.raw.json

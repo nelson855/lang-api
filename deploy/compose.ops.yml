@@ -1,0 +1,10 @@
+# LANG-P1-02 运维访问覆盖：仅显式叠加时生效
+# 初始化或受控运维：docker compose --env-file deploy/.env -f deploy/compose.yml -f deploy/compose.ops.yml up -d
+# 完成后必须用主文件强制收敛并验证端口消失：
+# docker compose --env-file deploy/.env -f deploy/compose.yml up -d && docker compose -f deploy/compose.yml ps
+# 该入口只绑定本机回环，局域网其他主机不可达；不为 PostgreSQL/Redis 增加任何端口。
+
+services:
+  new-api:
+    ports:
+      - "127.0.0.1:${NEW_API_ADMIN_PORT:-13000}:3000"

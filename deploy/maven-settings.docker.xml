@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- LANG-P1-02：仅供 Docker 构建使用的 Maven 配置。
+  只把中央仓库指向可达的公网镜像，不含任何账号口令，可放心进版本库。
+  本机构建命令（compose build secret）使用本文件，不使用个人全局 settings.xml，
+  避免把公司内网仓库地址和凭据带入构建。 -->
+<settings>
+  <mirrors>
+    <mirror>
+      <id>alimaven</id>
+      <name>aliyun maven</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
