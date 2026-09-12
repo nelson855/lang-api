@@ -46,13 +46,14 @@ class WebBaselineTests {
         .andExpect(status().isNotFound())
         .andExpect(content().contentTypeCompatibleWith(org.springframework.http.MediaType.APPLICATION_JSON))
         .andExpect(content().string(not(containsString("id=\"root\""))))
-        .andExpect(jsonPath("$.status").value(404));
+        .andExpect(jsonPath("$.error.code").value("NOT_FOUND"))
+        .andExpect(jsonPath("$.requestId").isNotEmpty());
   }
 
   @Test
   void unknownActuatorPathDoesNotFallBack() throws Exception {
     mvc.perform(get("/actuator/not-found"))
-        .andExpect(status().isNotFound())
+        .andExpect(status().isUnauthorized())
         .andExpect(content().string(not(containsString("id=\"root\""))));
   }
 
