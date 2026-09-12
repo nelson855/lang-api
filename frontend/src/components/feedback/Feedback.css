@@ -1,0 +1,23 @@
+.page-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 32px 0;
+}
+
+.page-state-title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.page-state-description {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.page-state-request-id {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}

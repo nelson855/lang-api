@@ -1,0 +1,68 @@
+.console-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.console-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border-inline-end: 1px solid var(--color-border);
+  background-color: var(--color-bg-raised);
+}
+
+.console-nav-link {
+  display: block;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.console-nav-link[aria-current='page'] {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.console-sidebar-foot {
+  margin-top: auto;
+}
+
+.console-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.console-topbar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-raised);
+}
+
+.console-menu-button {
+  min-height: 40px;
+  padding-inline: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-raised);
+}
+
+.console-context {
+  font-weight: 700;
+}
+
+@media (width <= 768px) {
+  .console-sidebar {
+    display: none;
+  }
+
+  .console-topbar {
+    display: flex;
+  }
+}

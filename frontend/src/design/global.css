@@ -1,0 +1,88 @@
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/jetbrains-mono';
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+code,
+pre,
+.request-id {
+  font-family: var(--font-mono);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+/* 内容容器：公共约 1180px，窄屏内边距 16px */
+.app-container {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+@media (width <= 768px) {
+  .app-container {
+    padding-inline: 16px;
+  }
+}
+
+/* 可替换临时品牌：几何标记 + 运行时站名 */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.brand-name {
+  white-space: nowrap;
+}
+
+/* 数据表只在自身容器内横向滚动，不撑开页面 */
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

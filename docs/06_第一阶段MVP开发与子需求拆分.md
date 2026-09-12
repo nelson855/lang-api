@@ -131,7 +131,7 @@ Portal API 不返回 New API 的原始响应包装、内部错误、私网地址
 | LANG-P1-01 工程基线与一体化构建 | 未开始 | 一个命令生成包含前端的可运行 JAR |
 | LANG-P1-02 New API 基线与本地运行环境 | 已完成 | v0.13.2 已冻结并实测，Compose 五服务全健康，证据见 docs/new-api/ |
 | LANG-P1-03 Portal API 公共基础 | 进行中 | 契约、安全、日志、上游底座与 public-config 已实现，`mvn verify` 48 测试通过，契约见 docs/08_Portal接口基础契约.md；待补 P1-02 Compose 外部连通性抽查 |
-| LANG-P1-04 独立前端骨架与公开页面框架 | 未开始 | 独立设计体系和页面框架可运行 |
+| LANG-P1-04 独立前端骨架与公开页面框架 | 进行中 | 独立设计体系、布局路由、数据访问与中英文已可运行，`mvn verify` 全绿、Vitest 117 用例与 Playwright 9 流程通过，验收见 openspec 变更 acceptance.md；待用户启动一体化 JAR 做真机与目视确认后归档 |
 | LANG-P1-05 认证与会话闭环 | 未开始 | 注册、登录、刷新、当前用户、退出可用 |
 | LANG-P1-06 API Key 管理闭环 | 未开始 | Key 全生命周期可用 |
 | LANG-P1-07 公共模型网关与真实调用 | 未开始 | 新建 Key 可完成真实流式调用 |

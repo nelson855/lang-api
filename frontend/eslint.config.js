@@ -13,6 +13,40 @@ export default tseslint.config(
     },
   },
   {
+    files: [
+      'src/pages/**/*.{ts,tsx}',
+      'src/components/**/*.{ts,tsx}',
+      'src/layouts/**/*.{ts,tsx}',
+      'src/features/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-globals': ['error', 'fetch'],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Literal[value=/^https?:\\/\\//]',
+          message: '禁止声明绝对 API 地址，只允许站内相对 /portal/api/*',
+        },
+        {
+          selector: 'Literal[value=/^\\/api(\\/|$|\\?|#)/]',
+          message: '禁止引用原始管理 /api/* 路径，只允许 /portal/api/*',
+        },
+      ],
+    },
+  },
+  {
+    // 测试 fixture 需要构造恶意地址证明拒绝逻辑，不随制品发布
+    files: [
+      'src/pages/**/*.test.{ts,tsx}',
+      'src/components/**/*.test.{ts,tsx}',
+      'src/layouts/**/*.test.{ts,tsx}',
+      'src/features/**/*.test.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-syntax': 'off',
+    },
+  },
+  {
     ignores: ['dist/', 'coverage/', 'node_modules/'],
   },
 );

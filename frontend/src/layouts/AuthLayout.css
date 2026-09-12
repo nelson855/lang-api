@@ -1,0 +1,10 @@
+.auth-header {
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-raised);
+  padding-block: 12px;
+}
+
+.auth-container {
+  max-width: 28rem;
+  padding-block: 48px;
+}
