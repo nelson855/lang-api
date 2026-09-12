@@ -1,23 +1,22 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  OpenSpec change directory names must use the format
+  YYYY-MM-DD-<requirement-id>-<kebab-case-description>. Keep an existing
+  requirement id when one is provided, for example:
+  2026-09-12-lang-p1-01-engineering-baseline-integrated-build.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Backend configuration must use .properties files, not YAML. Put shared
+  configuration in application.properties and environment-specific
+  configuration in application-dev.properties, application-test.properties,
+  and application-prod.properties. The dev, test, and prod environments must
+  remain explicitly separated.
+
+rules:
+  design:
+    - Backend configuration designs must use .properties files and cover dev, test, and prod profiles.
+  tasks:
+    - Include explicit tasks for application.properties and the dev, test, and prod profile files whenever backend configuration is in scope.
 
 # Per-operation guidance (optional)
 # Add advisory guidance for how apply and archive work should be conducted.
