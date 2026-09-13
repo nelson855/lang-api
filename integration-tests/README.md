@@ -19,7 +19,15 @@
 - 不得依赖开发机上的全局 Node.js、已启动的外部服务或手工步骤。
 - 接入前先在本地用正式构建命令跑通，再把调用接到根 `pom.xml` 或独立脚本。
 
-## 当前状态
+## 当前场景
 
-LANG-P1-01 只建立目录与约定，不添加任何伪造业务场景的测试。
-首个真实跨模块场景在后续子需求接入正式构建。
+- `new-api/`：New API 基线、脱敏、Compose 与真实本地环境探测。
+- `gateway/`：LANG-P1-07 公共模型网关的静态门禁、可控 Relay fixture、Nginx 容器契约与真实供应商验收入口。
+
+网关离线契约使用 fixture 验证传输与边界，不把 fixture 结果当作真实模型成功证据。真实供应商验收必须显式提供进程环境变量后运行：
+
+```bash
+bash integration-tests/gateway/real-provider-check.sh --with-restrictions
+```
+
+缺少真实 Base URL、模型、有效 Key 或四类限制 Key 时，脚本返回 `BLOCKED`/退出码 2，相关 OpenSpec 任务保持未完成。

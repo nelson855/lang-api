@@ -1,0 +1,14 @@
+# LANG-P1-07 网关契约测试 overlay（任务 1.2）：只增加 relay-fixture，
+# 把它接入内部 relay 网络。不改变生产 Compose 拓扑，不发布任何宿主机端口。
+# 用法（与主文件叠加，不单独启动）：
+# docker compose --env-file deploy/.env \
+#   -f deploy/compose.yml \
+#   -f integration-tests/gateway/compose.relay-test.yml \
+#   config
+services:
+  relay-fixture:
+    build:
+      context: ./fixture
+      dockerfile: Dockerfile
+    networks:
+      - relay

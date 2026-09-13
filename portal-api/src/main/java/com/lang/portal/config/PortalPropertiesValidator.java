@@ -43,11 +43,12 @@ public class PortalPropertiesValidator {
     if (siteName == null || siteName.isBlank()) {
       throw new IllegalStateException("非法配置 lang.portal.site-name：不能为空");
     }
-    Set<String> known = Set.of("OPENAI", "ANTHROPIC", "GEMINI");
+    Set<String> known = Set.of("OPENAI");
     for (String raw : enabled) {
       String protocol = raw.trim().toUpperCase(Locale.ROOT);
       if (!known.contains(protocol)) {
-        throw new IllegalStateException("非法配置 lang.portal.enabled-protocols：未知协议 " + raw);
+        throw new IllegalStateException(
+            "非法配置 lang.portal.enabled-protocols：LANG-P1-07 当前只接受 OPENAI，未知协议 " + raw);
       }
       String url = urls.get(protocol);
       if (url == null || url.isBlank()) {
@@ -56,6 +57,10 @@ public class PortalPropertiesValidator {
       URI uri = toAbsoluteHttpUri(url, "lang.portal.public-urls." + protocol.toLowerCase(Locale.ROOT));
       if (uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null) {
         throw new IllegalStateException("非法配置公开地址：不得包含用户信息、查询串或片段");
+      }
+      String path = uri.getPath() == null ? "" : uri.getPath();
+      if (!path.endsWith("/v1")) {
+        throw new IllegalStateException("非法配置公开地址：必须以 /v1 结束");
       }
     }
     for (Map.Entry<String, String> entry : urls.entrySet()) {

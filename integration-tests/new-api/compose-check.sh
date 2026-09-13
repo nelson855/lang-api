@@ -54,12 +54,19 @@ if grep -Eq "image:.*:latest" "$COMPOSE"; then
 else
   pass "无 latest 浮动引用"
 fi
-# 至少 new-api/nginx/postgres/redis 的 image 行必须包含 @sha256:
+# 外部基础镜像必须带 digest，禁止 latest 浮动引用。
+# LANG-P1-07 起 edge 改用自有镜像构建（digest 锁定在 gateway/Dockerfile，由网关检查覆盖），
+# 主文件保留 new-api/postgres/redis 三处 digest 锁定。
 DIGEST_COUNT=$(grep -c "image:.*@sha256:" "$COMPOSE" || true)
-if [[ "$DIGEST_COUNT" -lt 4 ]]; then
-  fail "外部镜像 digest 不足（期望>=4，实际=$DIGEST_COUNT）"
+if [[ "$DIGEST_COUNT" -lt 3 ]]; then
+  fail "外部镜像 digest 不足（期望>=3，实际=$DIGEST_COUNT）"
 else
   pass "外部镜像均使用 digest（$DIGEST_COUNT 处）"
+fi
+if grep -A6 -E "^[[:space:]]{2}edge-nginx:" "$COMPOSE" | grep -q "context: ../gateway"; then
+  pass "edge 使用自有网关镜像构建"
+else
+  fail "edge 应从 ../gateway 构建自有镜像"
 fi
 
 # 5. 必填变量使用 ${VAR:?} 在解析期失败

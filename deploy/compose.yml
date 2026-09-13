@@ -12,14 +12,29 @@ name: lang-api
 
 services:
   edge-nginx:
-    image: nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+    # LANG-P1-07：使用自有 edge 镜像（网关配置烘焙进镜像，不再挂载宿主机配置覆盖）。
+    # 基础镜像 digest 见 gateway/Dockerfile，与 P1-02 冻结指纹一致。
+    build:
+      context: ../gateway
+      dockerfile: Dockerfile
+      args:
+        PROJECT_VERSION: ${PROJECT_VERSION:-development}
+        GIT_REVISION: ${GIT_REVISION:-development}
+    environment:
+      PORTAL_SERVER_NAME: ${PORTAL_SERVER_NAME:?请在 deploy/.env 设置 PORTAL_SERVER_NAME}
+      MODEL_API_SERVER_NAME: ${MODEL_API_SERVER_NAME:?请在 deploy/.env 设置 MODEL_API_SERVER_NAME}
+      GATEWAY_CLIENT_MAX_BODY: ${GATEWAY_CLIENT_MAX_BODY:-10m}
+      GATEWAY_CONNECT_TIMEOUT: ${GATEWAY_CONNECT_TIMEOUT:-3s}
+      GATEWAY_SEND_TIMEOUT: ${GATEWAY_SEND_TIMEOUT:-60s}
+      GATEWAY_READ_TIMEOUT: ${GATEWAY_READ_TIMEOUT:-600s}
+      GATEWAY_RATE_LIMIT: ${GATEWAY_RATE_LIMIT:-10r/s}
+      GATEWAY_RATE_BURST: ${GATEWAY_RATE_BURST:-20}
+      GATEWAY_CONN_LIMIT: ${GATEWAY_CONN_LIMIT:-20}
     depends_on:
       lang-api:
         condition: service_healthy
     ports:
       - "${EDGE_HTTP_PORT:-8081}:80"
-    volumes:
-      - ../gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - web
       - relay
@@ -41,6 +56,9 @@ services:
         - maven_settings
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      # LANG-P1-07：本地 OPENAI Base URL 与网关模型站点保持一致，由 6.8 预检校验。
+      PORTAL_ENABLED_PROTOCOLS: ${PORTAL_ENABLED_PROTOCOLS:-OPENAI}
+      PORTAL_OPENAI_URL: ${PORTAL_OPENAI_URL:-http://api.localhost:${EDGE_HTTP_PORT:-8081}/v1}
     depends_on:
       new-api:
         condition: service_healthy
