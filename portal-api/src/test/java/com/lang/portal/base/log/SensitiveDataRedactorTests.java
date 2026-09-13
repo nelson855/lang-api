@@ -19,4 +19,12 @@ class SensitiveDataRedactorTests {
     String redacted = SensitiveDataRedactor.redact("connect to 192.168.1.10 failed");
     assertThat(redacted).doesNotContain("192.168.1.10");
   }
+
+  @Test
+  void redactsRevealSecretAndMaskedKeyValues() {
+    String input = "{\"secret\":\"sk-full-key-123\",\"maskedKey\":\"sk-fN95**********CMHQ\"}";
+    String redacted = SensitiveDataRedactor.redact(input);
+    assertThat(redacted).doesNotContain("sk-full-key-123").doesNotContain("sk-fN95**********CMHQ");
+    assertThat(redacted).contains("[REDACTED]");
+  }
 }

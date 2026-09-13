@@ -24,6 +24,7 @@ public class PortalPropertiesValidator {
   void validate() {
     validateBaseUrl(properties.upstream().newApi().baseUrl(), "lang.upstream.new-api.base-url");
     validateRequestId(properties.request().requestId().minLength(), properties.request().requestId().maxLength());
+    validateApiKey(properties.apiKey());
     validatePublicConfig(properties.portal().siteName(), properties.portal().enabledProtocols(), properties.portal().urlMap());
     if (environment.containsProperty("lang.auth.cookie.domain")) {
       throw new IllegalStateException("非法配置 lang.auth.cookie.domain：不支持配置 Cookie Domain");
@@ -95,6 +96,24 @@ public class PortalPropertiesValidator {
   private static void validateRequestId(int min, int max) {
     if (min < 1 || max < min || max > 128) {
       throw new IllegalStateException("非法配置 requestId 长度边界");
+    }
+  }
+
+  static void validateApiKey(PortalCommonProperties.ApiKey apiKey) {
+    if (apiKey.defaultPageSize() < 1 || apiKey.maxPageSize() < 1) {
+      throw new IllegalStateException("非法配置 lang.api-key.page-size：必须为正数");
+    }
+    if (apiKey.defaultPageSize() > apiKey.maxPageSize()) {
+      throw new IllegalStateException("非法配置 lang.api-key.default-page-size：默认值不得大于最大值");
+    }
+    if (apiKey.maxPageSize() > 100) {
+      throw new IllegalStateException("非法配置 lang.api-key.max-page-size：不得超过 100");
+    }
+    if (apiKey.statusAggregationMaxPages() < 1 || apiKey.statusAggregationMaxPages() > 100) {
+      throw new IllegalStateException("非法配置 lang.api-key.status-aggregation-max-pages：必须在 1～100 之间");
+    }
+    if (apiKey.revealTtl() == null || apiKey.revealTtl().isZero() || apiKey.revealTtl().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.api-key.reveal-ttl：必须为正数");
     }
   }
 

@@ -18,6 +18,7 @@ export const ROUTE_META: RouteMeta[] = [
   { id: 'login', path: '/login', layout: 'auth', access: 'public-only', titleKey: 'pages.login.title' },
   { id: 'register', path: '/register', layout: 'auth', access: 'public-only', titleKey: 'pages.register.title' },
   { id: 'dashboard', path: '/dashboard', layout: 'console', access: 'protected', titleKey: 'pages.dashboard.title' },
+  { id: 'apiKeys', path: '/dashboard/api-keys', layout: 'console', access: 'protected', titleKey: 'pages.apiKeys.title', navKey: 'nav.apiKeys', navOrder: 1 },
   { id: 'notFound', path: '*', layout: 'public', access: 'public', titleKey: 'pages.notFound.title' },
 ];
 
@@ -26,7 +27,13 @@ export function metaForPath(pathname: string): RouteMeta {
 }
 
 export function getPublicNavItems(): RouteMeta[] {
-  return ROUTE_META.filter((meta) => meta.navKey !== undefined).sort(
+  return ROUTE_META.filter((meta) => meta.layout === 'public' && meta.navKey !== undefined).sort(
+    (a, b) => (a.navOrder ?? 0) - (b.navOrder ?? 0),
+  );
+}
+
+export function getConsoleNavItems(): RouteMeta[] {
+  return ROUTE_META.filter((meta) => meta.layout === 'console' && meta.navKey !== undefined).sort(
     (a, b) => (a.navOrder ?? 0) - (b.navOrder ?? 0),
   );
 }

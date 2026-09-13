@@ -21,6 +21,7 @@ public class PortalCommonProperties {
   @Valid @NotNull private Upstream upstream = new Upstream();
   @Valid @NotNull private Portal portal = new Portal();
   @Valid @NotNull private Auth auth = new Auth();
+  @Valid @NotNull private ApiKey apiKey = new ApiKey();
   private String env = "";
 
   public Request request() {
@@ -53,6 +54,14 @@ public class PortalCommonProperties {
 
   public void setAuth(Auth auth) {
     this.auth = auth;
+  }
+
+  public ApiKey apiKey() {
+    return apiKey;
+  }
+
+  public void setApiKey(ApiKey apiKey) {
+    this.apiKey = apiKey;
   }
 
   public String env() {
@@ -641,6 +650,46 @@ public class PortalCommonProperties {
 
     public void setSameSite(String sameSite) {
       this.sameSite = sameSite;
+    }
+  }
+
+  @Validated
+  public static class ApiKey {
+    @Min(1) @Max(100) private int defaultPageSize = 20;
+    @Min(1) @Max(100) private int maxPageSize = 100;
+    @NotNull private Duration revealTtl = Duration.ofSeconds(60);
+    @Min(1) @Max(100) private int statusAggregationMaxPages = 20;
+
+    public int defaultPageSize() {
+      return defaultPageSize;
+    }
+
+    public void setDefaultPageSize(int defaultPageSize) {
+      this.defaultPageSize = defaultPageSize;
+    }
+
+    public int maxPageSize() {
+      return maxPageSize;
+    }
+
+    public void setMaxPageSize(int maxPageSize) {
+      this.maxPageSize = maxPageSize;
+    }
+
+    public Duration revealTtl() {
+      return revealTtl;
+    }
+
+    public void setRevealTtl(Duration revealTtl) {
+      this.revealTtl = revealTtl;
+    }
+
+    public int statusAggregationMaxPages() {
+      return statusAggregationMaxPages;
+    }
+
+    public void setStatusAggregationMaxPages(int statusAggregationMaxPages) {
+      this.statusAggregationMaxPages = statusAggregationMaxPages;
     }
   }
 }

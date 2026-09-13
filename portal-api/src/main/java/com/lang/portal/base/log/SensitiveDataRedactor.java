@@ -8,6 +8,7 @@ public final class SensitiveDataRedactor {
   private static final List<String> KEYS =
       List.of("password", "passwd", "pwd", "cookie", "set-cookie", "authorization",
           "access_token", "access-token", "accesstoken", "api_key", "api-key", "apikey",
+          "secret", "maskedkey", "masked_key", "masked-key",
           "sign", "signature", "pay_sign", "token");
 
   private static final Pattern PRIVATE_IP =

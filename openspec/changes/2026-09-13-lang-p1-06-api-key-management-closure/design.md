@@ -60,7 +60,7 @@ Controller 只接受 Lang API request；应用服务从 `PortalAuthenticatedUser
 
 ### 3. 列表直通分页，名称搜索走上游 search，状态筛选在 Portal 完整聚合后分页
 
-无名称和状态条件时直接调用 `/api/token/`，保留上游按 id 倒序和分页 total。只有名称条件时使用 `/api/token/search` 的 `keyword`，Portal 对用户输入转义 `%`、`_` 和 `!` 后再构造包含匹配，且绝不使用上游 `token` 参数，避免鼓励用明文片段搜索。
+无名称和状态条件时直接调用 `/api/token/`，保留上游按 id 倒序和分页 total。只有名称条件时使用 `/api/token/search` 的 `keyword`，Portal 把用户原文首尾各补一个 `%` 后直传，由上游按 `ESCAPE '!'` 自行转义 `!` 与 `_`；Portal 不得预转义，否则会形成双重转义。含 `%` 的名称上游按通配符计数拒绝（安全失败），单字符名称不满足上游“去通配后至少 2 字符”规则同样安全失败；`token` 明文搜索参数永不使用。
 
 冻结版没有 status 查询条件。存在 status 时，Portal 对“普通列表”或“名称搜索”按上游允许的最大页大小依次读取完整匹配集合，先映射状态、再筛选、最后应用 Portal page/pageSize，从而返回过滤后的真实 total。读取循环必须校验上游 total/页进度，发现 total 漂移时以已去重 id 的稳定快照继续一次，不重复无限拉取；整个编排受当前请求超时预算约束。New API 已有单用户 Token 数量上限，因此 MVP 可接受这一受限聚合；记录查询页数和耗时但不记录名称条件。
 

@@ -34,8 +34,11 @@ export function ConsoleLayout() {
           <Brand />
         </Link>
         <nav aria-label={t('pages.dashboard.title')}>
-          <NavLink to="/dashboard" className="console-nav-link">
+          <NavLink to="/dashboard" end className="console-nav-link">
             {t('nav.dashboard')}
+          </NavLink>
+          <NavLink to="/dashboard/api-keys" className="console-nav-link">
+            {t('nav.apiKeys')}
           </NavLink>
         </nav>
         <div className="console-sidebar-foot">
@@ -71,6 +74,9 @@ export function ConsoleLayout() {
         <nav aria-label={t('nav.menu')}>
           <Link to="/dashboard" className="drawer-link" onClick={() => setDrawerOpen(false)}>
             {t('nav.dashboard')}
+          </Link>
+          <Link to="/dashboard/api-keys" className="drawer-link" onClick={() => setDrawerOpen(false)}>
+            {t('nav.apiKeys')}
           </Link>
         </nav>
       </Dialog>

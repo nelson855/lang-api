@@ -1,0 +1,14 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-badge * {
+    transition: none;
+    animation: none;
+  }
+}

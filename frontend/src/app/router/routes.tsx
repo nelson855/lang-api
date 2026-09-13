@@ -4,11 +4,11 @@ import { AuthLayout } from '../../layouts/AuthLayout';
 import { ConsoleLayout } from '../../layouts/ConsoleLayout';
 import { PublicLayout } from '../../layouts/PublicLayout';
 import { PublicOnlyRoute, RequireAuth } from '../../features/auth/authState';
-import { getPublicNavItems, metaForPath, ROUTE_META } from './routeMeta';
+import { getConsoleNavItems, getPublicNavItems, metaForPath, ROUTE_META } from './routeMeta';
 import type { AppLayout, RouteAccess, RouteMeta } from './routeMeta';
 import { RouteError } from './RouteError';
 
-export { getPublicNavItems, metaForPath, ROUTE_META };
+export { getConsoleNavItems, getPublicNavItems, metaForPath, ROUTE_META };
 export type { AppLayout, RouteAccess, RouteMeta };
 
 type PageModule = Record<string, ComponentType>;
@@ -69,6 +69,7 @@ export function buildRoutes(): RouteObject[] {
       ),
       children: [
         { index: true, lazy: () => lazyPage(() => import('../../pages/DashboardPage'), 'DashboardPage') },
+        { path: 'api-keys', lazy: () => lazyPage(() => import('../../pages/ApiKeysPage'), 'ApiKeysPage') },
       ],
     },
   ];

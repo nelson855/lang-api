@@ -1,0 +1,37 @@
+.apikeys-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.apikeys-field {
+  font-weight: 600;
+}
+
+.apikeys-notice {
+  border: 1px solid var(--border, #d7dbe0);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+@media (max-width: 640px) {
+  .apikeys-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .apikeys-toolbar .input {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apikeys-toolbar *,
+  .apikeys-notice * {
+    transition: none;
+    animation: none;
+  }
+}
