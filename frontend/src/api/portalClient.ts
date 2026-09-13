@@ -12,6 +12,7 @@ import { validatePortalApiPath } from './portalPath';
 export interface PortalRequestOptions {
   method?: string;
   body?: unknown;
+  headers?: Record<string, string>;
   signal?: AbortSignal;
 }
 
@@ -51,6 +52,7 @@ export async function portalRequest<T>(
     Accept: 'application/json',
     'X-Request-Id': newRequestId(),
   };
+  Object.assign(headers, options.headers);
   let bodyInit: string | undefined;
   if (options.body !== undefined) {
     headers['Content-Type'] = 'application/json';

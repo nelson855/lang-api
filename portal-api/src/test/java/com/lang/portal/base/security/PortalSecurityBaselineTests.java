@@ -1,6 +1,7 @@
 package com.lang.portal.base.security;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,6 +53,27 @@ class PortalSecurityBaselineTests {
     mvc.perform(get("/portal/api/test-protected"))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.error.code").value("UNAUTHENTICATED"));
+  }
+
+  @Test
+  void profileAndRefreshRequireAnAuthenticatedSession() throws Exception {
+    mvc.perform(get("/portal/api/profile"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.error.code").value("UNAUTHENTICATED"));
+    mvc.perform(post("/portal/api/auth/refresh")
+            .cookie(new jakarta.servlet.http.Cookie("XSRF-TOKEN", "csrf-token"))
+            .header("X-XSRF-TOKEN", "csrf-token")
+            .header("Origin", "http://portal.test"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.error.code").value("UNAUTHENTICATED"));
+  }
+
+  @Test
+  void authenticationBootstrapRoutesAreNotBlockedByAuthentication() throws Exception {
+    mvc.perform(get("/portal/api/auth/options")).andExpect(status().isOk());
+    mvc.perform(post("/portal/api/auth/login"))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error.code").value("CSRF_REJECTED"));
   }
 
   @Test

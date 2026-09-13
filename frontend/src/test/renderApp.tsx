@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import type { ReactElement, ReactNode } from 'react';
 import { MemoryRouter } from 'react-router';
 import { AuthStateProvider, type AuthStatus } from '../features/auth/authState';
+import type { AuthProfile } from '../api/auth';
 import { ToastProvider } from '../components/feedback/Toast';
 import { PublicConfigGate } from '../app/providers/publicConfigGate';
 import { I18nProvider } from '../i18n/i18nProvider';
@@ -11,11 +12,12 @@ import type { SupportedLocale } from '../i18n/locale';
 export interface AppRenderOptions {
   locale?: SupportedLocale;
   authStatus?: AuthStatus;
+  authProfile?: AuthProfile | null;
   initialEntries?: string[];
 }
 
 export function renderApp(ui: ReactElement, options: AppRenderOptions = {}) {
-  const { locale = 'zh-CN', authStatus = 'anonymous', initialEntries = ['/'] } = options;
+  const { locale = 'zh-CN', authStatus = 'anonymous', authProfile = null, initialEntries = ['/'] } = options;
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   function Wrapper({ children }: { children: ReactNode }) {
     return (
@@ -23,7 +25,7 @@ export function renderApp(ui: ReactElement, options: AppRenderOptions = {}) {
         <I18nProvider initialLocale={locale}>
           <QueryClientProvider client={client}>
             <PublicConfigGate>
-              <AuthStateProvider status={authStatus}>
+              <AuthStateProvider status={authStatus} profile={authProfile}>
                 <ToastProvider>{children}</ToastProvider>
               </AuthStateProvider>
             </PublicConfigGate>

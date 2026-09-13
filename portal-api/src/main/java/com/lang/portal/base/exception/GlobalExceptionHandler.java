@@ -22,6 +22,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -137,7 +138,19 @@ public class GlobalExceptionHandler {
     if (requestId.isBlank()) {
       requestId = RequestIds.generate();
     }
-    return ResponseEntity.status(code.status()).body(ApiResponses.failure(requestId, code.name(), message));
+    ResponseEntity.BodyBuilder response = ResponseEntity.status(code.status());
+    if (code == PortalErrorCode.RATE_LIMITED) {
+      response.header("Retry-After", "60");
+    }
+    Object pendingCookies = request.getAttribute(
+        com.lang.portal.web.auth.AuthenticationController.EXPIRE_SESSION_COOKIES_ATTRIBUTE);
+    if (pendingCookies instanceof List<?> cookies) {
+      cookies.stream()
+          .filter(String.class::isInstance)
+          .map(String.class::cast)
+          .forEach(cookie -> response.header("Set-Cookie", cookie));
+    }
+    return response.body(ApiResponses.failure(requestId, code.name(), message));
   }
 
   private String firstField(Exception e) {

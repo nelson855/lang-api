@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,11 @@ public class TestValidationController {
           com.lang.portal.base.exception.PortalErrorCode.INVALID_ARGUMENT);
     }
     return name + age;
+  }
+
+  @GetMapping("/errors/{code}")
+  public void error(@PathVariable String code) {
+    throw new PortalException(PortalErrorCode.valueOf(code));
   }
 
   @PostMapping

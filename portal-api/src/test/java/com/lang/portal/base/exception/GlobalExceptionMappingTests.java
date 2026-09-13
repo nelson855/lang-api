@@ -54,4 +54,22 @@ class GlobalExceptionMappingTests {
         .andExpect(status().isMethodNotAllowed())
         .andExpect(jsonPath("$.error.code").value("METHOD_NOT_ALLOWED"));
   }
+
+  @Test
+  void authenticationErrorsUseStableHttpContracts() throws Exception {
+    mvc.perform(get("/portal/api/test-validation/errors/INVALID_CREDENTIALS"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.error.code").value("INVALID_CREDENTIALS"));
+    mvc.perform(get("/portal/api/test-validation/errors/REGISTRATION_DISABLED"))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error.code").value("REGISTRATION_DISABLED"));
+    mvc.perform(get("/portal/api/test-validation/errors/CSRF_REJECTED"))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error.code").value("CSRF_REJECTED"));
+    mvc.perform(get("/portal/api/test-validation/errors/RATE_LIMITED"))
+        .andExpect(status().isTooManyRequests())
+        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header()
+            .string("Retry-After", "60"))
+        .andExpect(jsonPath("$.error.code").value("RATE_LIMITED"));
+  }
 }

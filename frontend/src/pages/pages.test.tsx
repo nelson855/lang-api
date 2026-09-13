@@ -47,15 +47,15 @@ describe('阶段占位页诚实表达', () => {
     await screen.findByText(/后续阶段接入/);
   });
 
-  it('登录注册页无表单且不宣称成功', async () => {
+  it('登录注册页提供最小用户名密码表单且不展示未实现能力', async () => {
     const { container, unmount } = renderApp(<LoginPage />);
-    await screen.findByText(/尚未开放/);
-    expect(container.querySelector('form')).toBeNull();
-    expect(container.textContent).not.toContain('登录成功');
+    expect(await screen.findByRole('textbox', { name: /用户名/ })).toBeInTheDocument();
+    expect(container.querySelector('input[type="password"]')).not.toBeNull();
+    expect(container.textContent).not.toContain('OAuth');
     unmount();
     const second = renderApp(<RegisterPage />);
-    await screen.findByText(/暂不开放/);
-    expect(second.container.querySelector('form')).toBeNull();
+    expect(await screen.findByRole('textbox', { name: /用户名/ })).toBeInTheDocument();
+    expect(second.container.querySelectorAll('input[type="password"]')).toHaveLength(2);
   });
 
   it('控制台页为真实占位', async () => {

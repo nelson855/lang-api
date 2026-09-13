@@ -64,7 +64,7 @@ describe('路由导航与守卫集成', () => {
 
   it('匿名访问控制台跳转登录并携带站内返回地址', async () => {
     const router = setup('anonymous', ['/dashboard']);
-    await screen.findByText(/认证功能尚未开放/);
+    await screen.findByRole('heading', { name: '登录' });
     expect(router.state.location.pathname).toBe('/login');
     expect(router.state.location.search).toContain('returnTo=%2Fdashboard');
   });
@@ -78,7 +78,7 @@ describe('路由导航与守卫集成', () => {
 
   it('非法返回地址被丢弃', async () => {
     const router = setup('anonymous', ['/dashboard']);
-    await screen.findByText(/认证功能尚未开放/);
+    await screen.findByRole('heading', { name: '登录' });
     expect(router.state.location.search).not.toContain('http');
   });
 });

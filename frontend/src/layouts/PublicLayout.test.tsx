@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Route, Routes } from 'react-router';
 import { portalRequest } from '../api/portalClient';
@@ -59,5 +59,19 @@ describe('PublicLayout 公开站点壳', () => {
   it('提供语言切换器', async () => {
     setup('/');
     expect(await screen.findByRole('group', { name: '语言' })).toBeInTheDocument();
+  });
+
+  it('注册策略关闭时移除公开导航中的注册入口', async () => {
+    vi.mocked(portalRequest).mockImplementation((path) => Promise.resolve(
+      path === '/portal/api/auth/options'
+        ? {
+            data: { registrationEnabled: false, emailVerificationEnabled: false, captchaEnabled: false },
+            requestId: 'req-options',
+          }
+        : { data: { siteName: '测试站', apiBaseUrls: [] }, requestId: 'req-layout' },
+    ));
+    setup('/');
+    await screen.findAllByText('测试站');
+    await waitFor(() => expect(screen.queryByRole('link', { name: '注册' })).toBeNull());
   });
 });

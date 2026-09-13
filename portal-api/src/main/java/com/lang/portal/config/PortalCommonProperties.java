@@ -20,6 +20,8 @@ public class PortalCommonProperties {
   @Valid @NotNull private Request request = new Request();
   @Valid @NotNull private Upstream upstream = new Upstream();
   @Valid @NotNull private Portal portal = new Portal();
+  @Valid @NotNull private Auth auth = new Auth();
+  private String env = "";
 
   public Request request() {
     return request;
@@ -43,6 +45,22 @@ public class PortalCommonProperties {
 
   public void setPortal(Portal portal) {
     this.portal = portal;
+  }
+
+  public Auth auth() {
+    return auth;
+  }
+
+  public void setAuth(Auth auth) {
+    this.auth = auth;
+  }
+
+  public String env() {
+    return env;
+  }
+
+  public void setEnv(String env) {
+    this.env = env;
   }
 
   @Validated
@@ -329,6 +347,300 @@ public class PortalCommonProperties {
 
     public void setPath(String path) {
       this.path = path;
+    }
+  }
+
+  @Validated
+  public static class Auth {
+    @Valid @NotNull private Registration registration = new Registration();
+    @Valid @NotNull private AuthCookie cookie = new AuthCookie();
+    @Valid @NotNull private Csrf csrf = new Csrf();
+    @Valid @NotNull private RateLimit rateLimit = new RateLimit();
+    @Valid @NotNull private TrustedProxy trustedProxy = new TrustedProxy();
+    private boolean originCheckEnabled = true;
+    private String allowedOrigins = "";
+    private String trustedProxyCidrs = "";
+
+    public Registration registration() {
+      return registration;
+    }
+
+    public void setRegistration(Registration registration) {
+      this.registration = registration;
+    }
+
+    public AuthCookie cookie() {
+      return cookie;
+    }
+
+    public void setCookie(AuthCookie cookie) {
+      this.cookie = cookie;
+    }
+
+    public Csrf csrf() {
+      return csrf;
+    }
+
+    public void setCsrf(Csrf csrf) {
+      this.csrf = csrf;
+    }
+
+    public RateLimit rateLimit() {
+      return rateLimit;
+    }
+
+    public void setRateLimit(RateLimit rateLimit) {
+      this.rateLimit = rateLimit;
+    }
+
+    public TrustedProxy trustedProxy() {
+      return trustedProxy;
+    }
+
+    public void setTrustedProxy(TrustedProxy trustedProxy) {
+      this.trustedProxy = trustedProxy;
+    }
+
+    public boolean originCheckEnabled() {
+      return originCheckEnabled;
+    }
+
+    public void setOriginCheckEnabled(boolean originCheckEnabled) {
+      this.originCheckEnabled = originCheckEnabled;
+    }
+
+    public String allowedOrigins() {
+      return allowedOrigins;
+    }
+
+    public void setAllowedOrigins(String allowedOrigins) {
+      this.allowedOrigins = allowedOrigins;
+    }
+
+    public String trustedProxyCidrs() {
+      return trustedProxyCidrs;
+    }
+
+    public void setTrustedProxyCidrs(String trustedProxyCidrs) {
+      this.trustedProxyCidrs = trustedProxyCidrs;
+    }
+
+  }
+
+  @Validated
+  public static class Registration {
+    private boolean enabled;
+
+    public boolean enabled() {
+      return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+    }
+  }
+
+  @Validated
+  public static class RateLimit {
+    @Valid @NotNull private LoginRateLimit login = new LoginRateLimit();
+    @Valid @NotNull private RegistrationRateLimit registration = new RegistrationRateLimit();
+    @Min(1) @Max(100_000) private int maxEntries = 10_000;
+
+    public LoginRateLimit login() {
+      return login;
+    }
+
+    public void setLogin(LoginRateLimit login) {
+      this.login = login;
+    }
+
+    public RegistrationRateLimit registration() {
+      return registration;
+    }
+
+    public void setRegistration(RegistrationRateLimit registration) {
+      this.registration = registration;
+    }
+
+    public int maxEntries() {
+      return maxEntries;
+    }
+
+    public void setMaxEntries(int maxEntries) {
+      this.maxEntries = maxEntries;
+    }
+  }
+
+  @Validated
+  public static class LoginRateLimit {
+    private int usernameAttempts = 5;
+    private int clientAttempts = 20;
+    @NotNull private Duration window = Duration.ofMinutes(5);
+
+    public int usernameAttempts() {
+      return usernameAttempts;
+    }
+
+    public void setUsernameAttempts(int usernameAttempts) {
+      this.usernameAttempts = usernameAttempts;
+    }
+
+    public int clientAttempts() {
+      return clientAttempts;
+    }
+
+    public void setClientAttempts(int clientAttempts) {
+      this.clientAttempts = clientAttempts;
+    }
+
+    public Duration window() {
+      return window;
+    }
+
+    public void setWindow(Duration window) {
+      this.window = window;
+    }
+  }
+
+  @Validated
+  public static class RegistrationRateLimit {
+    private int clientAttempts = 3;
+    @NotNull private Duration window = Duration.ofHours(1);
+
+    public int clientAttempts() {
+      return clientAttempts;
+    }
+
+    public void setClientAttempts(int clientAttempts) {
+      this.clientAttempts = clientAttempts;
+    }
+
+    public Duration window() {
+      return window;
+    }
+
+    public void setWindow(Duration window) {
+      this.window = window;
+    }
+  }
+
+  @Validated
+  public static class TrustedProxy {
+    private String cidrs = "";
+    @NotBlank private String forwardedForHeader = "X-Forwarded-For";
+
+    public String cidrs() {
+      return cidrs;
+    }
+
+    public void setCidrs(String cidrs) {
+      this.cidrs = cidrs;
+    }
+
+    public String forwardedForHeader() {
+      return forwardedForHeader;
+    }
+
+    public void setForwardedForHeader(String forwardedForHeader) {
+      this.forwardedForHeader = forwardedForHeader;
+    }
+  }
+
+  @Validated
+  public static class AuthCookie {
+    @NotBlank private String sessionName = "LANG_SESSION";
+    @NotBlank private String userIdName = "LANG_UID";
+    @NotBlank private String path = "/portal";
+    @NotBlank private String sameSite = "Lax";
+    @NotNull private Duration maxAge = Duration.ofDays(30);
+    private boolean secure;
+
+    public String sessionName() {
+      return sessionName;
+    }
+
+    public void setSessionName(String sessionName) {
+      this.sessionName = sessionName;
+    }
+
+    public String userIdName() {
+      return userIdName;
+    }
+
+    public void setUserIdName(String userIdName) {
+      this.userIdName = userIdName;
+    }
+
+    public String path() {
+      return path;
+    }
+
+    public void setPath(String path) {
+      this.path = path;
+    }
+
+    public String sameSite() {
+      return sameSite;
+    }
+
+    public void setSameSite(String sameSite) {
+      this.sameSite = sameSite;
+    }
+
+    public Duration maxAge() {
+      return maxAge;
+    }
+
+    public void setMaxAge(Duration maxAge) {
+      this.maxAge = maxAge;
+    }
+
+    public boolean secure() {
+      return secure;
+    }
+
+    public void setSecure(boolean secure) {
+      this.secure = secure;
+    }
+  }
+
+  @Validated
+  public static class Csrf {
+    @NotBlank private String cookieName = "XSRF-TOKEN";
+    @NotBlank private String headerName = "X-XSRF-TOKEN";
+    @NotBlank private String path = "/portal";
+    @NotBlank private String sameSite = "Lax";
+
+    public String cookieName() {
+      return cookieName;
+    }
+
+    public void setCookieName(String cookieName) {
+      this.cookieName = cookieName;
+    }
+
+    public String headerName() {
+      return headerName;
+    }
+
+    public void setHeaderName(String headerName) {
+      this.headerName = headerName;
+    }
+
+    public String path() {
+      return path;
+    }
+
+    public void setPath(String path) {
+      this.path = path;
+    }
+
+    public String sameSite() {
+      return sameSite;
+    }
+
+    public void setSameSite(String sameSite) {
+      this.sameSite = sameSite;
     }
   }
 }

@@ -13,8 +13,11 @@ import com.lang.portal.upstream.newapi.policy.NewApiErrorTranslator;
 import com.lang.portal.upstream.newapi.policy.NewApiHeaderPolicy;
 import io.netty.handler.timeout.WriteTimeoutException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
@@ -43,6 +46,21 @@ public class NewApiExchange {
   }
 
   public <T> T execute(NewApiOperation operation, Object requestBody, TypeReference<NewApiEnvelope<T>> type) {
+    NewApiRawResponse<T> response = executeRaw(operation, requestBody, Map.of(), type);
+    if (response.status() < 200 || response.status() >= 300) {
+      throw translator.translate(response.status(), null);
+    }
+    if (!response.success()) {
+      throw translator.translate(response.status(), false);
+    }
+    return response.data();
+  }
+
+  public <T> NewApiRawResponse<T> executeRaw(
+      NewApiOperation operation,
+      Object requestBody,
+      Map<String, String> authentication,
+      TypeReference<NewApiEnvelope<T>> type) {
     String baseUrl = properties.upstream().newApi().baseUrl();
     URI base = URI.create(baseUrl);
     URI target = base.resolve(operation.path());
@@ -52,7 +70,7 @@ public class NewApiExchange {
       throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
     }
     String requestId = currentRequestId();
-    Map<String, String> headers = NewApiHeaderPolicy.requestHeaders(operation, requestId, Map.of());
+    Map<String, String> headers = NewApiHeaderPolicy.requestHeaders(operation, requestId, authentication);
     long start = System.currentTimeMillis();
     String outcome = "success";
     try {
@@ -61,19 +79,30 @@ public class NewApiExchange {
       if (requestBody != null) {
         spec.body(requestBody);
       }
-      String raw = spec.retrieve().body(String.class);
-      NewApiEnvelope<T> envelope;
-      try {
-        envelope = mapper.readValue(raw, type);
-      } catch (Exception e) {
-        outcome = "unparsable";
-        throw translator.unparsable();
-      }
-      if (!envelope.success()) {
-        outcome = "business_failure";
-        throw translator.translate(200, false);
-      }
-      return envelope.data();
+      NewApiRawResponse<T> response = spec.exchange((request, upstream) -> {
+        int status = upstream.getStatusCode().value();
+        List<String> setCookies = List.copyOf(upstream.getHeaders().getOrEmpty("Set-Cookie"));
+        if (status < 200 || status >= 300) {
+          return new NewApiRawResponse<>(status, false, null, setCookies);
+        }
+        try {
+          String raw = new String(upstream.getBody().readAllBytes(), StandardCharsets.UTF_8);
+          try {
+            NewApiEnvelope<T> envelope = mapper.readValue(raw, type);
+            return new NewApiRawResponse<>(status, envelope.success(), envelope.data(), setCookies);
+          } catch (Exception e) {
+            throw translator.unparsable();
+          }
+        } catch (UpstreamException e) {
+          throw e;
+        } catch (IOException e) {
+          throw new IllegalStateException("无法读取上游响应", e);
+        }
+      });
+      outcome = response.status() >= 200 && response.status() < 300 && response.success()
+          ? "success"
+          : response.status() >= 200 && response.status() < 300 ? "business_failure" : "http_" + response.status();
+      return response;
     } catch (UpstreamException e) {
       outcome = e.errorCode().name().toLowerCase();
       throw e;
@@ -95,6 +124,10 @@ public class NewApiExchange {
       log.info("event=new_api_call operation={} outcome={} durationMs={} requestId={}",
           operation.name(), outcome, System.currentTimeMillis() - start, requestId);
     }
+  }
+
+  public UpstreamException failure(NewApiRawResponse<?> response) {
+    return translator.translate(response.status(), response.success() ? null : false);
   }
 
   private String currentRequestId() {

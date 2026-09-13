@@ -16,6 +16,7 @@ export const enUS = {
     login: 'Sign in',
     register: 'Sign up',
     dashboard: 'Dashboard',
+    logout: 'Sign out',
     menu: 'Menu',
     closeMenu: 'Close menu',
   },
@@ -35,11 +36,21 @@ export const enUS = {
     },
     login: {
       title: 'Sign in',
-      unavailable: 'Authentication is not open yet; sign-in arrives once connected.',
+      submit: 'Sign in',
     },
     register: {
       title: 'Sign up',
-      unavailable: 'Registration policy is pending confirmation and stays closed for now.',
+      submit: 'Sign up',
+      closed: 'Registration is closed in this environment. Ask an administrator to create an account.',
+    },
+    auth: {
+      username: 'Username',
+      password: 'Password',
+      confirmPassword: 'Confirm password',
+      submitting: 'Submitting…',
+      invalidCredentials: 'Invalid username or password.',
+      passwordMismatch: 'The passwords do not match.',
+      requestFailed: 'The request failed. Please try again.',
     },
     dashboard: {
       title: 'Dashboard',

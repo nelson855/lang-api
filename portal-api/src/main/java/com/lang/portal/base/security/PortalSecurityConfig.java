@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
@@ -22,12 +23,23 @@ public class PortalSecurityConfig {
   private final ObjectMapper mapper = new ObjectMapper();
 
   @Bean
-  SecurityFilterChain portalFilterChain(HttpSecurity http) throws Exception {
+  SecurityFilterChain portalFilterChain(
+      HttpSecurity http,
+      PortalCsrfFilter csrfFilter,
+      PortalSessionAuthenticationFilter sessionAuthenticationFilter)
+      throws Exception {
     http.formLogin(form -> form.disable());
     http.httpBasic(basic -> basic.disable());
-    http.csrf(csrf -> csrf.ignoringRequestMatchers("/portal/api/public-config"));
+    http.csrf(csrf -> csrf.disable());
     http.authorizeHttpRequests(auth -> auth
-        .requestMatchers("/portal/api/public-config").permitAll()
+        .requestMatchers(
+            "/portal/api/public-config",
+            "/portal/api/auth/options",
+            "/portal/api/auth/csrf",
+            "/portal/api/auth/login",
+            "/portal/api/auth/register",
+            "/portal/api/auth/logout").permitAll()
+        .requestMatchers("/portal/api/profile", "/portal/api/auth/refresh").authenticated()
         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
         .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
         .requestMatchers("/actuator/**").denyAll()
@@ -36,6 +48,8 @@ public class PortalSecurityConfig {
     http.exceptionHandling(handling -> handling
         .authenticationEntryPoint(authenticationEntryPoint())
         .accessDeniedHandler(accessDeniedHandler()));
+    http.addFilterBefore(csrfFilter, AnonymousAuthenticationFilter.class);
+    http.addFilterAfter(sessionAuthenticationFilter, PortalCsrfFilter.class);
     return http.build();
   }
 

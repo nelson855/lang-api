@@ -31,11 +31,19 @@ const REQUIRED_KEYS = [
   'nav.login',
   'nav.register',
   'nav.dashboard',
+  'nav.logout',
   'pages.home.title',
   'pages.models.title',
   'pages.docs.title',
   'pages.login.title',
   'pages.register.title',
+  'pages.register.closed',
+  'pages.auth.username',
+  'pages.auth.password',
+  'pages.auth.confirmPassword',
+  'pages.auth.invalidCredentials',
+  'pages.auth.passwordMismatch',
+  'pages.auth.requestFailed',
   'pages.dashboard.title',
   'pages.notFound.title',
   'states.loading',
@@ -82,5 +90,12 @@ describe('中英文资源完整性', () => {
     for (const [path, value] of en) {
       expect(typeof value === 'string' && value.trim().length > 0, `英文空文案 ${path}`).toBe(true);
     }
+  });
+
+  it('认证文案不暴露上游品牌、原始消息或未交付能力', () => {
+    const text = [...collectKeys(zhCN).values(), ...collectKeys(enUS).values()]
+      .filter((value): value is string => typeof value === 'string')
+      .join('\n');
+    expect(text).not.toMatch(/new\s*api|access\s*token|oauth|mfa|passkey|private upstream/i);
   });
 });

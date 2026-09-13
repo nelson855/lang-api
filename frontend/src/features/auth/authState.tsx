@@ -1,33 +1,59 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
 import { Forbidden, Loading } from '../../components/feedback/Feedback';
+import { PortalApiError } from '../../api/envelope';
+import { AUTH_PROFILE_QUERY_KEY, fetchProfile, type AuthProfile } from '../../api/auth';
 import { DEFAULT_RETURN_TO, resolveReturnTo } from './returnTo';
 
 export type AuthStatus = 'checking' | 'authenticated' | 'anonymous' | 'forbidden';
 
 const AuthStateContext = createContext<AuthStatus>('anonymous');
+const AuthProfileContext = createContext<AuthProfile | null>(null);
 
 export function useAuthState(): AuthStatus {
   return useContext(AuthStateContext);
 }
 
+export function useAuthProfile(): AuthProfile | null {
+  return useContext(AuthProfileContext);
+}
+
 export function AuthStateProvider({
   status,
+  profile = null,
   children,
 }: {
   status: AuthStatus;
+  profile?: AuthProfile | null;
   children: ReactNode;
 }) {
-  return <AuthStateContext.Provider value={status}>{children}</AuthStateContext.Provider>;
+  return (
+    <AuthStateContext.Provider value={status}>
+      <AuthProfileContext.Provider value={profile}>{children}</AuthProfileContext.Provider>
+    </AuthStateContext.Provider>
+  );
 }
 
 /**
- * P1-04 默认鉴权状态：尚无会话接口，生产默认为匿名。
- * 不读取 Cookie，不使用 localStorage 或 query 参数伪造登录。
- * P1-05 只需替换这里的数据来源，守卫 API 不变。
+ * 会话状态仅由同源 profile 接口决定；浏览器不读取 Cookie，也不保存令牌。
  */
 export function DefaultAuthProvider({ children }: { children: ReactNode }) {
-  return <AuthStateProvider status="anonymous">{children}</AuthStateProvider>;
+  const profileQuery = useQuery({
+    queryKey: AUTH_PROFILE_QUERY_KEY,
+    queryFn: ({ signal }) => fetchProfile(signal),
+    staleTime: 0,
+  });
+  if (profileQuery.isPending) {
+    return <AuthStateProvider status="checking">{children}</AuthStateProvider>;
+  }
+  if (profileQuery.data) {
+    return <AuthStateProvider status="authenticated" profile={profileQuery.data.data}>{children}</AuthStateProvider>;
+  }
+  const status = profileQuery.error instanceof PortalApiError && profileQuery.error.status === 403
+    ? 'forbidden'
+    : 'anonymous';
+  return <AuthStateProvider status={status}>{children}</AuthStateProvider>;
 }
 
 export function RequireAuth({ children }: { children: ReactNode }) {  const status = useAuthState();

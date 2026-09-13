@@ -16,6 +16,7 @@ export const zhCN = {
     login: '登录',
     register: '注册',
     dashboard: '控制台',
+    logout: '退出登录',
     menu: '菜单',
     closeMenu: '关闭菜单',
   },
@@ -35,11 +36,21 @@ export const zhCN = {
     },
     login: {
       title: '登录',
-      unavailable: '认证功能尚未开放，接入后可登录。',
+      submit: '登录',
     },
     register: {
       title: '注册',
-      unavailable: '注册策略待确认，暂不开放。',
+      submit: '注册',
+      closed: '当前环境未开放注册，请联系管理员预建账号。',
+    },
+    auth: {
+      username: '用户名',
+      password: '密码',
+      confirmPassword: '确认密码',
+      submitting: '提交中…',
+      invalidCredentials: '用户名或密码错误。',
+      passwordMismatch: '两次输入的密码不一致。',
+      requestFailed: '请求失败，请稍后重试。',
     },
     dashboard: {
       title: '控制台',

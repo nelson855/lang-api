@@ -7,14 +7,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.stereotype.Component;
+import org.springframework.core.env.Environment;
 
 @Component
 public class PortalPropertiesValidator {
 
   private final PortalCommonProperties properties;
+  private final Environment environment;
 
-  public PortalPropertiesValidator(PortalCommonProperties properties) {
+  public PortalPropertiesValidator(PortalCommonProperties properties, Environment environment) {
     this.properties = properties;
+    this.environment = environment;
   }
 
   @PostConstruct
@@ -22,6 +25,10 @@ public class PortalPropertiesValidator {
     validateBaseUrl(properties.upstream().newApi().baseUrl(), "lang.upstream.new-api.base-url");
     validateRequestId(properties.request().requestId().minLength(), properties.request().requestId().maxLength());
     validatePublicConfig(properties.portal().siteName(), properties.portal().enabledProtocols(), properties.portal().urlMap());
+    if (environment.containsProperty("lang.auth.cookie.domain")) {
+      throw new IllegalStateException("非法配置 lang.auth.cookie.domain：不支持配置 Cookie Domain");
+    }
+    validateAuthentication(properties.env(), properties.auth());
   }
 
   static void validateBaseUrl(String value, String key) {
@@ -55,6 +62,33 @@ public class PortalPropertiesValidator {
         continue;
       }
       toAbsoluteHttpUri(entry.getValue(), "lang.portal.public-urls." + entry.getKey().toLowerCase(Locale.ROOT));
+    }
+  }
+
+  static void validateAuthentication(String environment, PortalCommonProperties.Auth auth) {
+    if (!"prod".equalsIgnoreCase(environment)) {
+      return;
+    }
+    if (!auth.cookie().secure()) {
+      throw new IllegalStateException("非法配置 lang.auth.cookie.secure：生产环境必须启用 Secure");
+    }
+    if (!auth.cookie().sessionName().matches("[!#$%&'*+\\-.^_`|~0-9A-Za-z]+")) {
+      throw new IllegalStateException("非法配置 lang.auth.cookie.session-name：必须是合法 Cookie 名");
+    }
+    if (!auth.cookie().userIdName().matches("[!#$%&'*+\\-.^_`|~0-9A-Za-z]+")) {
+      throw new IllegalStateException("非法配置 lang.auth.cookie.user-id-name：必须是合法 Cookie 名");
+    }
+    if (auth.rateLimit().login().usernameAttempts() > 20) {
+      throw new IllegalStateException("非法配置 lang.auth.rate-limit.login.username-attempts：不得超过 20");
+    }
+    if (auth.rateLimit().login().window().isZero() || auth.rateLimit().login().window().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.auth.rate-limit.login.window：必须为正数");
+    }
+    if (auth.allowedOrigins() == null || auth.allowedOrigins().isBlank()) {
+      throw new IllegalStateException("非法配置 lang.auth.allowed-origins：生产环境不能为空");
+    }
+    if (auth.trustedProxy().cidrs() == null || auth.trustedProxy().cidrs().isBlank()) {
+      throw new IllegalStateException("非法配置 lang.auth.trusted-proxy-cidrs：生产环境不能为空");
     }
   }
 

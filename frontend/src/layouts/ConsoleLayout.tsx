@@ -1,16 +1,31 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
+import { useNavigate } from 'react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Brand } from '../components/brand/Brand';
 import { Dialog } from '../components/ui/Dialog';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 import { usePageChrome } from './usePageChrome';
+import { logout } from '../api/auth';
+import { useAuthProfile } from '../features/auth/authState';
+import { clearAuthenticatedScope } from '../features/auth/authCache';
 import './ConsoleLayout.css';
 
 export function ConsoleLayout() {
   const { t } = useTranslation();
   const { mainRef } = usePageChrome();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const profile = useAuthProfile();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSettled: () => {
+      clearAuthenticatedScope(queryClient);
+      navigate('/', { replace: true });
+    },
+  });
 
   return (
     <div className="console-shell">
@@ -24,6 +39,10 @@ export function ConsoleLayout() {
           </NavLink>
         </nav>
         <div className="console-sidebar-foot">
+          {profile ? <span>{profile.displayName ?? profile.username}</span> : null}
+          <button type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
+            {logoutMutation.isPending ? t('pages.auth.submitting') : t('nav.logout')}
+          </button>
           <LanguageSwitcher />
         </div>
       </aside>
