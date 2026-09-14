@@ -40,6 +40,9 @@ export function ConsoleLayout() {
           <NavLink to="/dashboard/api-keys" className="console-nav-link">
             {t('nav.apiKeys')}
           </NavLink>
+          <NavLink to="/dashboard/request-logs" className="console-nav-link">
+            {t('nav.requestLogs')}
+          </NavLink>
         </nav>
         <div className="console-sidebar-foot">
           {profile ? <span>{profile.displayName ?? profile.username}</span> : null}
@@ -77,6 +80,9 @@ export function ConsoleLayout() {
           </Link>
           <Link to="/dashboard/api-keys" className="drawer-link" onClick={() => setDrawerOpen(false)}>
             {t('nav.apiKeys')}
+          </Link>
+          <Link to="/dashboard/request-logs" className="drawer-link" onClick={() => setDrawerOpen(false)}>
+            {t('nav.requestLogs')}
           </Link>
         </nav>
       </Dialog>

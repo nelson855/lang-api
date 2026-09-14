@@ -70,6 +70,7 @@ export function buildRoutes(): RouteObject[] {
       children: [
         { index: true, lazy: () => lazyPage(() => import('../../pages/DashboardPage'), 'DashboardPage') },
         { path: 'api-keys', lazy: () => lazyPage(() => import('../../pages/ApiKeysPage'), 'ApiKeysPage') },
+        { path: 'request-logs', lazy: () => lazyPage(() => import('../../pages/RequestLogsPage'), 'RequestLogsPage') },
       ],
     },
   ];

@@ -26,6 +26,7 @@ public class PortalPropertiesValidator {
     validateRequestId(properties.request().requestId().minLength(), properties.request().requestId().maxLength());
     validateApiKey(properties.apiKey());
     validateCatalog(properties.catalog());
+    validateUsage(properties.portal().usage());
     validatePublicConfig(properties.portal().siteName(), properties.portal().enabledProtocols(), properties.portal().urlMap());
     if (environment.containsProperty("lang.auth.cookie.domain")) {
       throw new IllegalStateException("非法配置 lang.auth.cookie.domain：不支持配置 Cookie Domain");
@@ -129,6 +130,29 @@ public class PortalPropertiesValidator {
     }
     if (catalog.cacheTtl() == null || catalog.cacheTtl().isZero() || catalog.cacheTtl().isNegative()) {
       throw new IllegalStateException("非法配置 lang.portal.catalog.cache-ttl：必须为正数");
+    }
+  }
+
+  static void validateUsage(PortalCommonProperties.Usage usage) {
+    if (usage.defaultRange() == null
+        || usage.defaultRange().isZero()
+        || usage.defaultRange().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.portal.usage.default-range：必须为正数");
+    }
+    if (usage.maxRange() == null || usage.maxRange().isZero() || usage.maxRange().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.portal.usage.max-range：必须为正数");
+    }
+    if (usage.defaultRange().compareTo(usage.maxRange()) > 0) {
+      throw new IllegalStateException("非法配置 lang.portal.usage.default-range：默认值不得大于最大值");
+    }
+    if (usage.defaultPageSize() < 1 || usage.maxPageSize() < 1) {
+      throw new IllegalStateException("非法配置 lang.portal.usage.page-size：必须为正数");
+    }
+    if (usage.defaultPageSize() > usage.maxPageSize()) {
+      throw new IllegalStateException("非法配置 lang.portal.usage.default-page-size：默认值不得大于最大值");
+    }
+    if (usage.maxPageSize() > 100) {
+      throw new IllegalStateException("非法配置 lang.portal.usage.max-page-size：不得超过 100");
     }
   }
 

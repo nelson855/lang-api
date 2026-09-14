@@ -46,4 +46,23 @@ class PortalPropertiesValidatorTests {
     PortalPropertiesValidator.validatePublicConfig(
         "Lang API", List.of("OPENAI"), Map.of("OPENAI", "http://api.localhost:8081/v1"));
   }
+
+  @Test
+  void usageDefaultLargerThanMaxFails() {
+    PortalCommonProperties.Usage usage = new PortalCommonProperties.Usage();
+    usage.setDefaultRange(java.time.Duration.ofDays(31));
+    usage.setMaxRange(java.time.Duration.ofDays(30));
+    assertThatThrownBy(() -> PortalPropertiesValidator.validateUsage(usage))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("默认值不得大于最大值");
+  }
+
+  @Test
+  void usagePageSizeOverLimitFails() {
+    PortalCommonProperties.Usage usage = new PortalCommonProperties.Usage();
+    usage.setMaxPageSize(101);
+    assertThatThrownBy(() -> PortalPropertiesValidator.validateUsage(usage))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("不得超过 100");
+  }
 }

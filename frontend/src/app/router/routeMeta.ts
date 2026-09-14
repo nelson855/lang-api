@@ -19,6 +19,7 @@ export const ROUTE_META: RouteMeta[] = [
   { id: 'register', path: '/register', layout: 'auth', access: 'public-only', titleKey: 'pages.register.title' },
   { id: 'dashboard', path: '/dashboard', layout: 'console', access: 'protected', titleKey: 'pages.dashboard.title' },
   { id: 'apiKeys', path: '/dashboard/api-keys', layout: 'console', access: 'protected', titleKey: 'pages.apiKeys.title', navKey: 'nav.apiKeys', navOrder: 1 },
+  { id: 'requestLogs', path: '/dashboard/request-logs', layout: 'console', access: 'protected', titleKey: 'pages.requestLogs.title', navKey: 'nav.requestLogs', navOrder: 2 },
   { id: 'notFound', path: '*', layout: 'public', access: 'public', titleKey: 'pages.notFound.title' },
 ];
 

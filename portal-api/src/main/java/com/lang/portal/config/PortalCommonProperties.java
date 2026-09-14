@@ -251,6 +251,8 @@ public class PortalCommonProperties {
 
     @Valid @NotNull private Cookie cookie = new Cookie();
 
+    @Valid @NotNull private Usage usage = new Usage();
+
     public String siteName() {
       return siteName;
     }
@@ -289,6 +291,14 @@ public class PortalCommonProperties {
 
     public void setCookie(Cookie cookie) {
       this.cookie = cookie;
+    }
+
+    public Usage usage() {
+      return usage;
+    }
+
+    public void setUsage(Usage usage) {
+      this.usage = usage;
     }
 
     public Map<String, String> urlMap() {
@@ -365,6 +375,46 @@ public class PortalCommonProperties {
 
     public void setPath(String path) {
       this.path = path;
+    }
+  }
+
+  @Validated
+  public static class Usage {
+    @NotNull private Duration defaultRange = Duration.ofHours(24);
+    @NotNull private Duration maxRange = Duration.ofDays(30);
+    @Min(1) @Max(100) private int defaultPageSize = 20;
+    @Min(1) @Max(100) private int maxPageSize = 100;
+
+    public Duration defaultRange() {
+      return defaultRange;
+    }
+
+    public void setDefaultRange(Duration defaultRange) {
+      this.defaultRange = defaultRange;
+    }
+
+    public Duration maxRange() {
+      return maxRange;
+    }
+
+    public void setMaxRange(Duration maxRange) {
+      this.maxRange = maxRange;
+    }
+
+    public int defaultPageSize() {
+      return defaultPageSize;
+    }
+
+    public void setDefaultPageSize(int defaultPageSize) {
+      this.defaultPageSize = defaultPageSize;
+    }
+
+    public int maxPageSize() {
+      return maxPageSize;
+    }
+
+    public void setMaxPageSize(int maxPageSize) {
+      this.maxPageSize = maxPageSize;
     }
   }
 

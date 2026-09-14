@@ -73,7 +73,7 @@ describe('API Key 路由与导航', () => {
 
   it('控制台导航含密钥入口且公开导航不受影响', async () => {
     const { getConsoleNavItems, getPublicNavItems } = await import('./routes');
-    expect(getConsoleNavItems().map((item) => item.id)).toEqual(['apiKeys']);
+    expect(getConsoleNavItems().map((item) => item.id)).toEqual(['apiKeys', 'requestLogs']);
     expect(getPublicNavItems().map((item) => item.id)).toEqual(['home', 'models', 'docs']);
   });
 

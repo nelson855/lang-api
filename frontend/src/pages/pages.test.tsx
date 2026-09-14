@@ -21,6 +21,18 @@ beforeEach(() => {
     if (path.includes('/portal/api/models')) {
       return { data: { pricingVersion: null, models: [] }, requestId: 'req-pages' };
     }
+    if (path.includes('/portal/api/account/balance')) {
+      return { data: { quota: '500000', amount: '1.0', currency: 'USD' }, requestId: 'req-pages' };
+    }
+    if (path.includes('/portal/api/usage/summary')) {
+      return {
+        data: { quota: '0', amount: '0.0', currency: 'USD', rpm: 0, tpm: 0, rateWindowSeconds: 60 },
+        requestId: 'req-pages',
+      };
+    }
+    if (path.includes('/portal/api/usage/timeseries')) {
+      return { data: { granularity: 'HOUR', points: [] }, requestId: 'req-pages' };
+    }
     return {
       data: { siteName: '测试站', apiBaseUrls: [] },
       requestId: 'req-pages',
@@ -63,10 +75,15 @@ describe('阶段占位页诚实表达', () => {
     expect(second.container.querySelectorAll('input[type="password"]')).toHaveLength(2);
   });
 
-  it('控制台页为真实占位', async () => {
-    const { container } = renderApp(<DashboardPage />, { authStatus: 'authenticated' });
-    await screen.findByText(/后续阶段接入/);
-    for (const fake of FAKE_MODELS) {
+  it('控制台页展示真实余额与基础用量区域', async () => {
+    const { container } = renderApp(<DashboardPage />, {
+      authStatus: 'authenticated',
+      authProfile: { id: 42, username: 'ordinary', displayName: 'Ordinary', email: null },
+    });
+    await screen.findByText(/当前余额/);
+    expect(await screen.findByText(/区间消费/)).toBeInTheDocument();
+    expect(await screen.findByText(/小时趋势/)).toBeInTheDocument();
+    for (const fake of FAKE_MODELS.filter((item) => item !== '余额')) {
       expect(container.textContent).not.toContain(fake);
     }
   });
