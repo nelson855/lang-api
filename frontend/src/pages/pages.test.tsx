@@ -14,12 +14,17 @@ vi.mock('../api/portalClient', () => ({
   portalRequest: vi.fn(),
 }));
 
-const FAKE_MODELS = ['GPT-', '价格', '余额', '已登录', '调用成功', '$', '¥'];
+const FAKE_MODELS = ['GPT-', '余额', '已登录', '调用成功', '¥'];
 
 beforeEach(() => {
-  vi.mocked(portalRequest).mockResolvedValue({
-    data: { siteName: '测试站', apiBaseUrls: [] },
-    requestId: 'req-pages',
+  vi.mocked(portalRequest).mockImplementation(async (path: string) => {
+    if (path.includes('/portal/api/models')) {
+      return { data: { pricingVersion: null, models: [] }, requestId: 'req-pages' };
+    }
+    return {
+      data: { siteName: '测试站', apiBaseUrls: [] },
+      requestId: 'req-pages',
+    };
   });
 });
 
@@ -38,13 +43,13 @@ describe('首页真实骨架', () => {
 describe('阶段占位页诚实表达', () => {
   it('模型与文档页为空状态且无伪造数据', async () => {
     const { container, unmount } = renderApp(<ModelsPage />);
-    await screen.findByText(/模型数据尚未接入/);
+    await screen.findByText(/尚未配置公开模型/);
     for (const fake of FAKE_MODELS) {
       expect(container.textContent).not.toContain(fake);
     }
     unmount();
     renderApp(<DocsPage />);
-    await screen.findByText(/后续阶段接入/);
+    await screen.findByText(/鉴权/);
   });
 
   it('登录注册页提供最小用户名密码表单且不展示未实现能力', async () => {

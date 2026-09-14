@@ -22,6 +22,7 @@ public class PortalCommonProperties {
   @Valid @NotNull private Portal portal = new Portal();
   @Valid @NotNull private Auth auth = new Auth();
   @Valid @NotNull private ApiKey apiKey = new ApiKey();
+  @Valid @NotNull private Catalog catalog = new Catalog();
   private String env = "";
 
   public Request request() {
@@ -62,6 +63,14 @@ public class PortalCommonProperties {
 
   public void setApiKey(ApiKey apiKey) {
     this.apiKey = apiKey;
+  }
+
+  public Catalog catalog() {
+    return catalog;
+  }
+
+  public void setCatalog(Catalog catalog) {
+    this.catalog = catalog;
   }
 
   public String env() {
@@ -690,6 +699,28 @@ public class PortalCommonProperties {
 
     public void setStatusAggregationMaxPages(int statusAggregationMaxPages) {
       this.statusAggregationMaxPages = statusAggregationMaxPages;
+    }
+  }
+
+  @Validated
+  public static class Catalog {
+    @Min(1) private long quotaPerUsd = 500_000L;
+    @NotNull private Duration cacheTtl = Duration.ofSeconds(60);
+
+    public long quotaPerUsd() {
+      return quotaPerUsd;
+    }
+
+    public void setQuotaPerUsd(long quotaPerUsd) {
+      this.quotaPerUsd = quotaPerUsd;
+    }
+
+    public Duration cacheTtl() {
+      return cacheTtl;
+    }
+
+    public void setCacheTtl(Duration cacheTtl) {
+      this.cacheTtl = cacheTtl;
     }
   }
 }

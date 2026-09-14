@@ -1,41 +1,41 @@
 ## 1. 定价契约与运行配置
 
 - [ ] 1.1 基于冻结版 New API v0.13.2 补充脱敏 `/api/pricing` fixture，覆盖空目录、按 Token、按次、厂商缺失、未知字段、非法数值和重复模型 ID
-- [ ] 1.2 先编写失败的价格换算与 DTO 映射测试，冻结 `TOKEN`/`REQUEST`、USD 单位、十进制字符串精度、`null` 缺失语义和稳定排序
-- [ ] 1.3 在 `portal-api/pom.xml` 增加 Caffeine 依赖，并在 `application.properties` 明确目录缓存 TTL 与 `quota-per-usd` 默认配置
-- [ ] 1.4 在 `application-dev.properties`、`application-test.properties` 和 `application-prod.properties` 分别声明目录计费参数与缓存配置，test 使用确定值、prod 支持部署变量覆盖
-- [ ] 1.5 扩展配置绑定和启动校验，拒绝非正 `quota-per-usd`、非正缓存 TTL 及超出约束的配置，并覆盖各 Profile 绑定测试
+- [x] 1.2 先编写失败的价格换算与 DTO 映射测试，冻结 `TOKEN`/`REQUEST`、USD 单位、十进制字符串精度、`null` 缺失语义和稳定排序
+- [x] 1.3 在 `portal-api/pom.xml` 增加 Caffeine 依赖，并在 `application.properties` 明确目录缓存 TTL 与 `quota-per-usd` 默认配置
+- [x] 1.4 在 `application-dev.properties`、`application-test.properties` 和 `application-prod.properties` 分别声明目录计费参数与缓存配置，test 使用确定值、prod 支持部署变量覆盖
+- [x] 1.5 扩展配置绑定和启动校验，拒绝非正 `quota-per-usd`、非正缓存 TTL 及超出约束的配置，并覆盖各 Profile 绑定测试
 
 ## 2. New API 定价适配与模型目录接口
 
 - [ ] 2.1 先扩展 New API 契约测试，断言匿名 `GET /api/pricing`、请求 Header 白名单、HTTP 200 业务失败、非 2xx、超时、非法 JSON 和无自动重试
-- [ ] 2.2 在 `upstream.newapi.pricing` 增加固定操作、最小上游 DTO、客户端和结果类型，只读取模型、厂商及定价版本的已声明字段
-- [ ] 2.3 实现模型 ID、厂商关联、重复项和价格数值的严格校验，使用 `BigDecimal` 映射默认组基础 Token/按次价格，未知增强元数据保持 `null`
-- [ ] 2.4 先编写缓存并发测试，证明 60 秒内命中、并发未命中只加载一次、异常和部分结果不缓存、过期刷新失败不返回陈旧价格
-- [ ] 2.5 实现最大条目数为 1 的原子 Caffeine 模型目录缓存，并复用现有上游异常分类和结构化安全日志
-- [ ] 2.6 先编写 `GET /portal/api/models` Web 测试，覆盖匿名成功、统一包装、空目录、错误方法、`Cache-Control: no-store`、上游错误和内部字段不泄露
-- [ ] 2.7 增加模型目录公开 DTO、查询服务与 Controller，并在安全配置中明确允许匿名 GET、拒绝其他方法且不放宽其他 Portal 路径
-- [ ] 2.8 增加架构与敏感信息守卫，确保 New API pricing 路径/DTO 只存在于适配模块，响应和日志不包含分组倍率、渠道、上游地址或原始消息
+- [x] 2.2 在 `upstream.newapi.pricing` 增加固定操作、最小上游 DTO、客户端和结果类型，只读取模型、厂商及定价版本的已声明字段
+- [x] 2.3 实现模型 ID、厂商关联、重复项和价格数值的严格校验，使用 `BigDecimal` 映射默认组基础 Token/按次价格，未知增强元数据保持 `null`
+- [x] 2.4 先编写缓存并发测试，证明 60 秒内命中、并发未命中只加载一次、异常和部分结果不缓存、过期刷新失败不返回陈旧价格
+- [x] 2.5 实现最大条目数为 1 的原子 Caffeine 模型目录缓存，并复用现有上游异常分类和结构化安全日志
+- [x] 2.6 先编写 `GET /portal/api/models` Web 测试，覆盖匿名成功、统一包装、空目录、错误方法、`Cache-Control: no-store`、上游错误和内部字段不泄露
+- [x] 2.7 增加模型目录公开 DTO、查询服务与 Controller，并在安全配置中明确允许匿名 GET、拒绝其他方法且不放宽其他 Portal 路径
+- [x] 2.8 增加架构与敏感信息守卫，确保 New API pricing 路径/DTO 只存在于适配模块，响应和日志不包含分组倍率、渠道、上游地址或原始消息
 
 ## 3. 模型广场页面
 
-- [ ] 3.1 先编写前端 API schema 和查询测试，覆盖两种价格模式、可空字段、非法金额、未知枚举、额外响应字段和 Portal 错误
-- [ ] 3.2 新增模型目录 API 客户端、Zod schema、TanStack Query key/hook，并确保请求只使用相对 `/portal/api/models` 路径
-- [ ] 3.3 先编写目录纯函数测试，覆盖大小写不敏感搜索、厂商选项去重、组合筛选、稳定排序及未知厂商不被推断
-- [ ] 3.4 在 `features/catalog` 实现搜索、厂商筛选、价格格式和模型选择组件，复用现有输入、按钮和反馈组件
-- [ ] 3.5 替换 `ModelsPage` 占位内容，完成加载、空目录、筛选无结果、价格不可用、接口错误与重试状态，以及“查看调用示例”导航
-- [ ] 3.6 补充模型广场中英文文案、桌面/移动端样式和 axe 组件测试，确认价格单位、基础价格免责声明与 Key 级可用性边界清晰
+- [x] 3.1 先编写前端 API schema 和查询测试，覆盖两种价格模式、可空字段、非法金额、未知枚举、额外响应字段和 Portal 错误
+- [x] 3.2 新增模型目录 API 客户端、Zod schema、TanStack Query key/hook，并确保请求只使用相对 `/portal/api/models` 路径
+- [x] 3.3 先编写目录纯函数测试，覆盖大小写不敏感搜索、厂商选项去重、组合筛选、稳定排序及未知厂商不被推断
+- [x] 3.4 在 `features/catalog` 实现搜索、厂商筛选、价格格式和模型选择组件，复用现有输入、按钮和反馈组件
+- [x] 3.5 替换 `ModelsPage` 占位内容，完成加载、空目录、筛选无结果、价格不可用、接口错误与重试状态，以及“查看调用示例”导航
+- [x] 3.6 补充模型广场中英文文案、桌面/移动端样式和 axe 组件测试，确认价格单位、基础价格免责声明与 Key 级可用性边界清晰
 
 ## 4. 开发文档与安全复制
 
-- [ ] 4.1 先编写代码模板测试，覆盖运行时 Base URL 规范化、模型 ID 的 JSON/shell 转义、cURL 与 OpenAI SDK 的非流式/流式四种输出
-- [ ] 4.2 实现无副作用示例模板函数，固定使用 API Key 环境变量和 P1-07 已开放字段，不生成 Responses、Embeddings 或其他未开放协议示例
-- [ ] 4.3 先编写文档模型选择测试，覆盖合法查询参数、未知/超长/控制字符参数、模型下线、空目录和确定性默认模型
-- [ ] 4.4 实现 public-config 与模型目录联合状态，只有存在 OPENAI Base URL 和有效目录模型时才生成可调用示例，并让 `/models` 选择安全联动到 `/docs`
-- [ ] 4.5 先编写代码块复制组件测试，覆盖鼠标/键盘成功、Clipboard API 拒绝、禁用原因、焦点保持和可选文本退路
-- [ ] 4.6 实现可复用代码块与 Base URL 复制组件，禁止把复制内容写入日志、浏览器持久化、URL 或分析事件
-- [ ] 4.7 替换 `DocsPage` 占位内容，完成鉴权、Key 安全、Base URL、开放接口、cURL/SDK 非流式与 SSE 章节，并明确未开放协议和无 Playground 边界
-- [ ] 4.8 补充开发文档中英文文案、章节导航、代码语言标识、移动端独立横向滚动和 axe 可访问性测试
+- [x] 4.1 先编写代码模板测试，覆盖运行时 Base URL 规范化、模型 ID 的 JSON/shell 转义、cURL 与 OpenAI SDK 的非流式/流式四种输出
+- [x] 4.2 实现无副作用示例模板函数，固定使用 API Key 环境变量和 P1-07 已开放字段，不生成 Responses、Embeddings 或其他未开放协议示例
+- [x] 4.3 先编写文档模型选择测试，覆盖合法查询参数、未知/超长/控制字符参数、模型下线、空目录和确定性默认模型
+- [x] 4.4 实现 public-config 与模型目录联合状态，只有存在 OPENAI Base URL 和有效目录模型时才生成可调用示例，并让 `/models` 选择安全联动到 `/docs`
+- [x] 4.5 先编写代码块复制组件测试，覆盖鼠标/键盘成功、Clipboard API 拒绝、禁用原因、焦点保持和可选文本退路
+- [x] 4.6 实现可复用代码块与 Base URL 复制组件，禁止把复制内容写入日志、浏览器持久化、URL 或分析事件
+- [x] 4.7 替换 `DocsPage` 占位内容，完成鉴权、Key 安全、Base URL、开放接口、cURL/SDK 非流式与 SSE 章节，并明确未开放协议和无 Playground 边界
+- [x] 4.8 补充开发文档中英文文案、章节导航、代码语言标识、移动端独立横向滚动和 axe 可访问性测试
 
 ## 5. 集成验证与真实验收
 

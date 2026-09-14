@@ -25,6 +25,7 @@ public class PortalPropertiesValidator {
     validateBaseUrl(properties.upstream().newApi().baseUrl(), "lang.upstream.new-api.base-url");
     validateRequestId(properties.request().requestId().minLength(), properties.request().requestId().maxLength());
     validateApiKey(properties.apiKey());
+    validateCatalog(properties.catalog());
     validatePublicConfig(properties.portal().siteName(), properties.portal().enabledProtocols(), properties.portal().urlMap());
     if (environment.containsProperty("lang.auth.cookie.domain")) {
       throw new IllegalStateException("非法配置 lang.auth.cookie.domain：不支持配置 Cookie Domain");
@@ -119,6 +120,15 @@ public class PortalPropertiesValidator {
     }
     if (apiKey.revealTtl() == null || apiKey.revealTtl().isZero() || apiKey.revealTtl().isNegative()) {
       throw new IllegalStateException("非法配置 lang.api-key.reveal-ttl：必须为正数");
+    }
+  }
+
+  static void validateCatalog(PortalCommonProperties.Catalog catalog) {
+    if (catalog.quotaPerUsd() <= 0) {
+      throw new IllegalStateException("非法配置 lang.portal.catalog.quota-per-usd：必须为正整数");
+    }
+    if (catalog.cacheTtl() == null || catalog.cacheTtl().isZero() || catalog.cacheTtl().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.portal.catalog.cache-ttl：必须为正数");
     }
   }
 

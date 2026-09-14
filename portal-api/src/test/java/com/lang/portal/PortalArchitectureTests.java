@@ -26,6 +26,7 @@ class PortalArchitectureTests {
         .that().haveSimpleNameEndingWith("Controller")
         .and().resideInAPackage("com.lang.portal.web..")
         .and().haveSimpleNameNotContaining("PublicConfig")
+        .and().haveSimpleNameNotContaining("CatalogController")
         .and().haveSimpleNameNotContaining("TestProtected")
         .should().beAnnotatedWith(com.lang.portal.base.security.ProtectedEndpoint.class)
         .orShould().beAnnotatedWith(org.springframework.security.access.prepost.PreAuthorize.class);
