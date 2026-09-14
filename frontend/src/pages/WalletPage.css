@@ -1,0 +1,36 @@
+.wallet-hint {
+  color: var(--muted, #5b6470);
+}
+
+.wallet-notice {
+  border: 1px solid var(--border, #d7dbe0);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+.wallet-cards {
+  display: none;
+}
+
+.wallet-card {
+  border: 1px solid var(--border, #d7dbe0);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+}
+
+.wallet-card p {
+  margin: 0.25rem 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .wallet-page .table-scroll {
+    display: none;
+  }
+
+  .wallet-cards {
+    display: block;
+  }
+}

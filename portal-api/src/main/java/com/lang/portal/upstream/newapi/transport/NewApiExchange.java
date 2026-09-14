@@ -83,13 +83,14 @@ public class NewApiExchange {
         int status = upstream.getStatusCode().value();
         List<String> setCookies = List.copyOf(upstream.getHeaders().getOrEmpty("Set-Cookie"));
         if (status < 200 || status >= 300) {
-          return new NewApiRawResponse<>(status, false, null, setCookies);
+          return new NewApiRawResponse<>(status, false, null, setCookies, null);
         }
         try {
           String raw = new String(upstream.getBody().readAllBytes(), StandardCharsets.UTF_8);
           try {
             NewApiEnvelope<T> envelope = mapper.readValue(raw, type);
-            return new NewApiRawResponse<>(status, envelope.success(), envelope.data(), setCookies);
+            return new NewApiRawResponse<>(
+                status, envelope.success(), envelope.data(), setCookies, envelope.message());
           } catch (Exception e) {
             throw translator.unparsable();
           }

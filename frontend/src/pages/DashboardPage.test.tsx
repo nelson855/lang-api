@@ -17,6 +17,23 @@ describe('用量概览局部失败', () => {
     vi.mocked(portalRequest).mockReset();
   });
 
+  it('余额区提供进入钱包的次要导航', async () => {
+    vi.mocked(portalRequest).mockImplementation(async (path: string) => {
+      if (path.includes('/portal/api/public-config')) {
+        return { data: { siteName: '测试站', apiBaseUrls: [] }, requestId: 'req-d' };
+      }
+      if (path.includes('/portal/api/account/balance')) {
+        return { data: { quota: '500000', amount: '1.0', currency: 'USD' }, requestId: 'req-d' };
+      }
+      throw new PortalApiError(502, 'UPSTREAM_ERROR', 'upstream', 'req-d');
+    });
+    renderApp(<DashboardPage />, { authStatus: 'authenticated', authProfile: profile });
+
+    expect(await screen.findByText(/1\.0/)).toBeInTheDocument();
+    const link = screen.getByRole('link', { name: '查看钱包' });
+    expect(link).toHaveAttribute('href', '/dashboard/wallet');
+  });
+
   it('趋势失败时保留余额与摘要并可重试', async () => {
     vi.mocked(portalRequest).mockImplementation(async (path: string) => {
       if (path.includes('/portal/api/public-config')) {

@@ -71,6 +71,8 @@ export function buildRoutes(): RouteObject[] {
         { index: true, lazy: () => lazyPage(() => import('../../pages/DashboardPage'), 'DashboardPage') },
         { path: 'api-keys', lazy: () => lazyPage(() => import('../../pages/ApiKeysPage'), 'ApiKeysPage') },
         { path: 'request-logs', lazy: () => lazyPage(() => import('../../pages/RequestLogsPage'), 'RequestLogsPage') },
+        { path: 'wallet', lazy: () => lazyPage(() => import('../../pages/WalletPage'), 'WalletPage') },
+        { path: 'settings', lazy: () => lazyPage(() => import('../../pages/SettingsPage'), 'SettingsPage') },
       ],
     },
   ];

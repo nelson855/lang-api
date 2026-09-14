@@ -4,6 +4,7 @@ import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.response.ApiResponse;
 import com.lang.portal.base.response.ApiResponses;
+import com.lang.portal.base.response.PageData;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
 import com.lang.portal.base.security.ProtectedEndpoint;
 import com.lang.portal.config.PortalCommonProperties;
@@ -45,6 +46,38 @@ public class AccountController {
         .header("Cache-Control", "no-store")
         .header("Pragma", "no-cache")
         .body(ApiResponses.ok(request, queryService.balance(session)));
+  }
+
+  @GetMapping("/topup-options")
+  public ResponseEntity<ApiResponse<TopupCapability>> topupOptions(
+      @RequestParam Map<String, String> params,
+      @AuthenticationPrincipal PortalAuthenticatedUser user,
+      HttpServletRequest request) {
+    if (!params.isEmpty()) {
+      throw new PortalException(PortalErrorCode.INVALID_ARGUMENT, "充值能力接口不接受查询参数");
+    }
+    NewApiSession session = session(request);
+    return ResponseEntity.ok()
+        .header("Cache-Control", "no-store")
+        .header("Pragma", "no-cache")
+        .body(ApiResponses.ok(request, queryService.topupOptions(session)));
+  }
+
+  @GetMapping("/topups")
+  public ResponseEntity<ApiResponse<PageData<TopupRecord>>> topups(
+      @RequestParam Map<String, String> params,
+      @AuthenticationPrincipal PortalAuthenticatedUser user,
+      HttpServletRequest request) {
+    TopupPageQuery query =
+        TopupPageQuery.resolve(
+            params,
+            properties.portal().usage().defaultPageSize(),
+            properties.portal().usage().maxPageSize());
+    NewApiSession session = session(request);
+    return ResponseEntity.ok()
+        .header("Cache-Control", "no-store")
+        .header("Pragma", "no-cache")
+        .body(ApiResponses.ok(request, queryService.topups(session, query.page(), query.pageSize())));
   }
 
   private NewApiSession session(HttpServletRequest request) {

@@ -80,6 +80,16 @@ class PortalCommonPropertiesBindingTests {
   }
 
   @Test
+  void bindsDeterministicProfileUpdateRateLimit() {
+    assertThat(environment.getProperty("lang.auth.rate-limit.profile-update.user-attempts")).isEqualTo("2");
+    assertThat(environment.getProperty("lang.auth.rate-limit.profile-update.client-attempts")).isEqualTo("3");
+    assertThat(environment.getProperty("lang.auth.rate-limit.profile-update.window")).isEqualTo("10s");
+    assertThat(properties.auth().rateLimit().profileUpdate().userAttempts()).isEqualTo(2);
+    assertThat(properties.auth().rateLimit().profileUpdate().clientAttempts()).isEqualTo(3);
+    assertThat(properties.auth().rateLimit().profileUpdate().window().toSeconds()).isEqualTo(10);
+  }
+
+  @Test
   void usesForwardedForOnlyThroughTheConfiguredTrustedProxyPolicy() {
     assertThat(environment.getProperty("lang.auth.trusted-proxy.forwarded-for-header"))
         .isEqualTo("X-Forwarded-For");

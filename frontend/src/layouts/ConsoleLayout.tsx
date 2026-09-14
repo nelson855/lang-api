@@ -43,6 +43,12 @@ export function ConsoleLayout() {
           <NavLink to="/dashboard/request-logs" className="console-nav-link">
             {t('nav.requestLogs')}
           </NavLink>
+          <NavLink to="/dashboard/wallet" className="console-nav-link">
+            {t('nav.wallet')}
+          </NavLink>
+          <NavLink to="/dashboard/settings" className="console-nav-link">
+            {t('nav.settings')}
+          </NavLink>
         </nav>
         <div className="console-sidebar-foot">
           {profile ? <span>{profile.displayName ?? profile.username}</span> : null}
@@ -83,6 +89,12 @@ export function ConsoleLayout() {
           </Link>
           <Link to="/dashboard/request-logs" className="drawer-link" onClick={() => setDrawerOpen(false)}>
             {t('nav.requestLogs')}
+          </Link>
+          <Link to="/dashboard/wallet" className="drawer-link" onClick={() => setDrawerOpen(false)}>
+            {t('nav.wallet')}
+          </Link>
+          <Link to="/dashboard/settings" className="drawer-link" onClick={() => setDrawerOpen(false)}>
+            {t('nav.settings')}
           </Link>
         </nav>
       </Dialog>

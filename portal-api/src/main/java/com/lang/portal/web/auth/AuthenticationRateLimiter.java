@@ -53,6 +53,12 @@ public class AuthenticationRateLimiter {
     check("registration:client:" + digest(addressResolver.resolve(request)), registration.clientAttempts(), registration.window());
   }
 
+  public void checkProfileUpdate(long userId, HttpServletRequest request) {
+    PortalCommonProperties.ProfileUpdateRateLimit profileUpdate = properties.auth().rateLimit().profileUpdate();
+    check("profile-update:user:" + userId, profileUpdate.userAttempts(), profileUpdate.window());
+    check("profile-update:client:" + digest(addressResolver.resolve(request)), profileUpdate.clientAttempts(), profileUpdate.window());
+  }
+
   synchronized int trackedKeyCount() {
     return windows.size();
   }

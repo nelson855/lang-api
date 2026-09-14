@@ -44,6 +44,32 @@ class AuthenticationRateLimiterTests {
   }
 
   @Test
+  void appliesUserAndClientProfileUpdateLimitsWithoutPassword() {
+    PortalCommonProperties properties = properties();
+    properties.auth().rateLimit().profileUpdate().setUserAttempts(2);
+    properties.auth().rateLimit().profileUpdate().setClientAttempts(3);
+    MutableClock clock = new MutableClock();
+    AuthenticationRateLimiter limiter = new AuthenticationRateLimiter(properties, new PortalClientAddressResolver(properties), clock);
+    MockHttpServletRequest request = request("127.0.0.1", "203.0.113.9");
+
+    limiter.checkProfileUpdate(42L, request);
+    limiter.checkProfileUpdate(42L, request);
+    assertRateLimited(() -> limiter.checkProfileUpdate(42L, request));
+    limiter.checkProfileUpdate(43L, request);
+    assertRateLimited(() -> limiter.checkProfileUpdate(44L, request));
+
+    try {
+      limiter.checkProfileUpdate(42L, request);
+    } catch (PortalException e) {
+      assertThat(e.errorCode()).isEqualTo(PortalErrorCode.RATE_LIMITED);
+      assertThat(String.valueOf(e.getMessage())).doesNotContain("correct-123");
+    }
+
+    clock.advanceSeconds(11);
+    limiter.checkProfileUpdate(42L, request);
+  }
+
+  @Test
   void expiresWindowsAndEvictsOldestKeysAtConfiguredCapacity() {
     PortalCommonProperties properties = properties();
     properties.auth().rateLimit().login().setUsernameAttempts(1);
@@ -68,6 +94,7 @@ class AuthenticationRateLimiterTests {
     properties.auth().trustedProxy().setForwardedForHeader("X-Forwarded-For");
     properties.auth().rateLimit().login().setWindow(java.time.Duration.ofSeconds(10));
     properties.auth().rateLimit().registration().setWindow(java.time.Duration.ofSeconds(10));
+    properties.auth().rateLimit().profileUpdate().setWindow(java.time.Duration.ofSeconds(10));
     return properties;
   }
 

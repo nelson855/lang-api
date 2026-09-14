@@ -46,8 +46,10 @@ describe('ConsoleLayout 控制台壳', () => {
     expect(screen.getByRole('link', { name: '控制台' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'API 密钥' })).toHaveAttribute('href', '/dashboard/api-keys');
     expect(screen.getByRole('link', { name: '请求日志' })).toHaveAttribute('href', '/dashboard/request-logs');
+    expect(screen.getByRole('link', { name: '钱包' })).toHaveAttribute('href', '/dashboard/wallet');
+    expect(screen.getByRole('link', { name: '个人设置' })).toHaveAttribute('href', '/dashboard/settings');
     const text = container.textContent ?? '';
-    expect(text).not.toMatch(/钱包|用户管理/);
+    expect(text).not.toMatch(/用户管理/);
   });
 
   it('移动抽屉可开关', async () => {

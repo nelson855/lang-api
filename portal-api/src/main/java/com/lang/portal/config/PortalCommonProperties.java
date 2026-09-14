@@ -512,6 +512,7 @@ public class PortalCommonProperties {
   public static class RateLimit {
     @Valid @NotNull private LoginRateLimit login = new LoginRateLimit();
     @Valid @NotNull private RegistrationRateLimit registration = new RegistrationRateLimit();
+    @Valid @NotNull private ProfileUpdateRateLimit profileUpdate = new ProfileUpdateRateLimit();
     @Min(1) @Max(100_000) private int maxEntries = 10_000;
 
     public LoginRateLimit login() {
@@ -528,6 +529,14 @@ public class PortalCommonProperties {
 
     public void setRegistration(RegistrationRateLimit registration) {
       this.registration = registration;
+    }
+
+    public ProfileUpdateRateLimit profileUpdate() {
+      return profileUpdate;
+    }
+
+    public void setProfileUpdate(ProfileUpdateRateLimit profileUpdate) {
+      this.profileUpdate = profileUpdate;
     }
 
     public int maxEntries() {
@@ -574,6 +583,37 @@ public class PortalCommonProperties {
   public static class RegistrationRateLimit {
     private int clientAttempts = 3;
     @NotNull private Duration window = Duration.ofHours(1);
+
+    public int clientAttempts() {
+      return clientAttempts;
+    }
+
+    public void setClientAttempts(int clientAttempts) {
+      this.clientAttempts = clientAttempts;
+    }
+
+    public Duration window() {
+      return window;
+    }
+
+    public void setWindow(Duration window) {
+      this.window = window;
+    }
+  }
+
+  @Validated
+  public static class ProfileUpdateRateLimit {
+    private int userAttempts = 10;
+    private int clientAttempts = 30;
+    @NotNull private Duration window = Duration.ofMinutes(10);
+
+    public int userAttempts() {
+      return userAttempts;
+    }
+
+    public void setUserAttempts(int userAttempts) {
+      this.userAttempts = userAttempts;
+    }
 
     public int clientAttempts() {
       return clientAttempts;

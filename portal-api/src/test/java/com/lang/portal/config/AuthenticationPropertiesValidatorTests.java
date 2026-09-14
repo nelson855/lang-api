@@ -77,4 +77,32 @@ class AuthenticationPropertiesValidatorTests {
     assertThatThrownBy(() -> PortalPropertiesValidator.validateAuthentication("prod", properties.auth()))
         .hasMessage("非法配置 lang.auth.rate-limit.login.window：必须为正数");
   }
+
+  @Test
+  void rejectsProfileUpdateUserThresholdAboveTwentyAttempts() {
+    PortalCommonProperties properties = new Binder(new MapConfigurationPropertySource(Map.of(
+            "lang.auth.allowed-origins", "https://portal.example",
+            "lang.auth.trusted-proxy-cidrs", "10.0.0.0/8",
+            "lang.auth.cookie.secure", "true",
+            "lang.auth.rate-limit.profile-update.user-attempts", "21")))
+        .bind("lang", PortalCommonProperties.class)
+        .orElseThrow(() -> new AssertionError("认证配置应可绑定"));
+
+    assertThatThrownBy(() -> PortalPropertiesValidator.validateAuthentication("prod", properties.auth()))
+        .hasMessage("非法配置 lang.auth.rate-limit.profile-update.user-attempts：不得超过 20");
+  }
+
+  @Test
+  void rejectsNonPositiveProfileUpdateRateLimitWindow() {
+    PortalCommonProperties properties = new Binder(new MapConfigurationPropertySource(Map.of(
+            "lang.auth.allowed-origins", "https://portal.example",
+            "lang.auth.trusted-proxy-cidrs", "10.0.0.0/8",
+            "lang.auth.cookie.secure", "true",
+            "lang.auth.rate-limit.profile-update.window", "0s")))
+        .bind("lang", PortalCommonProperties.class)
+        .orElseThrow(() -> new AssertionError("认证配置应可绑定"));
+
+    assertThatThrownBy(() -> PortalPropertiesValidator.validateAuthentication("prod", properties.auth()))
+        .hasMessage("非法配置 lang.auth.rate-limit.profile-update.window：必须为正数");
+  }
 }

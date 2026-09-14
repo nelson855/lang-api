@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { PortalApiError } from '../api/envelope';
@@ -86,6 +87,9 @@ export function DashboardPage() {
             {balanceData.amount} {balanceData.currency} <span>({balanceData.quota} quota)</span>
           </p>
         ) : null}
+        <p>
+          <Link to="/dashboard/wallet">{t('pages.dashboard.viewWallet')}</Link>
+        </p>
       </section>
 
       <section aria-label={t('pages.dashboard.summaryTitle')}>

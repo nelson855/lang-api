@@ -92,6 +92,12 @@ public class PortalPropertiesValidator {
     if (auth.rateLimit().login().window().isZero() || auth.rateLimit().login().window().isNegative()) {
       throw new IllegalStateException("非法配置 lang.auth.rate-limit.login.window：必须为正数");
     }
+    if (auth.rateLimit().profileUpdate().userAttempts() > 20) {
+      throw new IllegalStateException("非法配置 lang.auth.rate-limit.profile-update.user-attempts：不得超过 20");
+    }
+    if (auth.rateLimit().profileUpdate().window().isZero() || auth.rateLimit().profileUpdate().window().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.auth.rate-limit.profile-update.window：必须为正数");
+    }
     if (auth.allowedOrigins() == null || auth.allowedOrigins().isBlank()) {
       throw new IllegalStateException("非法配置 lang.auth.allowed-origins：生产环境不能为空");
     }

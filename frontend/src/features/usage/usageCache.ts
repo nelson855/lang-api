@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { AUTH_PROFILE_QUERY_KEY } from '../../api/auth';
 import { API_REQUEST_LOGS_QUERY_KEY } from '../../api/requestLogs';
 import { USAGE_QUERY_KEY } from '../../api/usage';
+import { WALLET_QUERY_KEY } from '../../api/wallet';
 
 export interface NormalizedUsageRange {
   startTime: string;
@@ -52,5 +53,6 @@ export function invalidateUsageScope(client: QueryClient, userId: number) {
 export function clearUsageScope(client: QueryClient) {
   client.removeQueries({ queryKey: AUTH_PROFILE_QUERY_KEY });
   client.removeQueries({ queryKey: USAGE_QUERY_KEY });
+  client.removeQueries({ queryKey: WALLET_QUERY_KEY });
   client.removeQueries({ queryKey: API_REQUEST_LOGS_QUERY_KEY });
 }

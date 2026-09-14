@@ -34,13 +34,25 @@ public class PortalCsrfFilter extends OncePerRequestFilter {
   }
 
   private static final String API_KEYS = "/portal/api/api-keys";
+  private static final String PROFILE = "/portal/api/profile";
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     if (MUTATION_PATHS.contains(request.getRequestURI())) {
       return !HttpMethod.POST.matches(request.getMethod());
     }
-    return !isApiKeyMutation(request);
+    return !isApiKeyMutation(request) && !isProfileMutation(request);
+  }
+
+  private boolean isProfileMutation(HttpServletRequest request) {
+    String uri = request.getRequestURI();
+    if (!uri.equals(PROFILE) && !uri.startsWith(PROFILE + "/")) {
+      return false;
+    }
+    String method = request.getMethod();
+    return !HttpMethod.GET.matches(method)
+        && !HttpMethod.HEAD.matches(method)
+        && !HttpMethod.OPTIONS.matches(method);
   }
 
   private boolean isApiKeyMutation(HttpServletRequest request) {
