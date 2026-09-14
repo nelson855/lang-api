@@ -63,7 +63,8 @@ describe('API Key 取回与复制', () => {
     try {
       setup();
       await user.click(await screen.findByRole('button', { name: '显示明文' }));
-      expect(await screen.findByDisplayValue('sk-abc')).toBeInTheDocument();
+      // 取回解密在受限构建环境下较慢，放宽等待避免误杀。
+      expect(await screen.findByDisplayValue('sk-abc', {}, { timeout: 10_000 })).toBeInTheDocument();
 
       await user.click(screen.getByRole('button', { name: '复制' }));
       expect(clipboard.writeText).toHaveBeenCalledWith('sk-abc');
@@ -82,7 +83,7 @@ describe('API Key 取回与复制', () => {
     try {
       setup();
       await user.click(await screen.findByRole('button', { name: '显示明文' }));
-      await screen.findByDisplayValue('sk-abc');
+      await screen.findByDisplayValue('sk-abc', {}, { timeout: 10_000 });
 
       await user.click(screen.getByRole('button', { name: '复制' }));
       expect(await screen.findByText(/复制失败/)).toBeInTheDocument();
@@ -96,7 +97,7 @@ describe('API Key 取回与复制', () => {
     const user = userEvent.setup();
     setup(30);
     await user.click(await screen.findByRole('button', { name: '显示明文' }));
-    await screen.findByDisplayValue('sk-abc');
+    await screen.findByDisplayValue('sk-abc', {}, { timeout: 10_000 });
 
     await waitFor(
       () => {

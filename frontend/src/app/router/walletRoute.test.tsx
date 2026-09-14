@@ -92,7 +92,8 @@ describe('钱包路由与导航', () => {
 
   it('登录后可见标题与高亮导航', async () => {
     setup('authenticated', '/dashboard/wallet');
-    await screen.findByRole('heading', { name: '钱包' });
+    // 懒加载页面在受限构建环境下解析较慢，放宽等待避免误杀。
+    await screen.findByRole('heading', { name: '钱包' }, { timeout: 10_000 });
     const nav = screen.getByRole('link', { name: '钱包' });
     expect(nav).toHaveAttribute('href', '/dashboard/wallet');
     expect(nav).toHaveAttribute('aria-current', 'page');

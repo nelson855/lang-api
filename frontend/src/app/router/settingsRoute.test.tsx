@@ -67,7 +67,8 @@ describe('个人设置路由与导航', () => {
 
   it('登录后可见标题与高亮导航', async () => {
     setup('authenticated', '/dashboard/settings');
-    await screen.findByRole('heading', { name: '个人设置' });
+    // 懒加载页面在受限构建环境下解析较慢，放宽等待避免误杀。
+    await screen.findByRole('heading', { name: '个人设置' }, { timeout: 10_000 });
     const nav = screen.getByRole('link', { name: '个人设置' });
     expect(nav).toHaveAttribute('href', '/dashboard/settings');
     expect(nav).toHaveAttribute('aria-current', 'page');

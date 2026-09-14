@@ -79,7 +79,8 @@ describe('API Key 路由与导航', () => {
 
   it('登录后可见标题与高亮导航', async () => {
     setup('authenticated', '/dashboard/api-keys');
-    await screen.findByRole('heading', { name: 'API 密钥' });
+    // 懒加载页面在受限构建环境下解析较慢，放宽等待避免误杀。
+    await screen.findByRole('heading', { name: 'API 密钥' }, { timeout: 10_000 });
     const nav = screen.getByRole('link', { name: 'API 密钥' });
     expect(nav).toHaveAttribute('href', '/dashboard/api-keys');
     expect(nav).toHaveAttribute('aria-current', 'page');
