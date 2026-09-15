@@ -1,0 +1,44 @@
+.public-page { padding-top: 72px; }
+.page-kicker { margin: 0 0 12px; color: var(--color-primary); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.public-page > h1, .public-page-head h1 { max-width: 760px; margin: 0; font-size: clamp(2.25rem, 5vw, 4.75rem); letter-spacing: -0.055em; }
+.public-page-head > p { max-width: 650px; color: var(--color-text-muted); font-size: 1.0625rem; }
+.home-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr); align-items: center; gap: clamp(40px, 7vw, 96px); min-height: 560px; padding-block: 72px 56px; }
+.home-title { max-width: 650px; margin: 0; font-size: clamp(2.75rem, 6vw, 5.6rem); letter-spacing: -0.065em; }
+.home-copy { max-width: 560px; color: var(--color-text-muted); font-size: 1.125rem; }
+.home-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.home-actions a { display: inline-flex; min-height: var(--button-height-md); align-items: center; padding: 0 16px; border-radius: var(--radius-md); font-weight: 700; text-decoration: none; }
+.home-actions a:first-child { background: var(--color-primary); color: var(--color-primary-contrast); }
+.home-actions a:last-child { border: 1px solid var(--color-border); color: var(--color-text); }
+.request-trace { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-md); }
+.request-trace-head { display: flex; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--color-border); color: var(--color-text-muted); font-family: var(--font-mono); font-size: 0.75rem; }
+.request-trace-status { color: var(--color-primary); }
+.request-trace pre { margin: 0; padding: 24px; color: var(--color-text-muted); font-size: 0.8125rem; line-height: 1.8; overflow: auto; }
+.request-trace code { color: var(--color-text); }
+.home-trust { display: flex; flex-wrap: wrap; gap: 12px 32px; padding: 20px 0; border-block: 1px solid var(--color-border); color: var(--color-text-muted); font-family: var(--font-mono); font-size: 0.75rem; }
+.home-section { padding-top: 96px; }
+.home-section-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 28px; }
+.home-section h2 { max-width: 600px; margin: 0; font-size: clamp(1.8rem, 3vw, 2.75rem); letter-spacing: -0.04em; }
+.home-section-head p { max-width: 470px; margin: 0; color: var(--color-text-muted); }
+.workflow-grid, .region-list, .model-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 0; list-style: none; }
+.workflow-card, .model-card, .region-list li, .docs-section { border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.workflow-card { padding: 24px; }
+.workflow-step { color: var(--color-primary); font-family: var(--font-mono); font-size: 0.75rem; }
+.workflow-card h3 { margin: 30px 0 8px; font-size: 1.125rem; }
+.workflow-card p { margin: 0; color: var(--color-text-muted); }
+.catalog-controls { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 12px; margin: 32px 0 20px; }
+.catalog-controls label { display: grid; gap: 7px; color: var(--color-text-muted); font-size: 0.8125rem; }
+.catalog-controls select { min-height: var(--button-height-md); padding-inline: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); }
+.model-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.model-card { display: grid; gap: 14px; padding: 22px; }
+.model-card-head { display: flex; justify-content: space-between; gap: 12px; }
+.model-card strong { font-family: var(--font-mono); font-size: 0.875rem; overflow-wrap: anywhere; }
+.model-card span { color: var(--color-text-muted); font-size: 0.875rem; }
+.model-card button { justify-self: start; border: 0; background: none; color: var(--color-primary); cursor: pointer; font-weight: 700; padding: 0; }
+.docs-stack { display: grid; gap: 18px; margin-top: 32px; }
+.docs-section { padding: clamp(20px, 4vw, 36px); }
+.docs-section h2 { margin-top: 0; }
+.docs-section p { color: var(--color-text-muted); }
+.region-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.region-list li { display: flex; justify-content: space-between; gap: 20px; padding: 18px; }
+.region-list code { color: var(--color-primary); }
+@media (width <= 768px) { .public-page { padding-top: 44px; } .home-hero { grid-template-columns: 1fr; min-height: auto; padding-top: 56px; } .home-section { padding-top: 64px; } .home-section-head { display: block; } .home-section-head p { margin-top: 12px; } .workflow-grid, .model-list, .region-list { grid-template-columns: 1fr; } .catalog-controls { grid-template-columns: 1fr; } }

@@ -2,87 +2,46 @@
 @import '@fontsource-variable/jetbrains-mono';
 @import './tokens.css';
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
+  color-scheme: dark;
   text-size-adjust: 100%;
+  scrollbar-color: var(--color-border) var(--color-bg);
+  scrollbar-width: thin;
 }
 
 body {
+  min-width: 320px;
   margin: 0;
-  background-color: var(--color-bg);
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   line-height: 1.6;
 }
 
-code,
-pre,
-.request-id {
-  font-family: var(--font-mono);
-}
+* { scrollbar-color: var(--color-border) var(--color-bg); scrollbar-width: thin; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--color-bg); }
+*::-webkit-scrollbar-thumb { background: var(--color-border); border: 3px solid var(--color-bg); border-radius: var(--radius-lg); }
+*::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
 
-h1,
-h2,
-h3 {
-  line-height: 1.3;
-  text-wrap: balance;
-}
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; }
+code, pre, .request-id { font-family: var(--font-mono); }
+h1, h2, h3 { line-height: 1.18; text-wrap: balance; }
 
-:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; border-radius: var(--radius-sm); }
+::selection { background: var(--color-primary); color: var(--color-primary-contrast); }
 
-::selection {
-  background-color: var(--color-primary);
-  color: var(--color-primary-contrast);
-}
+.app-container { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: 24px; }
+.brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.brand-name { white-space: nowrap; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
 
-/* 内容容器：公共约 1180px，窄屏内边距 16px */
-.app-container {
-  width: 100%;
-  max-width: 1180px;
-  margin-inline: auto;
-  padding-inline: 24px;
-}
-
-@media (width <= 768px) {
-  .app-container {
-    padding-inline: 16px;
-  }
-}
-
-/* 可替换临时品牌：几何标记 + 运行时站名 */
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-}
-
-.brand-name {
-  white-space: nowrap;
-}
-
-/* 数据表只在自身容器内横向滚动，不撑开页面 */
-.table-scroll {
-  overflow-x: auto;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-}
+@media (width <= 768px) { .app-container { padding-inline: 16px; } }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }

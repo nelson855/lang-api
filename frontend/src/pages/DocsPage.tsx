@@ -12,6 +12,7 @@ import {
   normalizeBaseUrl,
 } from '../features/docs/templates';
 import { CodeBlock } from '../components/CodeBlock';
+import './PublicPages.css';
 
 function openAiBaseUrl(apiBaseUrls: { protocol: string; url: string }[]): string | null {
   const hit = apiBaseUrls.find((e) => e.protocol === 'OPENAI');
@@ -39,13 +40,13 @@ export function DocsPage() {
   const ready = !!baseUrl && !!selected;
 
   return (
-    <>
-      <h1>{t('pages.docs.title')}</h1>
-      <section>
+    <div className="public-page">
+      <div className="public-page-head"><p className="page-kicker">Documentation</p><h1>{t('pages.docs.title')}</h1></div>
+      <div className="docs-stack"><section className="docs-section">
         <h2>{t('pages.docs.authTitle')}</h2>
         <p>{t('pages.docs.authBody')}</p>
       </section>
-      <section>
+      <section className="docs-section">
         <h2>{t('pages.docs.baseUrlTitle')}</h2>
         {baseUrl ? (
           <CodeBlock code={baseUrl} language="text" />
@@ -53,7 +54,7 @@ export function DocsPage() {
           <p>{t('pages.docs.baseUrlUnavailable')}</p>
         )}
       </section>
-      <section>
+      <section className="docs-section">
         <h2>{t('pages.docs.openSection')}</h2>
         <p>{t('pages.docs.openModels')}</p>
         <p>{t('pages.docs.openChat')}</p>
@@ -63,14 +64,14 @@ export function DocsPage() {
         <p>{t('pages.docs.noModel')}</p>
       ) : (
         <>
-          <section>
+          <section className="docs-section">
             <h2>{t('pages.docs.nonStreamingTitle')}</h2>
             <h3>cURL</h3>
             <CodeBlock code={buildCurlNonStreaming(baseUrl, selected.id)} language="bash" />
             <h3>OpenAI SDK</h3>
             <CodeBlock code={buildSdkNonStreaming(baseUrl, selected.id)} language="typescript" />
           </section>
-          <section>
+          <section className="docs-section">
             <h2>{t('pages.docs.streamingTitle')}</h2>
             <h3>cURL</h3>
             <CodeBlock code={buildCurlStreaming(baseUrl, selected.id)} language="bash" />
@@ -79,6 +80,7 @@ export function DocsPage() {
           </section>
         </>
       )}
-    </>
+      </div>
+    </div>
   );
 }

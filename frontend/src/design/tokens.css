@@ -1,68 +1,66 @@
 @import 'tailwindcss';
 
-/*
- * Lang API 自有设计变量：全部十六进制颜色只允许出现在此文件。
- * 三层命名：primitive（原始色板）→ semantic（语义用途）→ component（组件）。
- * @theme 镜像语义色板，供 Tailwind 生成 bg-canvas、text-ink 等工具类。
- */
+/* 运行时令牌为唯一真实来源：primitive → semantic → component。 */
 @theme {
-  --color-canvas: #fbfaf7;
-  --color-raised: #ffffff;
-  --color-muted-bg: #f1eee6;
-  --color-ink: #1d1a16;
-  --color-ink-muted: #5d574e;
-  --color-brand: #0c6b5f;
-  --color-brand-contrast: #ffffff;
-  --color-accent: #b3401f;
-  --color-line: #e2ddd2;
-  --color-focus: #0c6b5f;
+  --color-canvas: #0D1117;
+  --color-raised: #131920;
+  --color-muted-bg: #1B232D;
+  --color-ink: #EEF2F4;
+  --color-ink-muted: #AAB5C2;
+  --color-brand: #7CF2C7;
+  --color-brand-contrast: #0D1117;
+  --color-accent: #7CF2C7;
+  --color-line: #2A3542;
+  --color-focus: #7CF2C7;
   --font-sans: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
 }
 
 :root {
-  /* primitive 层：原始色板 */
-  --primitive-paper-0: #fbfaf7;
-  --primitive-paper-100: #f1eee6;
-  --primitive-paper-raised: #ffffff;
-  --primitive-ink-900: #1d1a16;
-  --primitive-ink-600: #5d574e;
-  --primitive-teal-700: #0c6b5f;
-  --primitive-teal-800: #09584e;
-  --primitive-coral-600: #b3401f;
-  --primitive-green-800: #166534;
-  --primitive-green-100: #e7f4ec;
-  --primitive-amber-800: #92400e;
-  --primitive-amber-100: #faf0dc;
-  --primitive-red-700: #b42318;
-  --primitive-red-100: #fae7e4;
-  --primitive-line: #e2ddd2;
+  /* primitive：Deep Ink 深色材料 */
+  --primitive-void-950: #0D1117;
+  --primitive-carbon-900: #131920;
+  --primitive-slate-800: #1B232D;
+  --primitive-slate-700: #2A3542;
+  --primitive-paper-100: #EEF2F4;
+  --primitive-mist-300: #AAB5C2;
+  --primitive-mist-500: #7E8A99;
+  --primitive-signal-300: #7CF2C7;
+  --primitive-signal-400: #4FD9AC;
+  --primitive-green-300: #7BE0A8;
+  --primitive-green-950: #102C25;
+  --primitive-amber-300: #F3C969;
+  --primitive-amber-950: #31260C;
+  --primitive-red-300: #FF9D99;
+  --primitive-red-950: #35181B;
 
-  /* semantic 层：用途语义 */
-  --color-bg: #fbfaf7;
-  --color-bg-raised: #ffffff;
-  --color-bg-muted: #f1eee6;
-  --color-text: #1d1a16;
-  --color-text-muted: #5d574e;
-  --color-primary: #0c6b5f;
-  --color-primary-hover: #09584e;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #b3401f;
-  --color-border: #e2ddd2;
-  --color-focus: #0c6b5f;
-  --color-success-text: #166534;
-  --color-success-bg: #e7f4ec;
-  --color-warning-text: #92400e;
-  --color-warning-bg: #faf0dc;
-  --color-danger-text: #b42318;
-  --color-danger-bg: #fae7e4;
+  /* semantic：跨页面只消费语义变量 */
+  --color-bg: #0D1117;
+  --color-surface: #131920;
+  --color-surface-raised: #1B232D;
+  --color-bg-raised: #131920;
+  --color-bg-muted: #1B232D;
+  --color-text: #EEF2F4;
+  --color-text-muted: #AAB5C2;
+  --color-primary: #7CF2C7;
+  --color-primary-hover: #4FD9AC;
+  --color-primary-contrast: #0D1117;
+  --color-accent: #7CF2C7;
+  --color-border: #2A3542;
+  --color-focus: #7CF2C7;
+  --color-success-text: #7BE0A8;
+  --color-success-bg: #102C25;
+  --color-warning-text: #F3C969;
+  --color-warning-bg: #31260C;
+  --color-danger-text: #FF9D99;
+  --color-danger-bg: #35181B;
 
-  /* component 层：圆角与阴影 */
+  /* component：紧凑、低噪声的几何规则 */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
-  --shadow-sm: 0 1px 2px rgb(29 26 22 / 0.06);
-  --shadow-md: 0 4px 12px rgb(29 26 22 / 0.08);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.2);
+  --shadow-md: 0 12px 32px rgb(0 0 0 / 0.22);
   --button-height-sm: 32px;
   --button-height-md: 40px;
   --dialog-max-width: 28rem;

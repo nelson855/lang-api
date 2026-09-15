@@ -1,9 +1,16 @@
 .legal-document {
-  max-width: 100%;
+  max-width: 860px;
+  margin: 64px auto 0;
+  padding: clamp(24px, 5vw, 56px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
 .legal-document-title {
-  margin-bottom: 1rem;
+  margin: 0 0 28px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.05em;
 }
 
 .legal-document-body {
@@ -21,4 +28,8 @@
 
 .legal-document-body a {
   overflow-wrap: anywhere;
+  color: var(--color-primary);
 }
+
+.legal-document-body h2 { margin-top: 2.25em; }
+.legal-document-body p, .legal-document-body li { color: var(--color-text-muted); }

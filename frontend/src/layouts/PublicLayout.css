@@ -1,13 +1,17 @@
 .public-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-bg-raised);
+  background-color: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  backdrop-filter: blur(14px);
 }
 
 .public-header-inner {
   display: flex;
   align-items: center;
   gap: 16px;
-  min-height: 60px;
+  min-height: 68px;
 }
 
 .brand-link {
@@ -27,6 +31,8 @@
   text-decoration: none;
 }
 
+.public-nav-link:hover { color: var(--color-text); background: var(--color-surface); }
+
 .public-nav-link[aria-current='page'] {
   color: var(--color-primary);
   font-weight: 700;
@@ -39,6 +45,10 @@
   gap: 12px;
 }
 
+.public-header-actions > a { color: var(--color-text-muted); text-decoration: none; }
+.public-header-actions > a:last-child { padding: 7px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text); }
+.public-header-actions > a:last-child:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
 .public-menu-button {
   display: none;
   margin-inline-start: auto;
@@ -46,7 +56,8 @@
   padding-inline: 12px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background-color: var(--color-bg-raised);
+  background-color: var(--color-surface);
+  color: var(--color-text);
 }
 
 .dialog-drawer {
@@ -68,7 +79,8 @@
 
 .public-footer {
   border-top: 1px solid var(--color-border);
-  margin-top: 48px;
+  margin-top: 96px;
+  background: var(--color-surface);
 }
 
 .public-footer-inner {
@@ -78,6 +90,10 @@
   padding-block: 24px;
   flex-wrap: wrap;
 }
+
+.public-footer nav { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.public-footer a { color: var(--color-text-muted); text-decoration: none; font-size: 0.875rem; }
+.public-footer a:hover { color: var(--color-primary); }
 
 @media (width <= 768px) {
   .public-nav-desktop,

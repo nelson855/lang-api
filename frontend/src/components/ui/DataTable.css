@@ -1,7 +1,7 @@
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: var(--color-bg-raised);
+  background-color: var(--color-surface);
   font-size: 0.9375rem;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .data-table thead th {
-  background-color: var(--color-bg-muted);
+  background-color: var(--color-surface-raised);
   font-weight: 700;
 }
 

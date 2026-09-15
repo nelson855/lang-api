@@ -1,9 +1,9 @@
 .wallet-hint {
-  color: var(--muted, #5b6470);
+  color: var(--color-text-muted);
 }
 
 .wallet-notice {
-  border: 1px solid var(--border, #d7dbe0);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   margin: 1rem 0;
@@ -14,7 +14,7 @@
 }
 
 .wallet-card {
-  border: 1px solid var(--border, #d7dbe0);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   margin: 0.5rem 0;

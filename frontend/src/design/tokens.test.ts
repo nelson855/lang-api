@@ -49,6 +49,14 @@ const TEXT_PAIRS: Array<[string, string]> = [
 ];
 
 describe('设计变量三层结构', () => {
+  it('采用 Deep Ink 深色语义基线', () => {
+    const vars = variablesOf(tokensCss);
+    expect(hexOf(vars, 'color-bg')).toBe('#0D1117');
+    expect(hexOf(vars, 'color-surface')).toBe('#131920');
+    expect(hexOf(vars, 'color-surface-raised')).toBe('#1B232D');
+    expect(hexOf(vars, 'color-primary')).toBe('#7CF2C7');
+  });
+
   it('具备 primitive、semantic、component 三层命名', () => {
     expect(tokensCss).toMatch(/--primitive-/);
     expect(tokensCss).toMatch(/--color-/);

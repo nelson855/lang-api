@@ -1,10 +1,19 @@
 .auth-header {
   border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-bg-raised);
-  padding-block: 12px;
+  background-color: var(--color-surface);
+  padding-block: 18px;
 }
 
 .auth-container {
-  max-width: 28rem;
-  padding-block: 48px;
+  max-width: 30rem;
+  min-height: calc(100vh - 76px);
+  padding-block: clamp(48px, 10vh, 112px);
 }
+
+.auth-container h1 { margin: 0 0 8px; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -0.05em; }
+.auth-container form { display: grid; gap: 18px; margin-top: 28px; padding: 28px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.auth-container form label { display: grid; gap: 7px; color: var(--color-text-muted); font-size: 0.875rem; }
+.auth-container form input { min-height: var(--button-height-md); padding-inline: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg); color: var(--color-text); }
+.auth-container form button { min-height: var(--button-height-md); border: 0; border-radius: var(--radius-md); background: var(--color-primary); color: var(--color-primary-contrast); cursor: pointer; font-weight: 700; }
+.auth-container form [role='alert'] { margin: 0; color: var(--color-danger-text); }
+.auth-container > p:last-child a { color: var(--color-text-muted); }

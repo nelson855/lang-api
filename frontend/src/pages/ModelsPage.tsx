@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useModels } from '../api/useModels';
 import { filterModels, providerOptions } from '../features/catalog/filter';
 import { Empty } from '../components/feedback/Feedback';
+import './PublicPages.css';
 
 function formatPrice(model: { pricing: unknown }): string {
   const pricing = model.pricing as {
@@ -34,9 +35,8 @@ export function ModelsPage() {
   const visible = useMemo(() => filterModels(models, search, provider), [models, search, provider]);
 
   return (
-    <>
-      <h1>{t('pages.models.title')}</h1>
-      <p>{t('pages.models.basePriceNote')}</p>
+    <div className="public-page">
+      <div className="public-page-head"><p className="page-kicker">Model Catalog</p><h1>{t('pages.models.title')}</h1><p>{t('pages.models.basePriceNote')}</p></div>
       {query.isPending ? <p>{t('states.loading')}</p> : null}
       {query.isError ? (
         <div>
@@ -48,12 +48,12 @@ export function ModelsPage() {
       ) : null}
       {query.isSuccess ? (
         <>
-          <label>
+          <div className="catalog-controls"><label>
             {t('pages.models.searchLabel')}
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={t('pages.models.searchPlaceholder')}
+              className="input" placeholder={t('pages.models.searchPlaceholder')}
             />
           </label>
           <label>
@@ -69,15 +69,14 @@ export function ModelsPage() {
                 </option>
               ))}
             </select>
-          </label>
+          </label></div>
           {models.length === 0 ? <Empty description={t('pages.models.empty')} /> : null}
           {models.length > 0 && visible.length === 0 ? <p>{t('pages.models.noMatch')}</p> : null}
-          <ul>
+          <ul className="model-list">
             {visible.map((m) => (
-              <li key={m.id}>
-                <strong>{m.id}</strong>
-                {m.provider ? <span> {m.provider}</span> : null}
-                <span> {m.pricing ? formatPrice(m) : t('pages.models.priceUnavailable')}</span>
+              <li key={m.id} className="model-card">
+                <div className="model-card-head"><strong>{m.id}</strong>{m.provider ? <span>{m.provider}</span> : null}</div>
+                <span>{m.pricing ? formatPrice(m) : t('pages.models.priceUnavailable')}</span>
                 <button
                   type="button"
                   onClick={() => navigate(`/docs?model=${encodeURIComponent(m.id)}`)}
@@ -89,6 +88,6 @@ export function ModelsPage() {
           </ul>
         </>
       ) : null}
-    </>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { usePublicConfigData } from '../app/providers/publicConfigGate';
 import { regionName } from '../i18n/regions';
 import type { SupportedLocale } from '../i18n/locale';
+import './PublicPages.css';
 
 export function RegionsPage() {
   const { t, i18n } = useTranslation();
@@ -10,23 +11,23 @@ export function RegionsPage() {
 
   if (supportedRegions.length === 0) {
     return (
-      <main>
-        <h1>{t('pages.regions.title')}</h1>
+      <div className="public-page">
+        <div className="public-page-head"><p className="page-kicker">Availability</p><h1>{t('pages.regions.title')}</h1></div>
         <p>{t('pages.regions.empty')}</p>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main>
-      <h1>{t('pages.regions.title')}</h1>
-      <ul>
+    <div className="public-page">
+      <div className="public-page-head"><p className="page-kicker">Availability</p><h1>{t('pages.regions.title')}</h1></div>
+      <ul className="region-list">
         {supportedRegions.map((code) => (
           <li key={code}>
             <span>{regionName(code, locale)}</span> <code>{code}</code>
           </li>
         ))}
       </ul>
-    </main>
+    </div>
   );
 }
