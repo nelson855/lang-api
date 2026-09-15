@@ -66,8 +66,10 @@ class AuthenticationSecurityEventTests {
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
     doThrow(new UpstreamException(PortalErrorCode.UPSTREAM_UNAVAILABLE))
         .when(client).logout(new NewApiSession("upstream-session", 42L));
+    RegistrationPolicyService registrationPolicy = mock(RegistrationPolicyService.class);
+    when(registrationPolicy.evaluate()).thenReturn(new RegistrationPolicy(true, null));
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(properties, client), new AuthCsrfService(properties),
+        new AuthApplicationService(registrationPolicy, client), new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties), properties,
         new AuthenticationRateLimiter(properties, new PortalClientAddressResolver(properties)));
     ListAppender<ILoggingEvent> events = attach(AuthenticationController.class);

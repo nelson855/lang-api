@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fetchProfile, login, type AuthProfile } from './auth';
+import { authOptionsSchema, fetchProfile, login, type AuthProfile } from './auth';
 import { InvalidPortalResponseError, PortalNetworkError } from './envelope';
 
 function response(data: unknown) {
@@ -40,5 +40,44 @@ describe('认证 Portal API 边界', () => {
     vi.mocked(fetch).mockRejectedValueOnce(new TypeError('offline'));
     await expect(login({ username: 'ordinary', password: 'correct-horse' })).rejects.toBeInstanceOf(PortalNetworkError);
     expect(vi.mocked(fetch)).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('认证选项 schema', () => {
+  it('接受关闭原因并在开放时要求关闭原因为空', () => {
+    expect(
+      authOptionsSchema.parse({
+        registrationEnabled: false,
+        registrationDisabledReason: 'PREVIEW_MODE',
+        emailVerificationEnabled: false,
+        captchaEnabled: false,
+      }),
+    ).toMatchObject({ registrationEnabled: false, registrationDisabledReason: 'PREVIEW_MODE' });
+    expect(
+      authOptionsSchema.parse({
+        registrationEnabled: true,
+        registrationDisabledReason: null,
+        emailVerificationEnabled: false,
+        captchaEnabled: false,
+      }).registrationDisabledReason,
+    ).toBeNull();
+  });
+
+  it('拒绝未知关闭原因与缺失关闭原因', () => {
+    expect(() =>
+      authOptionsSchema.parse({
+        registrationEnabled: false,
+        registrationDisabledReason: 'BANNED',
+        emailVerificationEnabled: false,
+        captchaEnabled: false,
+      }),
+    ).toThrow();
+    expect(() =>
+      authOptionsSchema.parse({
+        registrationEnabled: false,
+        emailVerificationEnabled: false,
+        captchaEnabled: false,
+      }),
+    ).toThrow();
   });
 });

@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Route, Routes } from 'react-router';
 import { portalRequest } from '../api/portalClient';
@@ -51,9 +51,11 @@ describe('PublicLayout 公开站点壳', () => {
     );
     expect(hrefs.length).toBeGreaterThan(0);
     for (const href of hrefs) {
-      expect(href?.startsWith('/')).toBe(true);
+      expect(href?.startsWith('/') || href?.startsWith('mailto:'), href ?? '').toBe(true);
     }
-    expect(footer?.textContent).not.toMatch(/隐私|条款|privacy|terms/i);
+    expect(hrefs).toContain('/terms');
+    expect(hrefs).toContain('/privacy');
+    expect(footer?.textContent).not.toMatch(/示例条款|占位/);
   });
 
   it('提供语言切换器', async () => {
@@ -73,5 +75,53 @@ describe('PublicLayout 公开站点壳', () => {
     setup('/');
     await screen.findAllByText('测试站');
     await waitFor(() => expect(screen.queryByRole('link', { name: '注册' })).toBeNull());
+  });
+
+  it('页脚提供法律地区支持与账号入口', async () => {
+    vi.mocked(portalRequest).mockImplementation((path) => Promise.resolve(
+      path === '/portal/api/public-config'
+        ? {
+            data: {
+              siteName: '测试站',
+              publicationMode: 'PREVIEW',
+              siteUrl: '',
+              supportUrl: 'mailto:support@portal.example',
+              supportedRegions: ['CN'],
+              enabledLocales: ['zh-CN'],
+              apiBaseUrls: [],
+            },
+            requestId: 'req-config',
+          }
+        : path === '/portal/api/auth/options'
+          ? {
+              data: {
+                registrationEnabled: true,
+                registrationDisabledReason: null,
+                emailVerificationEnabled: false,
+                captchaEnabled: false,
+              },
+              requestId: 'req-options',
+            }
+          : { data: { siteName: '测试站', apiBaseUrls: [] }, requestId: 'req-layout' },
+    ));
+    const { container } = setup('/');
+    await screen.findAllByText('测试站');
+    const footer = container.querySelector('footer') as HTMLElement;
+    const hrefs = [...footer.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+    expect(hrefs).toContain('/terms');
+    expect(hrefs).toContain('/privacy');
+    expect(hrefs).toContain('/regions');
+    expect(hrefs).toContain('mailto:support@portal.example');
+    expect(hrefs).toContain('/login');
+    expect(hrefs).toContain('/register');
+  });
+
+  it('移动抽屉包含服务地区与法律入口', async () => {
+    const { container } = setup('/');
+    await screen.findAllByText('测试站');
+    fireEvent.click(screen.getByRole('button', { name: '菜单' }));
+    const drawer = container.querySelector('.dialog-drawer') ?? document.body;
+    const links = [...drawer.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+    expect(links).toContain('/regions');
   });
 });

@@ -10,7 +10,8 @@
     "lint": "tsc --noEmit && eslint src",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "brand-scan": "node scripts/brand-scan.mjs"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "5.3.0",

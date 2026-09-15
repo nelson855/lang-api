@@ -29,18 +29,23 @@ function normalizeSaved(value: string | null | undefined): SupportedLocale | und
 export function resolveLocale(
   saved: string | null | undefined,
   languages: readonly string[],
+  enabled: readonly unknown[] = SUPPORTED_LOCALES,
 ): SupportedLocale {
+  const allowed = normalizeEnabledLocales(enabled);
+  if (allowed.length === 0) {
+    return DEFAULT_LOCALE;
+  }
   const fromStorage = normalizeSaved(saved);
-  if (fromStorage) {
+  if (fromStorage && allowed.includes(fromStorage)) {
     return fromStorage;
   }
   for (const language of languages) {
     const mapped = normalizeTag(language);
-    if (mapped) {
+    if (mapped && allowed.includes(mapped)) {
       return mapped;
     }
   }
-  return DEFAULT_LOCALE;
+  return allowed[0];
 }
 
 export function loadSavedLocale(): string | null {
@@ -65,4 +70,18 @@ export function detectInitialLocale(languages: readonly string[]): SupportedLoca
 
 export function supportedLanguages(): readonly SupportedLocale[] {
   return SUPPORTED_LOCALES;
+}
+
+export function normalizeEnabledLocales(values: readonly unknown[] = []): SupportedLocale[] {
+  const allowed: SupportedLocale[] = [];
+  for (const value of values) {
+    if ((value === 'zh-CN' || value === 'en-US') && !allowed.includes(value)) {
+      allowed.push(value);
+    }
+  }
+  return allowed;
+}
+
+export function isLocaleAllowed(locale: string, enabled: readonly unknown[] = []): boolean {
+  return normalizeEnabledLocales(enabled).includes(locale as SupportedLocale);
 }

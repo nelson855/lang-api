@@ -1,18 +1,19 @@
 package com.lang.portal.web.auth;
 
-import com.lang.portal.config.PortalCommonProperties;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthOptionsService {
 
-  private final PortalCommonProperties properties;
+  private final RegistrationPolicyService registrationPolicy;
 
-  public AuthOptionsService(PortalCommonProperties properties) {
-    this.properties = properties;
+  public AuthOptionsService(RegistrationPolicyService registrationPolicy) {
+    this.registrationPolicy = registrationPolicy;
   }
 
   public AuthOptions getOptions() {
-    return new AuthOptions(properties.auth().registration().enabled(), false, false);
+    RegistrationPolicy policy = registrationPolicy.evaluate();
+    return new AuthOptions(
+        policy.registrationEnabled(), policy.registrationDisabledReason(), false, false);
   }
 }

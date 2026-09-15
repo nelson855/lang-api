@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Brand } from '../components/brand/Brand';
 import { Dialog } from '../components/ui/Dialog';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+import { usePublicConfigData } from '../app/providers/publicConfigGate';
 import { usePageChrome } from './usePageChrome';
 import { logout } from '../api/auth';
 import { useAuthProfile } from '../features/auth/authState';
@@ -19,6 +20,7 @@ export function ConsoleLayout() {
   const profile = useAuthProfile();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { enabledLocales } = usePublicConfigData();
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSettled: () => {
@@ -55,7 +57,7 @@ export function ConsoleLayout() {
           <button type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
             {logoutMutation.isPending ? t('pages.auth.submitting') : t('nav.logout')}
           </button>
-          <LanguageSwitcher />
+          <LanguageSwitcher enabledLocales={enabledLocales} />
         </div>
       </aside>
 

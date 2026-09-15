@@ -1,0 +1,24 @@
+.legal-document {
+  max-width: 100%;
+}
+
+.legal-document-title {
+  margin-bottom: 1rem;
+}
+
+.legal-document-body {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-wrap: break-word;
+}
+
+.legal-document-body table,
+.legal-document-body pre {
+  max-width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.legal-document-body a {
+  overflow-wrap: anywhere;
+}

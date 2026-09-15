@@ -87,4 +87,39 @@ describe('RegisterPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('请求失败，请稍后重试。');
     expect(screen.queryByText('upstream registration policy detail')).toBeNull();
   });
+
+  it('三种关闭原因显示准确说明且始终提供法律入口', async () => {
+    const cases = [
+      { reason: 'ADMIN_DISABLED', text: '当前环境未开放注册，请联系管理员预建账号。' },
+      { reason: 'PREVIEW_MODE', text: '当前为预览版本，暂未开放注册。' },
+      { reason: 'LEGAL_UNAVAILABLE', text: '法律正文尚未就绪，暂未开放注册。' },
+    ] as const;
+    for (const { reason, text } of cases) {
+      authMocks.fetchAuthOptions.mockResolvedValue({
+        data: { ...openOptions.data, registrationEnabled: false, registrationDisabledReason: reason },
+        requestId: 'req-options',
+      });
+      const { unmount } = setup();
+      expect(await screen.findByText(text)).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: '用户协议' })).toHaveAttribute('href', '/terms');
+      expect(screen.getByRole('link', { name: '隐私政策' })).toHaveAttribute('href', '/privacy');
+      expect(screen.queryByRole('textbox', { name: '用户名' })).toBeNull();
+      unmount();
+    }
+  });
+
+  it('加载与开放状态始终提供法律入口', async () => {
+    let resolveOptions: ((value: typeof openOptions) => void) | undefined;
+    authMocks.fetchAuthOptions.mockReturnValue(new Promise((resolve) => { resolveOptions = resolve; }));
+    const first = setup();
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '用户协议' })).toHaveAttribute('href', '/terms');
+    first.unmount();
+    authMocks.fetchAuthOptions.mockResolvedValue(openOptions);
+    setup();
+    expect(await screen.findByRole('textbox', { name: '用户名' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '用户协议' })).toHaveAttribute('href', '/terms');
+    expect(screen.getByRole('link', { name: '隐私政策' })).toHaveAttribute('href', '/privacy');
+    resolveOptions?.(openOptions);
+  });
 });

@@ -26,7 +26,8 @@ class AuthOptionsControllerTests {
     mvc.perform(get("/portal/api/auth/options"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.error").doesNotExist())
-        .andExpect(jsonPath("$.data.registrationEnabled").value(true))
+        .andExpect(jsonPath("$.data.registrationEnabled").value(false))
+        .andExpect(jsonPath("$.data.registrationDisabledReason").value("PREVIEW_MODE"))
         .andExpect(jsonPath("$.data.emailVerificationEnabled").value(false))
         .andExpect(jsonPath("$.data.captchaEnabled").value(false));
   }

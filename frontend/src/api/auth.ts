@@ -3,6 +3,7 @@ import { portalRequest } from './portalClient';
 
 export const authOptionsSchema = z.object({
   registrationEnabled: z.boolean(),
+  registrationDisabledReason: z.enum(['ADMIN_DISABLED', 'PREVIEW_MODE', 'LEGAL_UNAVAILABLE']).nullable(),
   emailVerificationEnabled: z.literal(false),
   captchaEnabled: z.literal(false),
 }).strict();

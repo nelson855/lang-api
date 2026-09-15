@@ -2,7 +2,6 @@ package com.lang.portal.web.auth;
 
 import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
-import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiAuthenticationClient;
 import com.lang.portal.upstream.newapi.auth.NewApiCredentials;
 import com.lang.portal.upstream.newapi.auth.NewApiLoginResult;
@@ -12,16 +11,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthApplicationService {
 
-  private final PortalCommonProperties properties;
+  private final RegistrationPolicyService registrationPolicy;
   private final NewApiAuthenticationClient authenticationClient;
 
-  public AuthApplicationService(PortalCommonProperties properties, NewApiAuthenticationClient authenticationClient) {
-    this.properties = properties;
+  public AuthApplicationService(
+      RegistrationPolicyService registrationPolicy, NewApiAuthenticationClient authenticationClient) {
+    this.registrationPolicy = registrationPolicy;
     this.authenticationClient = authenticationClient;
   }
 
   public void register(RegisterRequest request) {
-    if (!properties.auth().registration().enabled()) {
+    if (!registrationPolicy.evaluate().registrationEnabled()) {
       throw new PortalException(PortalErrorCode.REGISTRATION_DISABLED);
     }
     if (!request.password().equals(request.confirmPassword())) {

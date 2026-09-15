@@ -18,8 +18,12 @@ class NewApiPolicyTests extends NewApiContractTestBase {
   void publicOperationOnlySendsWhitelistedHeaders() {
     NewApiOperation op = new NewApiOperation("probe", HttpMethod.GET, "/api/status", false);
     Map<String, String> headers = NewApiHeaderPolicy.requestHeaders(op, "req_123", Map.of("Cookie", "s=1", "New-Api-User", "u"));
-    assertThat(headers).containsKeys("Accept", "Content-Type", "X-Request-Id");
-    assertThat(headers).doesNotContainKeys("Cookie", "New-Api-User", "Authorization", "Host");
+    assertThat(headers).containsKeys("Accept", "X-Request-Id");
+    assertThat(headers).doesNotContainKeys("Content-Type", "Cookie", "New-Api-User", "Authorization", "Host");
+
+    NewApiOperation post = new NewApiOperation("register", HttpMethod.POST, "/api/user/register", false);
+    assertThat(NewApiHeaderPolicy.requestHeaders(post, "req_123", Map.of()))
+        .containsKeys("Accept", "Content-Type", "X-Request-Id");
   }
 
   @Test

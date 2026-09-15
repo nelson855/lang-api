@@ -11,7 +11,9 @@ public final class NewApiHeaderPolicy {
   public static Map<String, String> requestHeaders(NewApiOperation operation, String requestId, Map<String, String> auth) {
     Map<String, String> headers = new LinkedHashMap<>();
     headers.put("Accept", MediaType.APPLICATION_JSON_VALUE);
-    headers.put("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+    if (operation.method() != org.springframework.http.HttpMethod.GET) {
+      headers.put("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+    }
     if (requestId != null && !requestId.isBlank()) {
       headers.put("X-Request-Id", requestId);
     }

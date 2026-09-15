@@ -13,6 +13,9 @@ export const zhCN = {
     home: '首页',
     models: '模型广场',
     docs: '开发文档',
+    regions: '服务地区',
+    terms: '用户协议',
+    privacy: '隐私政策',
     login: '登录',
     register: '注册',
     dashboard: '控制台',
@@ -23,15 +26,20 @@ export const zhCN = {
     logout: '退出登录',
     menu: '菜单',
     closeMenu: '关闭菜单',
+    footer: '页脚',
+    legal: '法律',
   },
   pages: {
     home: {
       title: '自有语言模型网关',
+      description: '自有语言模型网关，提供模型调用与公开内容入口。',
       subtitle: '欢迎来到 {{siteName}}',
-      statusNote: '模型与认证能力按阶段接入，当前只提供基础入口。',
+      previewNote: '当前为预览版本，部分内容尚未正式发布。',
+      modelsUnavailable: '模型服务尚未开放。',
     },
     models: {
       title: '模型广场',
+      description: '浏览当前环境已开放的公开模型。',
       empty: '当前尚未配置公开模型。',
       searchLabel: '搜索模型',
       searchPlaceholder: '按模型 ID 搜索',
@@ -45,6 +53,7 @@ export const zhCN = {
     },
     docs: {
       title: '开发文档',
+      description: '开发文档：鉴权方式、调用地址与接口示例。',
       empty: '文档正文将在后续阶段接入，此处只保留入口框架。',
       authTitle: '鉴权',
       authBody: '使用 Authorization: Bearer <API_KEY> 调用，密钥仅展示一次，请妥善保存，不要写入前端代码或版本库。',
@@ -64,12 +73,17 @@ export const zhCN = {
     },
     login: {
       title: '登录',
+      description: '登录以进入控制台。',
       submit: '登录',
     },
     register: {
       title: '注册',
+      description: '注册新账号。',
       submit: '注册',
       closed: '当前环境未开放注册，请联系管理员预建账号。',
+      closedPreview: '当前为预览版本，暂未开放注册。',
+      closedLegal: '法律正文尚未就绪，暂未开放注册。',
+      legalTitle: '注册前请阅读',
     },
     auth: {
       username: '用户名',
@@ -249,6 +263,29 @@ export const zhCN = {
       title: '页面不存在',
       description: '该地址没有对应页面，请返回首页。',
     },
+    legal: {
+      unpublishedTitle: '法律正文尚未发布',
+      unpublishedBody: '当前版本正在准备中，请稍后再来查看，也可通过支持入口联系我们。',
+      contactSupport: '联系支持',
+      unavailableTitle: '法律正文暂时不可用',
+      unavailableBody: '内容加载失败，请稍后重试。',
+    },
+    terms: {
+      title: '用户协议',
+      description: '用户协议正文。',
+    },
+    privacy: {
+      title: '隐私政策',
+      description: '隐私政策正文。',
+    },
+    regions: {
+      title: '服务地区',
+      description: '查看当前支持的服务地区。',
+      empty: '服务地区暂未公布。',
+    },
+  },
+  support: {
+    unavailable: '支持入口暂未公布',
   },
   states: {
     loading: '加载中…',

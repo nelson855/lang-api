@@ -3,6 +3,7 @@ package com.lang.portal.config;
 import jakarta.annotation.PostConstruct;
 import java.net.URI;
 import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -13,10 +14,21 @@ import org.springframework.core.env.Environment;
 public class PortalPropertiesValidator {
 
   private final PortalCommonProperties properties;
+  private final PublicationProperties publication;
+  private final PublicSiteProperties publicSite;
+  private final LegalContentProperties legalContent;
   private final Environment environment;
 
-  public PortalPropertiesValidator(PortalCommonProperties properties, Environment environment) {
+  public PortalPropertiesValidator(
+      PortalCommonProperties properties,
+      PublicationProperties publication,
+      PublicSiteProperties publicSite,
+      LegalContentProperties legalContent,
+      Environment environment) {
     this.properties = properties;
+    this.publication = publication;
+    this.publicSite = publicSite;
+    this.legalContent = legalContent;
     this.environment = environment;
   }
 
@@ -28,6 +40,7 @@ public class PortalPropertiesValidator {
     validateCatalog(properties.catalog());
     validateUsage(properties.portal().usage());
     validatePublicConfig(properties.portal().siteName(), properties.portal().enabledProtocols(), properties.portal().urlMap());
+    validatePublication(publication, publicSite, legalContent);
     if (environment.containsProperty("lang.auth.cookie.domain")) {
       throw new IllegalStateException("非法配置 lang.auth.cookie.domain：不支持配置 Cookie Domain");
     }
@@ -103,6 +116,110 @@ public class PortalPropertiesValidator {
     }
     if (auth.trustedProxy().cidrs() == null || auth.trustedProxy().cidrs().isBlank()) {
       throw new IllegalStateException("非法配置 lang.auth.trusted-proxy-cidrs：生产环境不能为空");
+    }
+  }
+
+  static void validatePublication(
+      PublicationProperties publication, PublicSiteProperties site, LegalContentProperties legal) {
+    if (publication.mode() == null) {
+      throw new IllegalStateException("非法配置 lang.publication.mode：只允许 PREVIEW 或 PUBLIC");
+    }
+    validateLegalContent(legal);
+    validateOptionalSiteUrl(site.siteUrl(), "lang.public.site-url", publication.mode() == PublicationMode.PUBLIC);
+    validateSupportUrl(site.supportUrl(), publication.mode() == PublicationMode.PUBLIC);
+    validateRegions(site.supportedRegions(), publication.mode() == PublicationMode.PUBLIC);
+    validateLocales(site.enabledLocales(), legal.sourceLocale(), publication.mode() == PublicationMode.PUBLIC);
+  }
+
+  private static void validateLegalContent(LegalContentProperties legal) {
+    if (!Set.of("zh-CN", "en-US").contains(legal.sourceLocale())) {
+      throw new IllegalStateException("非法配置 lang.legal.source-locale：只允许 zh-CN 或 en-US");
+    }
+    if (legal.sourceFormat() == null) {
+      throw new IllegalStateException("非法配置 lang.legal.source-format：只允许 MARKDOWN 或 HTML");
+    }
+    if (legal.maxInputBytes() < 16 * 1024L || legal.maxInputBytes() > 1024 * 1024L) {
+      throw new IllegalStateException("非法配置 lang.legal.max-input-bytes：必须在 16384～1048576 之间");
+    }
+    if (legal.maxOutputBytes() < 16 * 1024L || legal.maxOutputBytes() > 1024 * 1024L) {
+      throw new IllegalStateException("非法配置 lang.legal.max-output-bytes：必须在 16384～1048576 之间");
+    }
+    if (legal.cacheTtl() == null
+        || legal.cacheTtl().compareTo(java.time.Duration.ofSeconds(10)) < 0
+        || legal.cacheTtl().compareTo(java.time.Duration.ofHours(1)) > 0) {
+      throw new IllegalStateException("非法配置 lang.legal.cache-ttl：必须在 10 秒到 1 小时之间");
+    }
+  }
+
+  private static void validateOptionalSiteUrl(String value, String key, boolean required) {
+    if (value == null || value.isBlank()) {
+      if (required) {
+        throw new IllegalStateException("非法配置 " + key + "：PUBLIC 模式不能为空");
+      }
+      return;
+    }
+    URI uri = toAbsoluteHttpUri(value, key);
+    if (!"https".equalsIgnoreCase(uri.getScheme()) && required) {
+      throw new IllegalStateException("非法配置 " + key + "：PUBLIC 模式必须使用 HTTPS");
+    }
+    if (uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null) {
+      throw new IllegalStateException("非法配置 " + key + "：不得包含用户信息、查询串或片段");
+    }
+  }
+
+  private static void validateSupportUrl(String value, boolean required) {
+    if (value == null || value.isBlank()) {
+      if (required) {
+        throw new IllegalStateException("非法配置 lang.public.support-url：PUBLIC 模式不能为空");
+      }
+      return;
+    }
+    URI uri;
+    try {
+      uri = new URI(value.trim());
+    } catch (Exception e) {
+      throw new IllegalStateException("非法配置 lang.public.support-url：不是合法地址");
+    }
+    String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
+    if (!("https".equals(scheme) || "mailto".equals(scheme))
+        || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null
+        || ("https".equals(scheme) && uri.getHost() == null)
+        || ("mailto".equals(scheme) && (uri.getSchemeSpecificPart() == null || uri.getSchemeSpecificPart().isBlank()))) {
+      throw new IllegalStateException("非法配置 lang.public.support-url：只允许安全 HTTPS 或 mailto 地址");
+    }
+  }
+
+  private static void validateRegions(List<String> regions, boolean required) {
+    if (regions == null || regions.isEmpty()) {
+      if (required) {
+        throw new IllegalStateException("非法配置 lang.public.supported-regions：PUBLIC 模式至少需要一个地区");
+      }
+      return;
+    }
+    Set<String> normalized = new LinkedHashSet<>();
+    for (String region : regions) {
+      String value = region == null ? "" : region.trim().toUpperCase(Locale.ROOT);
+      if (!value.matches("[A-Z]{2}") || !normalized.add(value)) {
+        throw new IllegalStateException("非法配置 lang.public.supported-regions：必须是去重的 ISO 3166-1 alpha-2 代码");
+      }
+    }
+  }
+
+  private static void validateLocales(List<String> locales, String sourceLocale, boolean publicMode) {
+    if (locales == null || locales.isEmpty()) {
+      if (publicMode) {
+        throw new IllegalStateException("非法配置 lang.public.enabled-locales：PUBLIC 模式必须启用法律源语言");
+      }
+      return;
+    }
+    Set<String> normalized = new LinkedHashSet<>();
+    for (String locale : locales) {
+      if (!Set.of("zh-CN", "en-US").contains(locale) || !normalized.add(locale)) {
+        throw new IllegalStateException("非法配置 lang.public.enabled-locales：只允许去重的 zh-CN、en-US");
+      }
+    }
+    if (publicMode && (normalized.size() != 1 || !normalized.contains(sourceLocale))) {
+      throw new IllegalStateException("非法配置 lang.public.enabled-locales：PUBLIC 模式只能启用 legal.source-locale");
     }
   }
 

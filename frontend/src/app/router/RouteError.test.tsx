@@ -17,4 +17,12 @@ describe('路由错误边界', () => {
     fireEvent.click(screen.getByRole('button', { name: '重试' }));
     expect(reload).toHaveBeenCalledTimes(1);
   });
+
+  it('错误页禁止索引且不保留 canonical', () => {
+    renderWithLocale(<RouteError />);
+    expect(document.head.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe(
+      'noindex,nofollow',
+    );
+    expect(document.head.querySelector('link[rel="canonical"]')).toBeNull();
+  });
 });

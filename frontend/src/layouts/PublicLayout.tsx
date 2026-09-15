@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, NavLink, Outlet } from 'react-router';
+import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Brand } from '../components/brand/Brand';
 import { Dialog } from '../components/ui/Dialog';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+import { SupportLink } from '../components/legal/SupportLink';
+import { usePublicConfigData } from '../app/providers/publicConfigGate';
 import { getPublicNavItems } from '../app/router/routeMeta';
 import { usePageChrome } from './usePageChrome';
 import { fetchAuthOptions } from '../api/auth';
@@ -12,9 +14,16 @@ import './PublicLayout.css';
 
 export function PublicLayout() {
   const { t } = useTranslation();
-  const { mainRef } = usePageChrome();
+  const location = useLocation();
+  const [legalIndexable, setLegalIndexable] = useState<boolean | null>(null);
+  useEffect(() => {
+    setLegalIndexable(null);
+  }, [location.pathname]);
+  const onLegalRoute = location.pathname === '/terms' || location.pathname === '/privacy';
+  const { mainRef } = usePageChrome({ pageIndexable: onLegalRoute ? (legalIndexable ?? false) : true });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navItems = getPublicNavItems();
+  const { enabledLocales, supportUrl } = usePublicConfigData();
   const authOptions = useQuery({ queryKey: ['portal', 'auth', 'options'], queryFn: ({ signal }) => fetchAuthOptions(signal) });
   const registrationEnabled = authOptions.data?.data.registrationEnabled !== false;
 
@@ -33,7 +42,7 @@ export function PublicLayout() {
             ))}
           </nav>
           <div className="public-header-actions">
-            <LanguageSwitcher />
+            <LanguageSwitcher enabledLocales={enabledLocales} />
             <Link to="/login">{t('nav.login')}</Link>
             {registrationEnabled ? <Link to="/register">{t('nav.register')}</Link> : null}
           </div>
@@ -70,18 +79,25 @@ export function PublicLayout() {
 
       <main ref={mainRef}>
         <div className="app-container">
-          <Outlet />
+          <Outlet context={{ setLegalIndexable }} />
         </div>
       </main>
 
       <footer className="public-footer">
         <div className="app-container public-footer-inner">
           <Brand />
-          {navItems.map((item) => (
-            <Link key={item.id} to={item.path}>
-              {t(item.navKey as string)}
-            </Link>
-          ))}
+          <nav aria-label={t('nav.footer')}>
+            {navItems.map((item) => (
+              <Link key={item.id} to={item.path}>
+                {t(item.navKey as string)}
+              </Link>
+            ))}
+            <Link to="/terms">{t('nav.terms')}</Link>
+            <Link to="/privacy">{t('nav.privacy')}</Link>
+            <SupportLink url={supportUrl}>{t('pages.legal.contactSupport')}</SupportLink>
+            <Link to="/login">{t('nav.login')}</Link>
+            {registrationEnabled ? <Link to="/register">{t('nav.register')}</Link> : null}
+          </nav>
         </div>
       </footer>
     </>

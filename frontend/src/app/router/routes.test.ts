@@ -17,6 +17,9 @@ describe('集中路由元数据', () => {
     expect(byId.get('home')).toMatchObject({ path: '/', layout: 'public', access: 'public' });
     expect(byId.get('models')).toMatchObject({ path: '/models', layout: 'public', access: 'public' });
     expect(byId.get('docs')).toMatchObject({ path: '/docs', layout: 'public', access: 'public' });
+    expect(byId.get('terms')).toMatchObject({ path: '/terms', layout: 'public', access: 'public' });
+    expect(byId.get('privacy')).toMatchObject({ path: '/privacy', layout: 'public', access: 'public' });
+    expect(byId.get('regions')).toMatchObject({ path: '/regions', layout: 'public', access: 'public' });
     expect(byId.get('login')).toMatchObject({ path: '/login', layout: 'auth', access: 'public-only' });
     expect(byId.get('register')).toMatchObject({ path: '/register', layout: 'auth', access: 'public-only' });
     expect(byId.get('dashboard')).toMatchObject({ path: '/dashboard', layout: 'console', access: 'protected' });
@@ -28,10 +31,13 @@ describe('集中路由元数据', () => {
     expect(new Set(paths).size).toBe(paths.length);
     for (const meta of ROUTE_META) {
       expect(typeof resolveKey(zhCN, meta.titleKey), meta.titleKey).toBe('string');
+      if (meta.descriptionKey) {
+        expect(typeof resolveKey(zhCN, meta.descriptionKey), meta.descriptionKey).toBe('string');
+      }
     }
   });
 
   it('公开导航只含已交付入口且顺序稳定', () => {
-    expect(getPublicNavItems().map((item) => item.id)).toEqual(['home', 'models', 'docs']);
+    expect(getPublicNavItems().map((item) => item.id)).toEqual(['home', 'models', 'docs', 'regions']);
   });
 });

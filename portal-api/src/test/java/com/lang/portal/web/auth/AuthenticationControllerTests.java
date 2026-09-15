@@ -31,7 +31,7 @@ class AuthenticationControllerTests {
         new NewApiSession("upstream-session", 42L),
         new NewApiUserProfile(42L, "ordinary", "Ordinary User", "ordinary@example.test")));
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(properties, client),
+        new AuthApplicationService(openPolicy(), client),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -51,7 +51,7 @@ class AuthenticationControllerTests {
     PortalCommonProperties properties = new PortalCommonProperties();
     properties.auth().setAllowedOrigins("http://portal.test");
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(properties, mock(NewApiAuthenticationClient.class)),
+        new AuthApplicationService(openPolicy(), mock(NewApiAuthenticationClient.class)),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -69,7 +69,7 @@ class AuthenticationControllerTests {
     PortalCommonProperties properties = new PortalCommonProperties();
     properties.auth().setAllowedOrigins("http://portal.test");
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(properties, mock(NewApiAuthenticationClient.class)),
+        new AuthApplicationService(openPolicy(), mock(NewApiAuthenticationClient.class)),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -89,7 +89,7 @@ class AuthenticationControllerTests {
     properties.auth().setAllowedOrigins("http://portal.test");
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(properties, client),
+        new AuthApplicationService(openPolicy(), client),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -114,7 +114,7 @@ class AuthenticationControllerTests {
     properties.auth().rateLimit().registration().setClientAttempts(1);
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(properties, client),
+        new AuthApplicationService(openPolicy(), client),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -139,7 +139,7 @@ class AuthenticationControllerTests {
     doThrow(new UpstreamException(PortalErrorCode.UPSTREAM_UNAVAILABLE))
         .when(client).logout(new NewApiSession("upstream-session", 42L));
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(properties, client),
+        new AuthApplicationService(openPolicy(), client),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -160,6 +160,12 @@ class AuthenticationControllerTests {
         .handlePortal(new UpstreamException(PortalErrorCode.UPSTREAM_UNAVAILABLE), request);
     assertThat(errorResponse.getStatusCode().value()).isEqualTo(503);
     assertThat(errorResponse.getHeaders().get("Set-Cookie")).hasSize(2);
+  }
+
+  private static RegistrationPolicyService openPolicy() {
+    RegistrationPolicyService policy = mock(RegistrationPolicyService.class);
+    when(policy.evaluate()).thenReturn(new RegistrationPolicy(true, null));
+    return policy;
   }
 
   private AuthenticationRateLimiter limiter(PortalCommonProperties properties) {

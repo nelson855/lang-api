@@ -28,6 +28,11 @@ class PublicConfigContractTests {
         .andExpect(header().exists("X-Request-Id"))
         .andExpect(jsonPath("$.requestId").isNotEmpty())
         .andExpect(jsonPath("$.data.siteName").isNotEmpty())
+        .andExpect(jsonPath("$.data.publicationMode").value("PREVIEW"))
+        .andExpect(jsonPath("$.data.siteUrl").value("http://portal.test"))
+        .andExpect(jsonPath("$.data.supportUrl").value("mailto:test@portal.test"))
+        .andExpect(jsonPath("$.data.supportedRegions[0]").value("CN"))
+        .andExpect(jsonPath("$.data.enabledLocales").isArray())
         .andExpect(jsonPath("$.data.apiBaseUrls").isArray());
   }
 

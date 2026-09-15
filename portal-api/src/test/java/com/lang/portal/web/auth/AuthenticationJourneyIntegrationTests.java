@@ -3,11 +3,14 @@ package com.lang.portal.web.auth;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.config.PortalCommonProperties;
+import com.lang.portal.config.PublicationMode;
+import com.lang.portal.config.PublicationProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiAuthenticationClient;
 import com.lang.portal.upstream.newapi.auth.NewApiLoginResult;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
@@ -41,16 +44,30 @@ class AuthenticationJourneyIntegrationTests {
   @Autowired private MockMvc mvc;
   @Autowired private ObjectMapper objectMapper;
   @Autowired private PortalCommonProperties properties;
+  @Autowired private PublicationProperties publication;
   @MockitoBean private NewApiAuthenticationClient client;
+  @MockitoBean private com.lang.portal.web.legal.LegalContentService legalContent;
 
   @AfterEach
   void resetRegistration() {
     properties.auth().registration().setEnabled(true);
+    publication.setMode(PublicationMode.PREVIEW);
+  }
+
+  private void openRegistrationGate() {
+    publication.setMode(PublicationMode.PUBLIC);
+    when(legalContent.document(com.lang.portal.web.legal.LegalContentType.TERMS))
+        .thenReturn(new com.lang.portal.web.legal.LegalContentDocument(
+            com.lang.portal.web.legal.LegalContentType.TERMS, "用户协议", "<p>safe</p>", "zh-CN"));
+    when(legalContent.document(com.lang.portal.web.legal.LegalContentType.PRIVACY))
+        .thenReturn(new com.lang.portal.web.legal.LegalContentDocument(
+            com.lang.portal.web.legal.LegalContentType.PRIVACY, "隐私政策", "<p>safe</p>", "zh-CN"));
   }
 
   @Test
   void registrationLoginProfileRefreshLogoutAndOldCookieExpiryFormOneJourney() throws Exception {
     Csrf csrf = csrf();
+    openRegistrationGate();
     mvc.perform(authPost("/portal/api/auth/register", csrf)
             .content("{\"username\":\"ordinary\",\"password\":\"correct-horse\",\"confirmPassword\":\"correct-horse\"}"))
         .andExpect(status().isOk());

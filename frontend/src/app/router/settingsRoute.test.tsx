@@ -62,7 +62,7 @@ describe('个人设置路由与导航', () => {
   it('控制台导航含设置入口且公开导航不受影响', async () => {
     const { getConsoleNavItems, getPublicNavItems } = await import('./routes');
     expect(getConsoleNavItems().map((item) => item.id)).toEqual(['apiKeys', 'requestLogs', 'wallet', 'settings']);
-    expect(getPublicNavItems().map((item) => item.id)).toEqual(['home', 'models', 'docs']);
+    expect(getPublicNavItems().map((item) => item.id)).toEqual(['home', 'models', 'docs', 'regions']);
   });
 
   it('登录后可见标题与高亮导航', async () => {

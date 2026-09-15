@@ -1,8 +1,23 @@
 import { useState, type FormEvent } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { fetchAuthOptions, register as registerAccount } from '../api/auth';
+
+function LegalLinks() {
+  const { t } = useTranslation();
+  return (
+    <nav aria-label={t('pages.register.legalTitle')}>
+      <Link to="/terms">{t('nav.terms')}</Link> <Link to="/privacy">{t('nav.privacy')}</Link>
+    </nav>
+  );
+}
+
+function closedText(reason: string | null | undefined, t: (key: string) => string): string {
+  if (reason === 'PREVIEW_MODE') return t('pages.register.closedPreview');
+  if (reason === 'LEGAL_UNAVAILABLE') return t('pages.register.closedLegal');
+  return t('pages.register.closed');
+}
 
 export function RegisterPage() {
   const { t } = useTranslation();
@@ -22,13 +37,27 @@ export function RegisterPage() {
     registerMutation.mutate({ username: username.trim(), password, confirmPassword });
   }
 
-  if (options.isPending) return <p role="status">{t('states.loading')}</p>;
+  if (options.isPending) {
+    return (
+      <>
+        <p role="status">{t('states.loading')}</p>
+        <LegalLinks />
+      </>
+    );
+  }
   if (options.data?.data.registrationEnabled === false) {
-    return <><h1>{t('pages.register.title')}</h1><p>{t('pages.register.closed')}</p></>;
+    return (
+      <>
+        <h1>{t('pages.register.title')}</h1>
+        <p>{closedText(options.data.data.registrationDisabledReason, t)}</p>
+        <LegalLinks />
+      </>
+    );
   }
   return (
     <>
       <h1>{t('pages.register.title')}</h1>
+      <LegalLinks />
       <form onSubmit={submit} noValidate>
         <label>{t('pages.auth.username')}<input name="username" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" required minLength={3} /></label>
         <label>{t('pages.auth.password')}<input name="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>

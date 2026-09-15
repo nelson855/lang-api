@@ -46,4 +46,15 @@ describe('语言切换基础设施', () => {
     expect(document.documentElement.getAttribute('lang')).toBe('en-US');
     expect(localStorage.getItem('lang-api:locale')).toBe('en-US');
   });
+
+  it('只展示运行时启用的语言', () => {
+    render(
+      <I18nProvider initialLocale="zh-CN">
+        <TitleProbe />
+        <LanguageSwitcher enabledLocales={['en-US']} />
+      </I18nProvider>,
+    );
+    expect(screen.queryByRole('button', { name: '中文' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument();
+  });
 });

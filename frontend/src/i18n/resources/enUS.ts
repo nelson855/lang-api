@@ -13,6 +13,9 @@ export const enUS = {
     home: 'Home',
     models: 'Models',
     docs: 'Docs',
+    regions: 'Service regions',
+    terms: 'Terms of Service',
+    privacy: 'Privacy Policy',
     login: 'Sign in',
     register: 'Sign up',
     dashboard: 'Dashboard',
@@ -23,15 +26,20 @@ export const enUS = {
     logout: 'Sign out',
     menu: 'Menu',
     closeMenu: 'Close menu',
+    footer: 'Footer',
+    legal: 'Legal',
   },
   pages: {
     home: {
       title: 'Self-hosted language model gateway',
+      description: 'Self-hosted language model gateway with model APIs and public content.',
       subtitle: 'Welcome to {{siteName}}',
-      statusNote: 'Model and auth capabilities land in stages; only base entry points exist for now.',
+      previewNote: 'This is a preview release; some content is not published yet.',
+      modelsUnavailable: 'Model service is not available yet.',
     },
     models: {
       title: 'Models',
+      description: 'Browse publicly available models in this environment.',
       empty: 'No public models are configured yet.',
       searchLabel: 'Search models',
       searchPlaceholder: 'Search by model ID',
@@ -45,6 +53,7 @@ export const enUS = {
     },
     docs: {
       title: 'Documentation',
+      description: 'Developer docs: authentication, base URLs and examples.',
       empty: 'Guides will land in a later stage; only the entry frame exists here.',
       authTitle: 'Authentication',
       authBody: 'Call with Authorization: Bearer <API_KEY>. Keys are shown once; keep them safe and out of frontend code or repos.',
@@ -64,12 +73,17 @@ export const enUS = {
     },
     login: {
       title: 'Sign in',
+      description: 'Sign in to access the console.',
       submit: 'Sign in',
     },
     register: {
       title: 'Sign up',
+      description: 'Create a new account.',
       submit: 'Sign up',
       closed: 'Registration is closed in this environment. Ask an administrator to create an account.',
+      closedPreview: 'This is a preview release; registration is not open yet.',
+      closedLegal: 'Legal documents are not ready yet; registration is not open.',
+      legalTitle: 'Please read before signing up',
     },
     auth: {
       username: 'Username',
@@ -249,6 +263,29 @@ export const enUS = {
       title: 'Page not found',
       description: 'No page matches this address. Please go back home.',
     },
+    legal: {
+      unpublishedTitle: 'Legal document not published yet',
+      unpublishedBody: 'The current version is being prepared. Please check back later or contact support.',
+      contactSupport: 'Contact support',
+      unavailableTitle: 'Legal document temporarily unavailable',
+      unavailableBody: 'Failed to load the content. Please try again later.',
+    },
+    terms: {
+      title: 'Terms of Service',
+      description: 'The Terms of Service document.',
+    },
+    privacy: {
+      title: 'Privacy Policy',
+      description: 'The Privacy Policy document.',
+    },
+    regions: {
+      title: 'Service Regions',
+      description: 'See the currently supported service regions.',
+      empty: 'Service regions have not been published yet.',
+    },
+  },
+  support: {
+    unavailable: 'Support contact not published yet',
   },
   states: {
     loading: 'Loading…',

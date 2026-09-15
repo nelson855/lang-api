@@ -1,9 +1,10 @@
 package com.lang.portal.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.lang.portal.config.PortalCommonProperties;
+import com.lang.portal.config.PublicSiteProperties;
+import com.lang.portal.config.PublicationProperties;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -21,14 +22,53 @@ class PublicConfigServiceTests {
   void keepsFixedOrderAndOnlyEnabledLegal() {
     PortalCommonProperties p = props("Lang API", List.of("GEMINI", "OPENAI"), "https://api.example.com/v1");
     p.portal().publicUrls().setGemini("https://gemini.example.com/v1");
-    PublicConfigService service = new PublicConfigService(p);
+    PublicConfigService service = new PublicConfigService(p, new PublicationProperties(), new PublicSiteProperties());
     var response = service.current();
     assertThat(response.apiBaseUrls()).extracting("protocol").containsExactly("OPENAI", "GEMINI");
   }
 
   @Test
   void emptyWhenNothingEnabled() {
-    PublicConfigService service = new PublicConfigService(props("Lang API", List.of(), "https://api.example.com/v1"));
+    PublicConfigService service = new PublicConfigService(
+        props("Lang API", List.of(), "https://api.example.com/v1"),
+        new PublicationProperties(),
+        new PublicSiteProperties());
     assertThat(service.current().apiBaseUrls()).isEmpty();
+  }
+
+  @Test
+  void exposesPublicationModeAndNormalizedPublicFields() {
+    PublicSiteProperties site = new PublicSiteProperties();
+    site.setSiteUrl("http://portal.test");
+    site.setSupportUrl("mailto:test@portal.test");
+    site.setSupportedRegions(List.of("cn", "CN", "US"));
+    site.setEnabledLocales(List.of("zh-CN", "en-US"));
+
+    PublicConfigService service = new PublicConfigService(
+        props("Lang API", List.of(), "https://api.example.com/v1"),
+        new PublicationProperties(),
+        site);
+
+    var response = service.current();
+    assertThat(response.publicationMode()).isEqualTo("PREVIEW");
+    assertThat(response.siteUrl()).isEqualTo("http://portal.test");
+    assertThat(response.supportUrl()).isEqualTo("mailto:test@portal.test");
+    assertThat(response.supportedRegions()).containsExactly("CN", "US");
+    assertThat(response.enabledLocales()).containsExactly("zh-CN", "en-US");
+  }
+
+  @Test
+  void returnsEmptyValuesWhenPreviewIsUnconfigured() {
+    PublicConfigService service = new PublicConfigService(
+        props("Lang API", List.of(), "https://api.example.com/v1"),
+        new PublicationProperties(),
+        new PublicSiteProperties());
+
+    var response = service.current();
+    assertThat(response.publicationMode()).isEqualTo("PREVIEW");
+    assertThat(response.siteUrl()).isEmpty();
+    assertThat(response.supportUrl()).isEmpty();
+    assertThat(response.supportedRegions()).isEmpty();
+    assertThat(response.enabledLocales()).isEmpty();
   }
 }
