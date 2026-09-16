@@ -3,6 +3,11 @@ import type { Page } from '@playwright/test';
 export interface MockPublicConfig {
   siteName: string;
   apiBaseUrls: Array<{ protocol: string; url: string }>;
+  publicationMode?: 'PREVIEW' | 'PUBLIC';
+  siteUrl?: string;
+  supportUrl?: string;
+  supportedRegions?: string[];
+  enabledLocales?: Array<'zh-CN' | 'en-US'>;
 }
 
 export async function mockPublicConfig(page: Page, data: MockPublicConfig, status = 200) {
@@ -10,7 +15,17 @@ export async function mockPublicConfig(page: Page, data: MockPublicConfig, statu
     route.fulfill({
       status,
       contentType: 'application/json',
-      body: JSON.stringify({ requestId: 'req-e2e', data }),
+      body: JSON.stringify({
+        requestId: 'req-e2e',
+        data: {
+          publicationMode: 'PREVIEW',
+          siteUrl: '',
+          supportUrl: 'mailto:dev@example.test',
+          supportedRegions: ['CN'],
+          enabledLocales: ['zh-CN', 'en-US'],
+          ...data,
+        },
+      }),
     }),
   );
 }
@@ -33,7 +48,15 @@ export async function mockAuthenticationApi(
   const registrationEnabled = options.registrationEnabled ?? true;
   await page.route('**/portal/api/auth/options', (route) => route.fulfill({
     contentType: 'application/json',
-    body: JSON.stringify({ requestId: 'req-options', data: { registrationEnabled, emailVerificationEnabled: false, captchaEnabled: false } }),
+    body: JSON.stringify({
+      requestId: 'req-options',
+      data: {
+        registrationEnabled,
+        registrationDisabledReason: registrationEnabled ? null : 'ADMIN_DISABLED',
+        emailVerificationEnabled: false,
+        captchaEnabled: false,
+      },
+    }),
   }));
   await page.route('**/portal/api/auth/csrf', (route) => route.fulfill({
     contentType: 'application/json',

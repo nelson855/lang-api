@@ -48,7 +48,7 @@ export function Dialog({ open, onOpenChange, title, description, actions, childr
           <div className="dialog-footer">
             {actions}
             <RadixDialog.Close asChild>
-              <button type="button" className="btn btn-secondary btn-sm">
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => onOpenChange(false)}>
                 {t('common.close')}
               </button>
             </RadixDialog.Close>

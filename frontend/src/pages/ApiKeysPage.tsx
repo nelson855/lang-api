@@ -135,7 +135,7 @@ export function ApiKeysPage() {
         </label>
         <input
           id="apikeys-search"
-          className="input"
+          className="input input-compact"
           type="search"
           placeholder={t('pages.apiKeys.searchPlaceholder')}
           value={nameInput}
@@ -146,7 +146,7 @@ export function ApiKeysPage() {
         </label>
         <select
           id="apikeys-status"
-          className="input"
+          className="input input-compact"
           value={status}
           onChange={(event) => onStatusChange(event.target.value)}
         >

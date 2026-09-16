@@ -1,14 +1,24 @@
 .apikeys-toolbar {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(180px, 320px) auto 180px 1fr;
   align-items: center;
-  gap: 0.5rem;
-  margin: 1rem 0;
+  gap: 0.625rem;
+  margin: 1rem 0 1.25rem;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .apikeys-field {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
   font-weight: 600;
 }
+
+.apikeys-toolbar .input { width: 100%; }
+.apikeys-toolbar .btn { justify-self: end; }
 
 .apikeys-notice {
   border: 1px solid var(--color-border);
@@ -17,15 +27,12 @@
   margin: 1rem 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 860px) {
   .apikeys-toolbar {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 
-  .apikeys-toolbar .input {
-    width: 100%;
-  }
+  .apikeys-toolbar .btn { justify-self: stretch; }
 }
 
 @media (prefers-reduced-motion: reduce) {

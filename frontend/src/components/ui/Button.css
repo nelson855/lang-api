@@ -5,7 +5,7 @@
   gap: 8px;
   min-width: 88px;
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -40,6 +40,7 @@
 }
 
 .btn-secondary:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
   background-color: var(--color-bg-muted);
 }
 
@@ -55,10 +56,10 @@
 .btn-danger {
   background-color: var(--color-danger-bg);
   border-color: var(--color-danger-text);
-  color: var(--color-primary-contrast);
+  color: var(--color-danger-text);
 }
 
-.btn-danger:hover:not(:disabled) { background-color: var(--color-danger-text); }
+.btn-danger:hover:not(:disabled) { background-color: var(--color-danger-text); color: var(--color-primary-contrast); }
 
 .btn:disabled {
   cursor: not-allowed;

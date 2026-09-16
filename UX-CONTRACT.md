@@ -10,14 +10,16 @@
 
 ## 共享能力归属
 
-| 能力 | 归属 | 规则 |
-| --- | --- | --- |
-| 表单与验证 | `FormField`、`Input` 与页面现有 mutation | 保留标签、字段错误、提交中防重复与服务端失败上下文。 |
-| 选择器 | 原生 `<select>` | 接受平台原生弹层与键盘行为；仅统一触发器视觉。 |
-| 对话框 | `Dialog` | 保持 Escape、焦点管理和原有确认流程。 |
-| 通知 | Toast/Feedback | 使用已有本地化反馈，不暴露原始后端错误。 |
-| 表格与分页 | `DataTable`、`Pagination` | 保留语义表格、范围、边界禁用、加载/空/错误态。 |
-| API 密钥 | `ApiKeysPage` 既有动作 | 显示、复制、撤销与确认语义不因样式变化。 |
+| Capability | Canonical owner | Source of truth | Allowed variants | Verification |
+| --- | --- | --- | --- | --- |
+| Form | `FormField`、`Input` 与页面现有 mutation | 本合同与页面 schema | 登录 / 注册 / 编辑 | 组件测试 + 页面测试 |
+| Select/Listbox | 原生 `<select>` | 本合同与 `DESIGN.md` | native | 键盘 + 浏览器外观 |
+| Date | 原生 `datetime-local` Input | 本合同 | native | 值传递 + 平台弹层 |
+| Scrollbar | `src/design/global.css` | `DESIGN.md` | 表格稳定 gutter | 样式守卫 + 浏览器外观 |
+| Toast | Toast/Feedback | 本合同 | success / info / warning / error | live-region 测试 |
+| CRUD | `ApiKeysPage` 既有动作 | API 契约与本合同 | 创建 / 编辑 / 启停 / 删除 | 页面测试 + E2E |
+| Dialog | `Dialog` | 本合同 | 标准 / 移动抽屉 | 焦点 + Escape 测试 |
+| Data Table | `DataTable`、`Pagination` | 本合同 | 普通表格 / 局部横向滚动 | 组件测试 + 页面测试 |
 
 ## 异步与状态
 

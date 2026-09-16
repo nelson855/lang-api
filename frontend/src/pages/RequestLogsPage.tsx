@@ -108,7 +108,7 @@ export function RequestLogsPage() {
         </label>
         <input
           id="request-logs-key"
-          className="input"
+          className="input input-compact"
           type="search"
           placeholder={t('pages.requestLogs.keyPlaceholder')}
           value={keyInput}
@@ -119,7 +119,7 @@ export function RequestLogsPage() {
         </label>
         <input
           id="request-logs-model"
-          className="input"
+          className="input input-compact"
           type="search"
           placeholder={t('pages.requestLogs.modelPlaceholder')}
           value={modelInput}
@@ -130,7 +130,7 @@ export function RequestLogsPage() {
         </label>
         <select
           id="request-logs-result"
-          className="input"
+          className="input input-compact"
           value={resultInput}
           onChange={(event) => setResultInput(event.target.value)}
         >
@@ -142,7 +142,7 @@ export function RequestLogsPage() {
         </label>
         <select
           id="request-logs-range"
-          className="input"
+          className="input input-compact"
           value={timePreset}
           onChange={(event) => setTimePreset(event.target.value as TimePreset)}
         >

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useModels } from '../api/useModels';
 import { filterModels, providerOptions } from '../features/catalog/filter';
 import { Empty } from '../components/feedback/Feedback';
+import { Input } from '../components/ui/Input';
 import './PublicPages.css';
 
 function formatPrice(model: { pricing: unknown }): string {
@@ -50,15 +51,17 @@ export function ModelsPage() {
         <>
           <div className="catalog-controls"><label>
             {t('pages.models.searchLabel')}
-            <input
+            <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input" placeholder={t('pages.models.searchPlaceholder')}
+              density="compact"
+              placeholder={t('pages.models.searchPlaceholder')}
             />
           </label>
           <label>
             {t('pages.models.providerLabel')}
             <select
+              className="input input-compact"
               value={provider ?? ''}
               onChange={(e) => setProvider(e.target.value ? e.target.value : null)}
             >

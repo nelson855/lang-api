@@ -36,6 +36,7 @@ export const zhCN = {
       subtitle: '欢迎来到 {{siteName}}',
       previewNote: '当前为预览版本，部分内容尚未正式发布。',
       modelsUnavailable: '模型服务尚未开放。',
+      requestExample: '请求示例',
     },
     models: {
       title: '模型广场',

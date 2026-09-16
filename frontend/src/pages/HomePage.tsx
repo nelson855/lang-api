@@ -30,7 +30,7 @@ export function HomePage() {
         <div className="request-trace" aria-label="API request trace">
           <div className="request-trace-head">
             <span>POST /v1/chat/completions</span>
-            <span className="request-trace-status">200 · ready</span>
+            <span className="request-trace-status">{t('pages.home.requestExample')}</span>
           </div>
           <pre><code>{trace}</code></pre>
         </div>

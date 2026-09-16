@@ -2,12 +2,12 @@
   width: 100%;
   border-collapse: collapse;
   background-color: var(--color-surface);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
 }
 
 .data-table th,
 .data-table td {
-  padding: 10px 12px;
+  padding: 11px 14px;
   border-bottom: 1px solid var(--color-border);
   text-align: start;
   white-space: nowrap;
@@ -15,7 +15,11 @@
 
 .data-table thead th {
   background-color: var(--color-surface-raised);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .data-table-empty {
@@ -48,7 +52,8 @@
 
 .pagination-page[aria-current='page'] {
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
   font-weight: 700;
 }
 

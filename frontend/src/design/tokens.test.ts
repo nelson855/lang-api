@@ -49,12 +49,13 @@ const TEXT_PAIRS: Array<[string, string]> = [
 ];
 
 describe('设计变量三层结构', () => {
-  it('采用 Deep Ink 深色语义基线', () => {
+  it('采用 Clear Circuit 浅色语义基线', () => {
     const vars = variablesOf(tokensCss);
-    expect(hexOf(vars, 'color-bg')).toBe('#0D1117');
-    expect(hexOf(vars, 'color-surface')).toBe('#131920');
-    expect(hexOf(vars, 'color-surface-raised')).toBe('#1B232D');
-    expect(hexOf(vars, 'color-primary')).toBe('#7CF2C7');
+    expect(hexOf(vars, 'color-bg')).toBe('#F4F7FB');
+    expect(hexOf(vars, 'color-surface')).toBe('#FFFFFF');
+    expect(hexOf(vars, 'color-surface-raised')).toBe('#E9EEF5');
+    expect(hexOf(vars, 'color-primary')).toBe('#315BE8');
+    expect(globalCss).toMatch(/color-scheme:\s*light/);
   });
 
   it('具备 primitive、semantic、component 三层命名', () => {
@@ -72,6 +73,12 @@ describe('设计变量三层结构', () => {
     expect(vars.get('radius-sm')).toContain('6px');
     expect(vars.get('radius-md')).toContain('10px');
     expect(vars.get('radius-lg')).toContain('16px');
+  });
+
+  it('定义标准与紧凑两种控件密度', () => {
+    const vars = variablesOf(tokensCss);
+    expect(vars.get('control-height-md')).toBe('40px');
+    expect(vars.get('control-height-sm')).toBe('36px');
   });
 
   it('只引用本地字体与站内资源', () => {

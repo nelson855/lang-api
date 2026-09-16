@@ -208,7 +208,7 @@ export function ApiKeyForm({ mode, initial, pending, serverError, onSubmit, onCa
           <label htmlFor="apikey-form-models">{t('pages.apiKeys.formModels')}</label>
           <textarea
             id="apikey-form-models"
-            className="input"
+            className="input resize-none"
             value={modelsText}
             onChange={(event) => setModelsText(event.target.value)}
           />
@@ -218,7 +218,7 @@ export function ApiKeyForm({ mode, initial, pending, serverError, onSubmit, onCa
           <label htmlFor="apikey-form-ips">{t('pages.apiKeys.formIps')}</label>
           <textarea
             id="apikey-form-ips"
-            className="input"
+            className="input resize-none"
             value={ipsText}
             onChange={(event) => setIpsText(event.target.value)}
           />

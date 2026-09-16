@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { fetchAuthOptions, register as registerAccount } from '../api/auth';
+import { Input } from '../components/ui/Input';
 
 function LegalLinks() {
   const { t } = useTranslation();
@@ -59,9 +60,9 @@ export function RegisterPage() {
       <h1>{t('pages.register.title')}</h1>
       <LegalLinks />
       <form onSubmit={submit} noValidate>
-        <label>{t('pages.auth.username')}<input name="username" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" required minLength={3} /></label>
-        <label>{t('pages.auth.password')}<input name="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
-        <label>{t('pages.auth.confirmPassword')}<input name="confirmPassword" type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
+        <label>{t('pages.auth.username')}<Input name="username" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" required minLength={3} /></label>
+        <label>{t('pages.auth.password')}<Input name="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
+        <label>{t('pages.auth.confirmPassword')}<Input name="confirmPassword" type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
         {password && confirmPassword && password !== confirmPassword ? <p role="alert">{t('pages.auth.passwordMismatch')}</p> : null}
         {registerMutation.error ? <p role="alert">{t('pages.auth.requestFailed')}</p> : null}
         <button type="submit" disabled={registerMutation.isPending}>{registerMutation.isPending ? t('pages.auth.submitting') : t('pages.register.submit')}</button>

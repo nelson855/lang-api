@@ -1,7 +1,8 @@
 .dialog-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgb(29 26 22 / 0.45);
+  background-color: color-mix(in srgb, var(--color-text) 30%, transparent);
+  backdrop-filter: blur(3px);
 }
 
 .dialog-content {

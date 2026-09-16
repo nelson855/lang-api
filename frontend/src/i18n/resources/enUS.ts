@@ -36,6 +36,7 @@ export const enUS = {
       subtitle: 'Welcome to {{siteName}}',
       previewNote: 'This is a preview release; some content is not published yet.',
       modelsUnavailable: 'Model service is not available yet.',
+      requestExample: 'Request example',
     },
     models: {
       title: 'Models',

@@ -10,10 +10,10 @@ describe('Button 按钮', () => {
     renderWithLocale(
       <>
         <Button variant="primary" onClick={onClick}>主要</Button>
-        <Button variant="secondary">次要</Button>
-        <Button variant="quiet">安静</Button>
-        <Button variant="danger">危险</Button>
-        <Button size="sm">小</Button>
+        <Button variant="secondary" onClick={onClick}>次要</Button>
+        <Button variant="quiet" onClick={onClick}>安静</Button>
+        <Button variant="danger" onClick={onClick}>危险</Button>
+        <Button size="sm" onClick={onClick}>小</Button>
       </>,
     );
     fireEvent.click(screen.getByRole('button', { name: '主要' }));
@@ -34,7 +34,7 @@ describe('Button 按钮', () => {
   });
 
   it('无严重可访问性问题', async () => {
-    const { container } = renderWithLocale(<Button variant="primary">主要</Button>);
+    const { container } = renderWithLocale(<Button variant="primary" onClick={() => undefined}>主要</Button>);
     expect(await axe(container)).toHaveNoViolations();
   });
 });

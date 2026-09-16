@@ -2,13 +2,17 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   margin: 1rem 0;
 }
 
 .dashboard-field {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
   font-weight: 600;
 }
+
+.dashboard-toolbar .input { width: auto; min-width: 132px; }
 
 .dashboard-hint {
   color: var(--color-text-muted);
@@ -22,7 +26,7 @@
   margin: 1rem 0;
 }
 
-.dashboard-toolbar, .dashboard-page > section { border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); padding: 20px; }
+.dashboard-toolbar, .dashboard-page > section { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); padding: 16px 18px; box-shadow: var(--shadow-sm); }
 .dashboard-page > section { margin-top: 16px; }
 
 .dashboard-trend {

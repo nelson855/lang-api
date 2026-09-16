@@ -60,7 +60,7 @@ export function DashboardPage() {
         </label>
         <select
           id="dashboard-range"
-          className="input"
+          className="input input-compact"
           value={preset}
           onChange={(event) => setPreset(event.target.value as RangePreset)}
         >

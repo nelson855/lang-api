@@ -9,6 +9,17 @@ import { Input } from './Input';
 import { renderWithLocale } from '../../test/render';
 
 describe('Input 与 FormField', () => {
+  it('默认使用标准密度，并可显式切换为紧凑密度', () => {
+    renderWithLocale(
+      <>
+        <Input aria-label="标准输入" />
+        <Input aria-label="紧凑输入" density="compact" />
+      </>,
+    );
+    expect(screen.getByRole('textbox', { name: '标准输入' })).toHaveClass('input-standard');
+    expect(screen.getByRole('textbox', { name: '紧凑输入' })).toHaveClass('input-compact');
+  });
+
   it('标签、说明、错误与字段自动关联', () => {
     renderWithLocale(
       <FormField label="昵称" description="2 到 20 个字符" error="昵称太短" required>
@@ -39,7 +50,7 @@ describe('Input 与 FormField', () => {
         resolver: zodResolver(schema),
       });
       return (
-        <form onSubmit={(event) => void handleSubmit(vi.fn())(event)}>
+        <form noValidate onSubmit={(event) => void handleSubmit(vi.fn())(event)}>
           <FormField label="昵称" error={formState.errors.nickname?.message}>
             <Input {...register('nickname')} />
           </FormField>

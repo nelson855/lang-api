@@ -88,7 +88,7 @@ describe('API Key 页面无障碍与布局', () => {
       resolve(process.cwd(), 'src/features/apiKeys/StatusBadge.css'),
       'utf8',
     );
-    expect(pageCss).toContain('@media (max-width: 640px)');
+    expect(pageCss).toContain('@media (max-width: 860px)');
     expect(pageCss).toContain('prefers-reduced-motion');
     expect(badgeCss).toContain('prefers-reduced-motion');
   });

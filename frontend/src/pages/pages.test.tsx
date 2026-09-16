@@ -68,6 +68,7 @@ describe('首页真实骨架', () => {
     const { container } = renderApp(<HomePage />);
     expect(await screen.findByText(/预览/)).toBeInTheDocument();
     expect(screen.getByText(/模型服务尚未开放/)).toBeInTheDocument();
+    expect(container.textContent).not.toContain('200 · ready');
     expect(container.textContent).not.toMatch(/按阶段接入/);
     expect(screen.getByRole('link', { name: /用户协议/ })).toHaveAttribute('href', '/terms');
     expect(screen.getByRole('link', { name: /隐私政策/ })).toHaveAttribute('href', '/privacy');

@@ -1,8 +1,10 @@
 import type { InputHTMLAttributes } from 'react';
 import './Input.css';
 
-export type InputProps = InputHTMLAttributes<HTMLInputElement>;
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  density?: 'standard' | 'compact';
+}
 
-export function Input(props: InputProps) {
-  return <input {...props} className={['input', props.className].filter(Boolean).join(' ')} />;
+export function Input({ density = 'standard', className, ...props }: InputProps) {
+  return <input {...props} className={['input', `input-${density}`, className].filter(Boolean).join(' ')} />;
 }

@@ -2,65 +2,66 @@
 
 /* 运行时令牌为唯一真实来源：primitive → semantic → component。 */
 @theme {
-  --color-canvas: #0D1117;
-  --color-raised: #131920;
-  --color-muted-bg: #1B232D;
-  --color-ink: #EEF2F4;
-  --color-ink-muted: #AAB5C2;
-  --color-brand: #7CF2C7;
-  --color-brand-contrast: #0D1117;
-  --color-accent: #7CF2C7;
-  --color-line: #2A3542;
-  --color-focus: #7CF2C7;
+  --color-canvas: #F4F7FB;
+  --color-raised: #FFFFFF;
+  --color-muted-bg: #E9EEF5;
+  --color-ink: #182235;
+  --color-ink-muted: #5D6B82;
+  --color-brand: #315BE8;
+  --color-brand-contrast: #FFFFFF;
+  --color-accent: #315BE8;
+  --color-line: #D7DEE9;
+  --color-focus: #315BE8;
   --font-sans: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
 }
 
 :root {
-  /* primitive：Deep Ink 深色材料 */
-  --primitive-void-950: #0D1117;
-  --primitive-carbon-900: #131920;
-  --primitive-slate-800: #1B232D;
-  --primitive-slate-700: #2A3542;
-  --primitive-paper-100: #EEF2F4;
-  --primitive-mist-300: #AAB5C2;
-  --primitive-mist-500: #7E8A99;
-  --primitive-signal-300: #7CF2C7;
-  --primitive-signal-400: #4FD9AC;
-  --primitive-green-300: #7BE0A8;
-  --primitive-green-950: #102C25;
-  --primitive-amber-300: #F3C969;
-  --primitive-amber-950: #31260C;
-  --primitive-red-300: #FF9D99;
-  --primitive-red-950: #35181B;
+  /* primitive：Clear Circuit 明亮工程材料 */
+  --primitive-canvas-50: #F4F7FB;
+  --primitive-paper-0: #FFFFFF;
+  --primitive-mist-100: #E9EEF5;
+  --primitive-mist-200: #D7DEE9;
+  --primitive-slate-600: #5D6B82;
+  --primitive-graphite-900: #182235;
+  --primitive-cobalt-600: #315BE8;
+  --primitive-cobalt-700: #2447C6;
+  --primitive-green-700: #167A5A;
+  --primitive-green-50: #EAF8F2;
+  --primitive-amber-800: #8B5A00;
+  --primitive-amber-50: #FFF7DF;
+  --primitive-red-700: #C43B4D;
+  --primitive-red-50: #FEF0F2;
 
   /* semantic：跨页面只消费语义变量 */
-  --color-bg: #0D1117;
-  --color-surface: #131920;
-  --color-surface-raised: #1B232D;
-  --color-bg-raised: #131920;
-  --color-bg-muted: #1B232D;
-  --color-text: #EEF2F4;
-  --color-text-muted: #AAB5C2;
-  --color-primary: #7CF2C7;
-  --color-primary-hover: #4FD9AC;
-  --color-primary-contrast: #0D1117;
-  --color-accent: #7CF2C7;
-  --color-border: #2A3542;
-  --color-focus: #7CF2C7;
-  --color-success-text: #7BE0A8;
-  --color-success-bg: #102C25;
-  --color-warning-text: #F3C969;
-  --color-warning-bg: #31260C;
-  --color-danger-text: #FF9D99;
-  --color-danger-bg: #35181B;
+  --color-bg: #F4F7FB;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #E9EEF5;
+  --color-bg-raised: #FFFFFF;
+  --color-bg-muted: #E9EEF5;
+  --color-text: #182235;
+  --color-text-muted: #5D6B82;
+  --color-primary: #315BE8;
+  --color-primary-hover: #2447C6;
+  --color-primary-contrast: #FFFFFF;
+  --color-accent: #315BE8;
+  --color-border: #D7DEE9;
+  --color-focus: #315BE8;
+  --color-success-text: #167A5A;
+  --color-success-bg: #EAF8F2;
+  --color-warning-text: #8B5A00;
+  --color-warning-bg: #FFF7DF;
+  --color-danger-text: #C43B4D;
+  --color-danger-bg: #FEF0F2;
 
   /* component：紧凑、低噪声的几何规则 */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.2);
-  --shadow-md: 0 12px 32px rgb(0 0 0 / 0.22);
+  --shadow-sm: 0 1px 2px rgb(24 34 53 / 0.06);
+  --shadow-md: 0 18px 48px rgb(24 34 53 / 0.14);
+  --control-height-sm: 36px;
+  --control-height-md: 40px;
   --button-height-sm: 32px;
   --button-height-md: 40px;
   --dialog-max-width: 28rem;
