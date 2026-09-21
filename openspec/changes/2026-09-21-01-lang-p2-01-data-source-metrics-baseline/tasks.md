@@ -1,10 +1,10 @@
 ## 1. 探测与证据安全基础
 
-- [ ] 1.1 先为 opt-in 开关、本地隔离地址限制、凭证仅从环境读取、原始输出只进入 `target/` 编写测试，再实现第二阶段 New API 实测入口，确保默认 Maven 测试不访问网络
-- [ ] 1.2 先为字段白名单、一致占位符、关联关系保留和映射不落盘编写测试，再实现日志、账户、充值和价格响应的脱敏转换
-- [ ] 1.3 先为 Cookie/Header、Authorization/Bearer、完整 Key、邮箱、手机号、IP、请求内容、渠道和供应商密钥等敏感模式编写拒绝测试，再实现固化前安全扫描
-- [ ] 1.4 定义并测试 `docs/new-api/aggregation-baseline.json` 的必填结构、四态结论、唯一标识、证据引用和版本一致性校验
-- [ ] 1.5 定义并测试 `docs/new-api/samples/aggregation/manifest.json` 的场景、冻结版本、实测时间、环境摘要和文件摘要规则，确认悬空或被篡改的 fixture 会使验证失败
+- [x] 1.1 先为 opt-in 开关、本地隔离地址限制、凭证仅从环境读取、原始输出只进入 `target/` 编写测试，再实现第二阶段 New API 实测入口，确保默认 Maven 测试不访问网络
+- [x] 1.2 先为字段白名单、一致占位符、关联关系保留和映射不落盘编写测试，再实现日志、账户、充值和价格响应的脱敏转换
+- [x] 1.3 先为 Cookie/Header、Authorization/Bearer、完整 Key、邮箱、手机号、IP、请求内容、渠道和供应商密钥等敏感模式编写拒绝测试，再实现固化前安全扫描
+- [x] 1.4 定义并测试 `docs/new-api/aggregation-baseline.json` 的必填结构、四态结论、唯一标识、证据引用和版本一致性校验
+- [x] 1.5 定义并测试 `docs/new-api/samples/aggregation/manifest.json` 的场景、冻结版本、实测时间、环境摘要和文件摘要规则，确认悬空或被篡改的 fixture 会使验证失败
 
 ## 2. 隔离环境与验证数据集
 
