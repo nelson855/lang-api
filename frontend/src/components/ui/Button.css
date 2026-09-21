@@ -9,7 +9,7 @@
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+  transition: background-color var(--motion-micro) ease, border-color var(--motion-micro) ease, color var(--motion-micro) ease;
 }
 
 .btn-md {
@@ -24,42 +24,85 @@
   font-size: 0.875rem;
 }
 
-.btn-primary {
+/* IconButton: 方形稳定尺寸，不带最小宽度 */
+.btn-icon {
+  min-width: 0;
+  padding-inline: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.btn-icon-md {
+  width: var(--button-height-md);
+  min-height: var(--button-height-md);
+}
+
+.btn-icon-sm {
+  width: var(--button-height-sm);
+  min-height: var(--button-height-sm);
+}
+
+/* intent × emphasis：组合语义 */
+.btn-intent-primary.btn-emphasis-solid {
   background-color: var(--color-primary);
   color: var(--color-primary-contrast);
 }
 
-.btn-primary:hover:not(:disabled) {
+.btn-intent-primary.btn-emphasis-solid:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
 }
 
-.btn-secondary {
+.btn-intent-primary.btn-emphasis-ghost,
+.btn-intent-primary.btn-emphasis-outline {
+  background-color: transparent;
+  color: var(--color-primary);
+}
+
+.btn-intent-primary.btn-emphasis-outline {
+  border-color: var(--color-primary);
+}
+
+.btn-intent-primary.btn-emphasis-ghost:hover:not(:disabled),
+.btn-intent-primary.btn-emphasis-outline:hover:not(:disabled) {
+  background-color: var(--color-surface-raised);
+}
+
+.btn-intent-neutral.btn-emphasis-outline,
+.btn-intent-neutral.btn-emphasis-ghost {
   background-color: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text);
 }
 
-.btn-secondary:hover:not(:disabled) {
+.btn-intent-neutral.btn-emphasis-ghost {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+.btn-intent-neutral.btn-emphasis-outline:hover:not(:disabled),
+.btn-intent-neutral.btn-emphasis-ghost:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
   background-color: var(--color-bg-muted);
 }
 
-.btn-quiet {
-  background-color: transparent;
-  color: var(--color-primary);
-}
-
-.btn-quiet:hover:not(:disabled) {
-  background-color: var(--color-surface-raised);
-}
-
-.btn-danger {
+.btn-intent-danger.btn-emphasis-outline {
   background-color: var(--color-danger-bg);
   border-color: var(--color-danger-text);
   color: var(--color-danger-text);
 }
 
-.btn-danger:hover:not(:disabled) { background-color: var(--color-danger-text); color: var(--color-primary-contrast); }
+.btn-intent-danger.btn-emphasis-outline:hover:not(:disabled) {
+  background-color: var(--color-danger-text);
+  color: var(--color-primary-contrast);
+}
+
+.btn-intent-danger.btn-emphasis-ghost {
+  background-color: transparent;
+  color: var(--color-danger-text);
+}
+
+.btn-intent-danger.btn-emphasis-ghost:hover:not(:disabled) {
+  background-color: var(--color-danger-bg);
+}
 
 .btn:disabled {
   cursor: not-allowed;

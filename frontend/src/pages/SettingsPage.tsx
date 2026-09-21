@@ -9,6 +9,7 @@ import { clearUsageScope } from '../features/usage/usageCache';
 import { Button } from '../components/ui/Button';
 import { FormField } from '../components/ui/FormField';
 import { Input } from '../components/ui/Input';
+import { PasswordField } from '../components/ui/PasswordField';
 import './SettingsPage.css';
 
 export function SettingsPage() {
@@ -128,24 +129,21 @@ export function SettingsPage() {
             required
             error={fieldError('currentPassword')}
           >
-            <Input
-              type="password"
+            <PasswordField
               value={currentPassword}
               onChange={(event) => setCurrentPassword(event.target.value)}
               autoComplete="current-password"
             />
           </FormField>
           <FormField label={t('pages.settings.newPasswordLabel')} error={fieldError('newPassword')}>
-            <Input
-              type="password"
+            <PasswordField
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
               autoComplete="new-password"
             />
           </FormField>
           <FormField label={t('pages.settings.confirmPasswordLabel')} error={fieldError('confirmPassword')}>
-            <Input
-              type="password"
+            <PasswordField
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               autoComplete="new-password"

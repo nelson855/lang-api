@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { axe } from 'vitest-axe';
-import { Button } from './Button';
+import { Button, IconButton } from './Button';
 import { renderWithLocale } from '../../test/render';
 
 describe('Button 按钮', () => {
@@ -33,8 +33,85 @@ describe('Button 按钮', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  it('busy 别名与 loading 等价', () => {
+    renderWithLocale(<Button busy>保存</Button>);
+    const button = screen.getByRole('button', { name: '保存' });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('新 API：intent × emphasis 可组合', () => {
+    renderWithLocale(
+      <>
+        <Button intent="primary" emphasis="solid">主操作</Button>
+        <Button intent="danger" emphasis="outline">危险描边</Button>
+        <Button intent="neutral" emphasis="ghost">幽灵</Button>
+      </>,
+    );
+    expect(screen.getByRole('button', { name: '主操作' })).toHaveClass('btn-intent-primary', 'btn-emphasis-solid');
+    expect(screen.getByRole('button', { name: '危险描边' })).toHaveClass('btn-intent-danger', 'btn-emphasis-outline');
+    expect(screen.getByRole('button', { name: '幽灵' })).toHaveClass('btn-intent-neutral', 'btn-emphasis-ghost');
+  });
+
+  it('旧 variant 兼容映射到新 intent/emphasis', () => {
+    renderWithLocale(
+      <>
+        <Button variant="primary">V主</Button>
+        <Button variant="secondary">V次</Button>
+        <Button variant="quiet">V幽</Button>
+        <Button variant="danger">V危</Button>
+      </>,
+    );
+    expect(screen.getByRole('button', { name: 'V主' })).toHaveClass('btn-intent-primary', 'btn-emphasis-solid');
+    expect(screen.getByRole('button', { name: 'V次' })).toHaveClass('btn-intent-neutral', 'btn-emphasis-outline');
+    expect(screen.getByRole('button', { name: 'V幽' })).toHaveClass('btn-intent-primary', 'btn-emphasis-ghost');
+    expect(screen.getByRole('button', { name: 'V危' })).toHaveClass('btn-intent-danger', 'btn-emphasis-outline');
+  });
+
+  it('disabled 时不响应点击', () => {
+    const onClick = vi.fn();
+    renderWithLocale(<Button disabled onClick={onClick}>禁用</Button>);
+    const button = screen.getByRole('button', { name: '禁用' });
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
   it('无严重可访问性问题', async () => {
     const { container } = renderWithLocale(<Button variant="primary" onClick={() => undefined}>主要</Button>);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('IconButton 图标按钮', () => {
+  it('要求可访问名称且稳定方形尺寸', () => {
+    const onClick = vi.fn();
+    renderWithLocale(
+      <IconButton aria-label="关闭" onClick={onClick}>
+        <span aria-hidden="true">×</span>
+      </IconButton>,
+    );
+    const button = screen.getByRole('button', { name: '关闭' });
+    expect(button).toHaveClass('btn-icon');
+    fireEvent.click(button);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('支持 sm/md 尺寸与 intent 切换', () => {
+    renderWithLocale(
+      <>
+        <IconButton aria-label="小" size="sm">×</IconButton>
+        <IconButton aria-label="危险" intent="danger">!</IconButton>
+      </>,
+    );
+    expect(screen.getByRole('button', { name: '小' })).toHaveClass('btn-icon-sm');
+    expect(screen.getByRole('button', { name: '危险' })).toHaveClass('btn-intent-danger');
+  });
+
+  it('图标按钮无名称时可访问性检查失败', async () => {
+    const { container } = renderWithLocale(
+      <IconButton aria-label="ok">×</IconButton>,
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

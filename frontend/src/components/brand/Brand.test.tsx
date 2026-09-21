@@ -61,4 +61,11 @@ describe('临时品牌标识', () => {
     const withoutNamespace = favicon.replace('xmlns="http://www.w3.org/2000/svg"', '');
     expect(withoutNamespace).not.toMatch(/https?:\/\//);
   });
+
+  it('favicon 在 Clear Circuit 浅色背景上使用 Cobalt 主色', async () => {
+    const fs = await import('node:fs');
+    const favicon = fs.readFileSync('public/favicon.svg', 'utf8');
+    expect(favicon).toContain('#315BE8');
+    expect(favicon).not.toContain('#0c6b5f');
+  });
 });

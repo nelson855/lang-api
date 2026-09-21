@@ -42,7 +42,7 @@ export function RetryableError({
           {t('errors.requestId', { requestId })}
         </p>
       ) : null}
-      <button type="button" className="btn btn-secondary btn-md" onClick={onRetry}>
+      <button type="button" className="btn btn-md btn-intent-neutral btn-emphasis-outline" onClick={onRetry}>
         {t('common.retry')}
       </button>
     </StateShell>

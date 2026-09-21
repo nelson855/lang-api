@@ -23,6 +23,40 @@ vi.mock('../features/auth/authState', async (importOriginal) => {
   };
 });
 
+// 页面级测试聚焦查询时机与状态语义；Radix Select 弹层在 jsdom 内打开存在已知限制，
+// 这里把 Select 替换为原生 select 以保留值映射和提交时机断言，弹层键盘与碰撞由 E2E 覆盖。
+vi.mock('../components/ui/Select', () => ({
+  Select: ({
+    options,
+    value,
+    onValueChange,
+    id,
+    disabled,
+    'aria-label': ariaLabel,
+  }: {
+    options: Array<{ value: string; label: string; disabled?: boolean }>;
+    value: string;
+    onValueChange: (value: string) => void;
+    id?: string;
+    disabled?: boolean;
+    'aria-label'?: string;
+  }) => (
+    <select
+      id={id}
+      aria-label={ariaLabel}
+      disabled={disabled}
+      value={value}
+      onChange={(event) => onValueChange(event.target.value)}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value} disabled={option.disabled}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ),
+}));
+
 const { listApiKeys } = await import('../api/apiKeys');
 const listMock = vi.mocked(listApiKeys);
 

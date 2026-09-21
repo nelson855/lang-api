@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { PortalApiError } from '../api/envelope';
 import { Empty } from '../components/feedback/Feedback';
 import { Button } from '../components/ui/Button';
+import { Select } from '../components/ui/Select';
 import { useAuthProfile } from '../features/auth/authState';
 import { normalizeUsageRange } from '../features/usage/usageCache';
 import { handleUsageQueryError, useBalanceQuery, useSummaryQuery, useTimeseriesQuery } from '../features/usage/useUsage';
@@ -58,16 +59,17 @@ export function DashboardPage() {
         <label className="dashboard-field" htmlFor="dashboard-range">
           {t('pages.dashboard.rangeLabel')}
         </label>
-        <select
+        <Select
           id="dashboard-range"
-          className="input input-compact"
+          density="compact"
           value={preset}
-          onChange={(event) => setPreset(event.target.value as RangePreset)}
-        >
-          <option value="24h">{t('pages.dashboard.range24h')}</option>
-          <option value="7d">{t('pages.dashboard.range7d')}</option>
-          <option value="30d">{t('pages.dashboard.range30d')}</option>
-        </select>
+          onValueChange={(value) => setPreset(value as RangePreset)}
+          options={[
+            { value: '24h', label: t('pages.dashboard.range24h') },
+            { value: '7d', label: t('pages.dashboard.range7d') },
+            { value: '30d', label: t('pages.dashboard.range30d') },
+          ]}
+        />
       </div>
 
       <section aria-label={t('pages.dashboard.balanceTitle')}>

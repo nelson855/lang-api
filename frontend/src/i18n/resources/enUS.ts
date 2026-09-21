@@ -8,6 +8,11 @@ export const enUS = {
     nextPage: 'Next page',
     pageStatus: 'Page {{current}} of {{total}}',
     required: 'Required',
+    showPassword: 'Show input content',
+    hidePassword: 'Hide input content',
+    showSecret: 'Show secret content',
+    hideSecret: 'Hide secret content',
+    clearSearch: 'Clear search',
   },
   nav: {
     home: 'Home',

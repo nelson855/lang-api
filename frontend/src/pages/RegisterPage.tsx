@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { fetchAuthOptions, register as registerAccount } from '../api/auth';
 import { Input } from '../components/ui/Input';
+import { PasswordField } from '../components/ui/PasswordField';
 
 function LegalLinks() {
   const { t } = useTranslation();
@@ -61,8 +62,8 @@ export function RegisterPage() {
       <LegalLinks />
       <form onSubmit={submit} noValidate>
         <label>{t('pages.auth.username')}<Input name="username" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" required minLength={3} /></label>
-        <label>{t('pages.auth.password')}<Input name="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
-        <label>{t('pages.auth.confirmPassword')}<Input name="confirmPassword" type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
+        <label>{t('pages.auth.password')}<PasswordField name="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
+        <label>{t('pages.auth.confirmPassword')}<PasswordField name="confirmPassword" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" required minLength={8} /></label>
         {password && confirmPassword && password !== confirmPassword ? <p role="alert">{t('pages.auth.passwordMismatch')}</p> : null}
         {registerMutation.error ? <p role="alert">{t('pages.auth.requestFailed')}</p> : null}
         <button type="submit" disabled={registerMutation.isPending}>{registerMutation.isPending ? t('pages.auth.submitting') : t('pages.register.submit')}</button>

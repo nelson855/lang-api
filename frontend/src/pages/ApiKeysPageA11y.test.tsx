@@ -76,7 +76,8 @@ describe('API Key 页面无障碍与布局', () => {
     await user.tab();
     expect(document.activeElement?.tagName).toBe('INPUT');
     await user.tab();
-    expect(document.activeElement?.tagName).toBe('SELECT');
+    // Radix Select 触发器是 button + combobox 角色
+    expect(document.activeElement?.getAttribute('role')).toBe('combobox');
     for (const name of ['新建密钥', '编辑 alpha', '停用 alpha', '删除 alpha', '显示并复制 alpha']) {
       expect(screen.getByRole('button', { name })).toBeVisible();
     }

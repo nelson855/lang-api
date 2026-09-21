@@ -47,6 +47,8 @@
   --color-accent: #315BE8;
   --color-border: #D7DEE9;
   --color-focus: #315BE8;
+  --color-info-text: #1E40AF;
+  --color-info-bg: #EFF6FF;
   --color-success-text: #167A5A;
   --color-success-bg: #EAF8F2;
   --color-warning-text: #8B5A00;
@@ -65,4 +67,19 @@
   --button-height-sm: 32px;
   --button-height-md: 40px;
   --dialog-max-width: 28rem;
+
+  /* 层级：统一 overlay 顺序，禁止页面局部任意大数值 */
+  --z-sticky: 10;
+  --z-dropdown: 20;
+  --z-popover: 30;
+  --z-header: 40;
+  --z-backdrop: 50;
+  --z-dialog: 60;
+  --z-drawer: 70;
+  --z-toast: 80;
+
+  /* 动效：克制微交互 160-220ms */
+  --motion-micro: 180ms;
+  --motion-fade: 100ms;
+  --duration-fast: 180ms;
 }
