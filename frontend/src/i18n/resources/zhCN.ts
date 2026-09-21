@@ -8,6 +8,11 @@ export const zhCN = {
     nextPage: '下一页',
     pageStatus: '第 {{current}} / {{total}} 页',
     required: '必填',
+    showPassword: '显示输入内容',
+    hidePassword: '遮蔽输入内容',
+    showSecret: '显示密钥内容',
+    hideSecret: '遮蔽密钥内容',
+    clearSearch: '清除搜索',
   },
   nav: {
     home: '首页',

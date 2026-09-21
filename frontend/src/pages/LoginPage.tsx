@@ -7,6 +7,7 @@ import { PortalApiError } from '../api/envelope';
 import { cacheAuthenticatedProfile } from '../features/auth/authCache';
 import { resolveReturnTo } from '../features/auth/returnTo';
 import { Input } from '../components/ui/Input';
+import { PasswordField } from '../components/ui/PasswordField';
 
 export function loginErrorKind(error: unknown): 'invalidCredentials' | 'requestFailed' {
   return error instanceof PortalApiError && error.code === 'INVALID_CREDENTIALS'
@@ -47,7 +48,7 @@ export function LoginPage() {
         </label>
         <label>
           {t('pages.auth.password')}
-          <Input name="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" required minLength={8} />
+          <PasswordField name="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" required minLength={8} />
         </label>
         {errorKind === 'invalidCredentials' ? <p role="alert">{t('pages.auth.invalidCredentials')}</p> : null}
         {errorKind === 'requestFailed' ? <p role="alert">{t('pages.auth.requestFailed')}</p> : null}

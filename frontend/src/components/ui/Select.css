@@ -1,0 +1,76 @@
+.select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  text-align: start;
+  width: 100%;
+}
+
+.select-trigger[data-disabled] {
+  cursor: not-allowed;
+}
+
+.select-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.select-content {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-dropdown);
+  overflow: hidden;
+  /* Radix 注入 --radix-select-trigger-width，弹层与触发器等宽 */
+  min-width: var(--radix-select-trigger-width);
+  max-width: var(--radix-select-trigger-width);
+  max-height: var(--radix-select-content-available-height);
+}
+
+.select-viewport {
+  padding: 4px;
+}
+
+.select-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  position: relative;
+  padding-inline-end: 28px;
+}
+
+.select-item[data-highlighted] {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text);
+}
+
+.select-item[data-state='checked'] {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.select-item[data-disabled] {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.select-item-indicator {
+  position: absolute;
+  inset-inline-end: 8px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-primary);
+}

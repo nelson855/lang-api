@@ -48,6 +48,40 @@ const TEXT_PAIRS: Array<[string, string]> = [
   ['color-danger-text', 'color-bg'],
 ];
 
+describe('Clear Circuit 核心色与语义', () => {
+  it('定义六个核心 primitive 角色', () => {
+    const vars = variablesOf(tokensCss);
+    expect(hexOf(vars, 'primitive-canvas-50').toUpperCase()).toBe('#F4F7FB');
+    expect(hexOf(vars, 'primitive-paper-0').toUpperCase()).toBe('#FFFFFF');
+    expect(hexOf(vars, 'primitive-mist-100').toUpperCase()).toBe('#E9EEF5');
+    expect(hexOf(vars, 'primitive-mist-200').toUpperCase()).toBe('#D7DEE9');
+    expect(hexOf(vars, 'primitive-graphite-900').toUpperCase()).toBe('#182235');
+    expect(hexOf(vars, 'primitive-cobalt-600').toUpperCase()).toBe('#315BE8');
+  });
+
+  it('语义色 info/success/warning/danger 独立且不复用 Cobalt', () => {
+    const vars = variablesOf(tokensCss);
+    for (const name of ['color-info-text', 'color-success-text', 'color-warning-text', 'color-danger-text']) {
+      expect(vars.has(name), `缺失语义变量 --${name}`).toBe(true);
+      expect(hexOf(vars, name), `${name} 不应复用 Cobalt 主色`).not.toBe('#315BE8');
+    }
+    expect(hexOf(vars, 'color-info-text').toUpperCase()).not.toBe(hexOf(vars, 'color-success-text').toUpperCase());
+    expect(hexOf(vars, 'color-warning-text').toUpperCase()).not.toBe(hexOf(vars, 'color-danger-text').toUpperCase());
+  });
+
+  it('具备统一 z-index 层级与动效令牌', () => {
+    const vars = variablesOf(tokensCss);
+    for (const name of ['z-sticky', 'z-dropdown', 'z-popover', 'z-header', 'z-backdrop', 'z-dialog', 'z-drawer', 'z-toast']) {
+      expect(vars.has(name), `缺失层级变量 --${name}`).toBe(true);
+    }
+    const micro = vars.get('motion-micro') ?? vars.get('duration-fast') ?? '';
+    expect(micro, '缺少微动效时长令牌').toMatch(/^\d+ms$/);
+    const microMs = parseInt(micro, 10);
+    expect(microMs).toBeGreaterThanOrEqual(150);
+    expect(microMs).toBeLessThanOrEqual(250);
+  });
+});
+
 describe('设计变量三层结构', () => {
   it('采用 Clear Circuit 浅色语义基线', () => {
     const vars = variablesOf(tokensCss);

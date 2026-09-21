@@ -7,6 +7,8 @@ import { Empty } from '../components/feedback/Feedback';
 import { Button } from '../components/ui/Button';
 import { DataTable } from '../components/ui/DataTable';
 import { Pagination } from '../components/ui/Pagination';
+import { SearchField } from '../components/ui/SearchField';
+import { Select } from '../components/ui/Select';
 import { useAuthProfile } from '../features/auth/authState';
 import {
   normalizeRequestLogsParams,
@@ -106,10 +108,9 @@ export function RequestLogsPage() {
         <label className="request-logs-field" htmlFor="request-logs-key">
           {t('pages.requestLogs.keyLabel')}
         </label>
-        <input
+        <SearchField
           id="request-logs-key"
-          className="input input-compact"
-          type="search"
+          density="compact"
           placeholder={t('pages.requestLogs.keyPlaceholder')}
           value={keyInput}
           onChange={(event) => setKeyInput(event.target.value)}
@@ -117,10 +118,9 @@ export function RequestLogsPage() {
         <label className="request-logs-field" htmlFor="request-logs-model">
           {t('pages.requestLogs.modelLabel')}
         </label>
-        <input
+        <SearchField
           id="request-logs-model"
-          className="input input-compact"
-          type="search"
+          density="compact"
           placeholder={t('pages.requestLogs.modelPlaceholder')}
           value={modelInput}
           onChange={(event) => setModelInput(event.target.value)}
@@ -128,32 +128,34 @@ export function RequestLogsPage() {
         <label className="request-logs-field" htmlFor="request-logs-result">
           {t('pages.requestLogs.resultLabel')}
         </label>
-        <select
+        <Select
           id="request-logs-result"
-          className="input input-compact"
+          density="compact"
           value={resultInput}
-          onChange={(event) => setResultInput(event.target.value)}
-        >
-          <option value="SUCCESS">{t('pages.requestLogs.resultSuccess')}</option>
-          <option value="ERROR">{t('pages.requestLogs.resultError')}</option>
-        </select>
+          onValueChange={setResultInput}
+          options={[
+            { value: 'SUCCESS', label: t('pages.requestLogs.resultSuccess') },
+            { value: 'ERROR', label: t('pages.requestLogs.resultError') },
+          ]}
+        />
         <label className="request-logs-field" htmlFor="request-logs-range">
           {t('pages.dashboard.rangeLabel')}
         </label>
-        <select
+        <Select
           id="request-logs-range"
-          className="input input-compact"
+          density="compact"
           value={timePreset}
-          onChange={(event) => setTimePreset(event.target.value as TimePreset)}
-        >
-          <option value="24h">{t('pages.dashboard.range24h')}</option>
-          <option value="7d">{t('pages.dashboard.range7d')}</option>
-          <option value="30d">{t('pages.dashboard.range30d')}</option>
-        </select>
-        <Button type="button" variant="primary" onClick={submit}>
+          onValueChange={(value) => setTimePreset(value as TimePreset)}
+          options={[
+            { value: '24h', label: t('pages.dashboard.range24h') },
+            { value: '7d', label: t('pages.dashboard.range7d') },
+            { value: '30d', label: t('pages.dashboard.range30d') },
+          ]}
+        />
+        <Button type="button" intent="primary" onClick={submit}>
           {t('pages.requestLogs.search')}
         </Button>
-        <Button type="button" variant="secondary" onClick={() => void query.refetch()}>
+        <Button type="button" intent="neutral" emphasis="outline" onClick={() => void query.refetch()}>
           {t('pages.requestLogs.refresh')}
         </Button>
       </div>

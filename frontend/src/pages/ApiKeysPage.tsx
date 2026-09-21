@@ -6,6 +6,8 @@ import { DataTable } from '../components/ui/DataTable';
 import { Dialog } from '../components/ui/Dialog';
 import { Empty } from '../components/feedback/Feedback';
 import { Pagination } from '../components/ui/Pagination';
+import { SearchField } from '../components/ui/SearchField';
+import { Select } from '../components/ui/Select';
 import { useAuthProfile } from '../features/auth/authState';
 import { ApiKeyForm } from '../features/apiKeys/ApiKeyForm';
 import { RevealDialog } from '../features/apiKeys/RevealDialog';
@@ -133,10 +135,9 @@ export function ApiKeysPage() {
         <label className="apikeys-field" htmlFor="apikeys-search">
           {t('pages.apiKeys.searchLabel')}
         </label>
-        <input
+        <SearchField
           id="apikeys-search"
-          className="input input-compact"
-          type="search"
+          density="compact"
           placeholder={t('pages.apiKeys.searchPlaceholder')}
           value={nameInput}
           onChange={(event) => setNameInput(event.target.value)}
@@ -144,20 +145,17 @@ export function ApiKeysPage() {
         <label className="apikeys-field" htmlFor="apikeys-status">
           {t('pages.apiKeys.statusLabel')}
         </label>
-        <select
+        <Select
           id="apikeys-status"
-          className="input input-compact"
+          density="compact"
           value={status}
-          onChange={(event) => onStatusChange(event.target.value)}
-        >
-          <option value="">{t('pages.apiKeys.statusAll')}</option>
-          {STATUSES.map((item) => (
-            <option key={item} value={item}>
-              {t(`pages.apiKeys.status_${item}`)}
-            </option>
-          ))}
-        </select>
-        <Button type="button" variant="primary" onClick={() => setDialog({ type: 'create' })}>
+          onValueChange={onStatusChange}
+          options={[
+            { value: '', label: t('pages.apiKeys.statusAll') },
+            ...STATUSES.map((item) => ({ value: item, label: t(`pages.apiKeys.status_${item}`) })),
+          ]}
+        />
+        <Button type="button" intent="primary" onClick={() => setDialog({ type: 'create' })}>
           {t('pages.apiKeys.create')}
         </Button>
       </div>
@@ -180,7 +178,7 @@ export function ApiKeysPage() {
       {query.isError && error?.code !== 'OPERATION_RESULT_UNKNOWN' ? (
         <div className="apikeys-notice" role="alert">
           <p>{t('pages.apiKeys.loadError')}</p>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => query.refetch()}>
+          <button type="button" className="btn btn-sm btn-intent-neutral btn-emphasis-outline" onClick={() => query.refetch()}>
             {t('common.retry')}
           </button>
         </div>

@@ -88,7 +88,8 @@ describe('API Key 启停与删除确认', () => {
     await screen.findByText('old');
 
     expect(screen.queryByRole('button', { name: '启用 old' })).not.toBeInTheDocument();
-    expect(screen.getAllByText('已过期')).toHaveLength(2);
+    // Select 弹层未打开时选项不渲染；状态徽标本身已表达"已过期"
+    expect(screen.getAllByText('已过期').length).toBeGreaterThanOrEqual(1);
     await user.click(screen.getByRole('button', { name: '停用 alpha' }));
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
   });

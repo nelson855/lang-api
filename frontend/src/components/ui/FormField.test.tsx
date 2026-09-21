@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { axe } from 'vitest-axe';
 import { FormField } from './FormField';
 import { Input } from './Input';
+import { Textarea } from './Textarea';
 import { renderWithLocale } from '../../test/render';
 
 describe('Input 与 FormField', () => {
@@ -72,5 +73,29 @@ describe('Input 与 FormField', () => {
       </FormField>,
     );
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe('Textarea 多行输入', () => {
+  it('默认 resize:none 且支持密度切换', () => {
+    renderWithLocale(
+      <>
+        <Textarea aria-label="备注" />
+        <Textarea aria-label="紧凑备注" density="compact" />
+      </>,
+    );
+    expect(screen.getByRole('textbox', { name: '备注' })).toHaveClass('input-standard');
+    expect(screen.getByRole('textbox', { name: '紧凑备注' })).toHaveClass('input-compact');
+  });
+
+  it('与 FormField 组合时错误可关联', () => {
+    renderWithLocale(
+      <FormField label="说明" error="说明过长">
+        <Textarea />
+      </FormField>,
+    );
+    const textarea = screen.getByRole('textbox', { name: '说明' });
+    expect(textarea).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('说明过长')).toBeInTheDocument();
   });
 });

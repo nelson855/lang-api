@@ -15,6 +15,22 @@ expect.extend({
   },
 });
 
+// jsdom 缺 Radix Select 需要的 Pointer Capture、ResizeObserver、scrollIntoView API
+if (typeof Element !== 'undefined' && !Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = () => false;
+  Element.prototype.setPointerCapture = () => undefined;
+  Element.prototype.releasePointerCapture = () => undefined;
+  Element.prototype.scrollIntoView = () => undefined;
+}
+
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
 afterEach(() => {
   localStorage.clear();
   document.documentElement.setAttribute('lang', '');

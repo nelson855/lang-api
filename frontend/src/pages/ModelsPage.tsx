@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router';
 import { useModels } from '../api/useModels';
 import { filterModels, providerOptions } from '../features/catalog/filter';
 import { Empty } from '../components/feedback/Feedback';
-import { Input } from '../components/ui/Input';
+import { SearchField } from '../components/ui/SearchField';
+import { Select } from '../components/ui/Select';
 import './PublicPages.css';
 
 function formatPrice(model: { pricing: unknown }): string {
@@ -51,7 +52,7 @@ export function ModelsPage() {
         <>
           <div className="catalog-controls"><label>
             {t('pages.models.searchLabel')}
-            <Input
+            <SearchField
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               density="compact"
@@ -60,18 +61,15 @@ export function ModelsPage() {
           </label>
           <label>
             {t('pages.models.providerLabel')}
-            <select
-              className="input input-compact"
+            <Select
+              density="compact"
               value={provider ?? ''}
-              onChange={(e) => setProvider(e.target.value ? e.target.value : null)}
-            >
-              <option value="">{t('pages.models.providerAll')}</option>
-              {providers.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+              onValueChange={(value) => setProvider(value ? value : null)}
+              options={[
+                { value: '', label: t('pages.models.providerAll') },
+                ...providers.map((p) => ({ value: p, label: p })),
+              ]}
+            />
           </label></div>
           {models.length === 0 ? <Empty description={t('pages.models.empty')} /> : null}
           {models.length > 0 && visible.length === 0 ? <p>{t('pages.models.noMatch')}</p> : null}

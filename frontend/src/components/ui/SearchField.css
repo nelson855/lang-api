@@ -1,0 +1,21 @@
+.search-field {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.search-input {
+  padding-inline-end: calc(var(--button-height-sm) + 8px);
+}
+
+.search-clear {
+  position: absolute;
+  inset-inline-end: 4px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+}
+
+.search-clear:hover:not(:disabled) {
+  color: var(--color-text);
+}
