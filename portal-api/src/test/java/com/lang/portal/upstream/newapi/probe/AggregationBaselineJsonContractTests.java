@@ -37,6 +37,64 @@ class AggregationBaselineJsonContractTests {
   }
 
   @Test
+  void realRepositoryBaselineIsValidAgainstRealFixtures() {
+    Path repo = locateRepoRoot();
+    Path baseline = repo.resolve("docs/new-api/aggregation-baseline.json");
+    assertThat(baseline).as("baseline json exists at docs/new-api").exists();
+
+    AggregationBaselineValidator.ValidationResult result =
+        AggregationBaselineValidator.validate(baseline);
+
+    assertThat(result.errors())
+        .as("repository baseline must pass contract: %s", result.errors())
+        .isEmpty();
+  }
+
+  @Test
+  void realRepositoryManifestMatchesRealFixtures() {
+    Path repo = locateRepoRoot();
+    Path samples = repo.resolve("docs/new-api/samples/aggregation");
+    assertThat(samples).as("samples dir exists").isDirectory();
+
+    AggregationManifestValidator.ValidationResult result =
+        AggregationManifestValidator.validate(samples);
+
+    assertThat(result.errors())
+        .as("repository manifest must match on-disk fixtures: %s", result.errors())
+        .isEmpty();
+  }
+
+  @Test
+  void realRepositoryFixturesContainNoSensitiveContent() throws Exception {
+    Path repo = locateRepoRoot();
+    Path samples = repo.resolve("docs/new-api/samples/aggregation");
+    AggregationSensitiveScanner scanner = new AggregationSensitiveScanner();
+    try (var stream = Files.list(samples)) {
+      for (Path p : stream.filter(p -> p.getFileName().toString().endsWith(".json")).toList()) {
+        if ("manifest.json".equals(p.getFileName().toString())) {
+          continue;
+        }
+        JsonNode node = MAPPER.readTree(Files.newInputStream(p));
+        var result = scanner.scan(node);
+        assertThat(result.clean())
+            .as("fixture %s contains sensitive content: %s", p.getFileName(), result.violations())
+            .isTrue();
+      }
+    }
+  }
+
+  private static Path locateRepoRoot() {
+    Path dir = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
+    while (dir != null && !Files.isDirectory(dir.resolve("docs/new-api"))) {
+      dir = dir.getParent();
+    }
+    if (dir == null) {
+      throw new IllegalStateException("cannot locate repo root from " + System.getProperty("user.dir"));
+    }
+    return dir;
+  }
+
+  @Test
   void rejectsMissingBaselineVersion() throws Exception {
     seedSamples(tempDir);
     Path p = tempDir.resolve("baseline.json");

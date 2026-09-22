@@ -1,0 +1,52 @@
+{
+  "baselineVersion": "p2-2026-09-22-a",
+  "frozen": {"release": "v0.13.2", "commit": "bee339d279ccecbf8c8a89e14ddbbd902f78bd5d", "image": "calciumion/new-api:v0.13.2"},
+  "measuredAt": "2026-09-22T08:51:59.490037Z",
+  "environment": "本地 Docker Compose 隔离环境；New API 回环地址。",
+  "interfaces": [
+    {"id":"log-self","route":"/api/log/self","method":"GET","auth":"session","结论":"已验证","sampleRefs":["samples/aggregation/log-self.nonempty.json","samples/aggregation/log-self.empty.json","samples/aggregation/log-self.unauth.json","samples/aggregation/log-self.bad-page.json"]},
+    {"id":"log-self-stat","route":"/api/log/self/stat","method":"GET","auth":"session","结论":"存在差异","sampleRefs":["samples/aggregation/log-self-stat.nonempty.json","samples/aggregation/log-self-stat.empty.json","samples/aggregation/log-self-stat.unauth.json","samples/aggregation/log-self-stat.bad-time.json","samples/aggregation/log-self-stat.adjacent.json"]},
+    {"id":"data-self","route":"/api/data/self","method":"GET","auth":"session","结论":"条件可用","sampleRefs":["samples/aggregation/data-self.nonempty.json","samples/aggregation/data-self.empty.json","samples/aggregation/data-self.unauth.json","samples/aggregation/data-self.bad-time.json","samples/aggregation/data-self.hourly-edge.json","samples/aggregation/data-self.latency.json"]},
+    {"id":"user-self","route":"/api/user/self","method":"GET","auth":"session","结论":"已验证","sampleRefs":["samples/aggregation/user-self.valid.json","samples/aggregation/user-self.unauth.json"]},
+    {"id":"topup","route":"/api/user/topup/self","method":"GET","auth":"session","结论":"条件可用","sampleRefs":["samples/aggregation/topup.empty.json","samples/aggregation/topup.unauth.json","samples/aggregation/topup.bad-page.json"]},
+    {"id":"pricing","route":"/api/pricing","method":"GET","auth":"anonymous-or-session","结论":"已验证","sampleRefs":["samples/aggregation/pricing.anon.json","samples/aggregation/pricing.auth.json","samples/aggregation/pricing.nonempty.json"]}
+  ],
+  "fields": [
+    {"id":"log-type","interface":"log-self","jsonPath":"$.data.items[*].type","type":"integer","unit":"日志类型","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-quota","interface":"log-self","jsonPath":"$.data.items[*].quota","type":"integer","unit":"quota","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-prompt-tokens","interface":"log-self","jsonPath":"$.data.items[*].prompt_tokens","type":"integer","unit":"tokens","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-completion-tokens","interface":"log-self","jsonPath":"$.data.items[*].completion_tokens","type":"integer","unit":"tokens","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-use-time","interface":"log-self","jsonPath":"$.data.items[*].use_time","type":"integer","unit":"seconds","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-is-stream","interface":"log-self","jsonPath":"$.data.items[*].is_stream","type":"boolean","unit":"布尔","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-token-id","interface":"log-self","jsonPath":"$.data.items[*].token_id","type":"integer","unit":"标识","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-request-id","interface":"log-self","jsonPath":"$.data.items[*].request_id","type":"string","unit":"字符串","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-model-name","interface":"log-self","jsonPath":"$.data.items[*].model_name","type":"string","unit":"字符串","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"已验证"},
+    {"id":"log-first-token-time","interface":"log-self","jsonPath":"$.data.items[*].first_token_time","type":"integer","unit":"毫秒","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"不可用"},
+    {"id":"log-protocol","interface":"log-self","jsonPath":"$.data.items[*].protocol","type":"string","unit":"字符串","sampleRef":"samples/aggregation/log-self.nonempty.json","结论":"不可用"},
+    {"id":"stat-quota","interface":"log-self-stat","jsonPath":"$.data.quota","type":"integer","unit":"quota","sampleRef":"samples/aggregation/log-self-stat.nonempty.json","结论":"存在差异"},
+    {"id":"stat-rpm","interface":"log-self-stat","jsonPath":"$.data.rpm","type":"integer","unit":"次/分","sampleRef":"samples/aggregation/log-self-stat.nonempty.json","结论":"存在差异"},
+    {"id":"stat-tpm","interface":"log-self-stat","jsonPath":"$.data.tpm","type":"integer","unit":"tokens/分","sampleRef":"samples/aggregation/log-self-stat.nonempty.json","结论":"存在差异"},
+    {"id":"hourly-data","interface":"data-self","jsonPath":"$.data[*]","type":"array","unit":"小时桶","sampleRef":"samples/aggregation/data-self.nonempty.json","结论":"条件可用"},
+    {"id":"profile-quota","interface":"user-self","jsonPath":"$.data.quota","type":"integer","unit":"quota","sampleRef":"samples/aggregation/user-self.valid.json","结论":"已验证"},
+    {"id":"profile-used-quota","interface":"user-self","jsonPath":"$.data.used_quota","type":"integer","unit":"quota","sampleRef":"samples/aggregation/user-self.valid.json","结论":"已验证"},
+    {"id":"profile-status","interface":"user-self","jsonPath":"$.data.status","type":"integer","unit":"枚举","sampleRef":"samples/aggregation/user-self.valid.json","结论":"已验证"},
+    {"id":"topup-record","interface":"topup","jsonPath":"$.data.items[*]","type":"object","unit":"记录","sampleRef":"samples/aggregation/topup.empty.json","结论":"条件可用"},
+    {"id":"pricing-data","interface":"pricing","jsonPath":"$.data.data[*]","type":"object","unit":"价格项","sampleRef":"samples/aggregation/pricing.anon.json","结论":"已验证"},
+    {"id":"pricing-vendors","interface":"pricing","jsonPath":"$.data.vendors[*]","type":"object","unit":"厂商","sampleRef":"samples/aggregation/pricing.anon.json","结论":"已验证"},
+    {"id":"pricing-group-ratio","interface":"pricing","jsonPath":"$.data.group_ratio","type":"object","unit":"倍率","sampleRef":"samples/aggregation/pricing.anon.json","结论":"已验证"},
+    {"id":"pricing-model-ratio","interface":"pricing","jsonPath":"$.data.data[*].model_ratio","type":"number","unit":"倍率","sampleRef":"samples/aggregation/pricing.anon.json","结论":"已验证"},
+    {"id":"pricing-model-price","interface":"pricing","jsonPath":"$.data.data[*].model_price","type":"number","unit":"美元","sampleRef":"samples/aggregation/pricing.anon.json","结论":"已验证"},
+    {"id":"pricing-completion-ratio","interface":"pricing","jsonPath":"$.data.data[*].completion_ratio","type":"number","unit":"倍率","sampleRef":"samples/aggregation/pricing.anon.json","结论":"已验证"}
+  ],
+  "metrics": [
+    {"id":"request-count","名称":"请求总数","权威来源":"log-self","分子":"type=2 或 type=5 日志条数","分母":"无","结论":"条件可用"},
+    {"id":"token-usage","名称":"Token 用量","权威来源":"log-self","分子":"prompt_tokens + completion_tokens 求和","分母":"无","结论":"已验证"},
+    {"id":"spend","名称":"消费总额","权威来源":"log-self.quota","分子":"type=2 日志 quota 求和","分母":"quotaPerUsd（未冻结）","结论":"条件可用"},
+    {"id":"active-key","名称":"活跃 Key","权威来源":"log-self.token_id","分子":"去重 token_id 计数","分母":"无","结论":"已验证"},
+    {"id":"success-rate","名称":"成功率","权威来源":"log-self","分子":"type=2 条数","分母":"type=2 + type=5 条数（type=5 是否算失败待裁决）","结论":"条件可用"},
+    {"id":"average-latency","名称":"平均延迟","权威来源":"log-self.use_time","分子":"use_time 求和","分母":"type=2 条数","结论":"已验证"}
+  ],
+  "ledger": {"充值":{"方向":"入","结论":"条件可用"},"消费":{"方向":"出","结论":"条件可用"},"退款":{"方向":"未知","结论":"不可用"}},
+  "timeRules": {"时间单位":"Unix 秒；以样例为证","边界":"Portal 使用 [startTime,endTime)","结论":"条件可用"},
+  "moneyRules": {"quotaPerUsd":"未知，待独立换算证据","累计阶段":"BigDecimal 原始 quota 累计","舍入":"展示阶段舍入","结论":"条件可用"}
+}

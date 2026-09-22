@@ -1,0 +1,4 @@
+{
+  "message" : "Unauthorized, not logged in and no access token provided",
+  "success" : false
+}
