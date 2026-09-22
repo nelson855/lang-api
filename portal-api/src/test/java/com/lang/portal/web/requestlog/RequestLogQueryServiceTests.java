@@ -44,7 +44,8 @@ class RequestLogQueryServiceTests {
         3000L,
         true,
         500000L,
-        "req-1");
+        "req-1",
+        9L);
     when(logClient.listSuccess(eq(SESSION), any(NewApiLogQuery.class)))
         .thenReturn(new NewApiLogPage(1, List.of(record)));
 

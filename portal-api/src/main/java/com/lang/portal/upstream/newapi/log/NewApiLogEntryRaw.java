@@ -14,4 +14,5 @@ public record NewApiLogEntryRaw(
     @JsonProperty("completion_tokens") Long completionTokens,
     @JsonProperty("use_time") Long useTime,
     @JsonProperty("is_stream") Boolean stream,
-    @JsonProperty("request_id") String requestId) {}
+    @JsonProperty("request_id") String requestId,
+    @JsonProperty("token_id") Long tokenId) {}

@@ -39,6 +39,7 @@ public class PortalPropertiesValidator {
     validateApiKey(properties.apiKey());
     validateCatalog(properties.catalog());
     validateUsage(properties.portal().usage());
+    validateAggregation(properties.aggregation());
     validatePublicConfig(properties.portal().siteName(), properties.portal().enabledProtocols(), properties.portal().urlMap());
     validatePublication(publication, publicSite, legalContent);
     if (environment.containsProperty("lang.auth.cookie.domain")) {
@@ -276,6 +277,64 @@ public class PortalPropertiesValidator {
     }
     if (usage.maxPageSize() > 100) {
       throw new IllegalStateException("非法配置 lang.portal.usage.max-page-size：不得超过 100");
+    }
+  }
+
+  static void validateAggregation(PortalCommonProperties.Aggregation aggregation) {
+    if (!"p2-2026-09-22-a".equals(aggregation.baselineVersion())) {
+      throw new IllegalStateException(
+          "非法配置 lang.aggregation.baseline-version：不受支持的口径版本 " + aggregation.baselineVersion());
+    }
+    if (aggregation.pageSize() < 1 || aggregation.maxPages() < 1 || aggregation.maxRecords() < 1) {
+      throw new IllegalStateException("非法配置 lang.aggregation.max-records：页数与记录数必须为正数");
+    }
+    if (aggregation.maxRecords() < aggregation.pageSize()) {
+      throw new IllegalStateException("非法配置 lang.aggregation.max-records：最大记录数不得小于单页大小");
+    }
+    long capacity = (long) aggregation.pageSize() * (long) aggregation.maxPages();
+    if (aggregation.maxRecords() > capacity) {
+      throw new IllegalStateException("非法配置 lang.aggregation.max-records：最大记录数不得超过单页大小与最大页数乘积");
+    }
+    if (aggregation.singleCallTimeout() == null
+        || aggregation.singleCallTimeout().isZero()
+        || aggregation.singleCallTimeout().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.aggregation.single-call-timeout：必须为正数");
+    }
+    if (aggregation.totalTimeout() == null
+        || aggregation.totalTimeout().isZero()
+        || aggregation.totalTimeout().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.aggregation.total-timeout：必须为正数");
+    }
+    if (aggregation.totalTimeout().compareTo(aggregation.singleCallTimeout()) < 0) {
+      throw new IllegalStateException("非法配置 lang.aggregation.total-timeout：总预算不得短于单次调用超时");
+    }
+    if (aggregation.maxLiveLogRange() == null
+        || aggregation.maxLiveLogRange().isZero()
+        || aggregation.maxLiveLogRange().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.aggregation.max-live-log-range：必须为正数");
+    }
+    if (aggregation.cacheTtl() == null
+        || aggregation.cacheTtl().isZero()
+        || aggregation.cacheTtl().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.aggregation.cache.ttl：必须为正数");
+    }
+    if (aggregation.cacheMaximumSize() < 1) {
+      throw new IllegalStateException("非法配置 lang.aggregation.cache.maximum-size：必须为正数");
+    }
+    if (aggregation.fiveMinutesMaxSpan() == null
+        || aggregation.fiveMinutesMaxSpan().isZero()
+        || aggregation.fiveMinutesMaxSpan().isNegative()
+        || aggregation.hourMaxSpan() == null
+        || aggregation.hourMaxSpan().isZero()
+        || aggregation.hourMaxSpan().isNegative()
+        || aggregation.dayMaxSpan() == null
+        || aggregation.dayMaxSpan().isZero()
+        || aggregation.dayMaxSpan().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.aggregation.granularity：粒度跨度必须为正数");
+    }
+    if (aggregation.fiveMinutesMaxSpan().compareTo(aggregation.hourMaxSpan()) > 0
+        || aggregation.hourMaxSpan().compareTo(aggregation.dayMaxSpan()) > 0) {
+      throw new IllegalStateException("非法配置 lang.aggregation.granularity：粒度跨度必须单调递增");
     }
   }
 

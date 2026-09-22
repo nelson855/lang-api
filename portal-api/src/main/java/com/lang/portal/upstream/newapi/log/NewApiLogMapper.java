@@ -38,7 +38,8 @@ public final class NewApiLogMapper {
           || entry.completionTokens() < 0
           || entry.useTime() == null
           || entry.useTime() < 0
-          || entry.useTime() > Long.MAX_VALUE / 1000L) {
+          || entry.useTime() > Long.MAX_VALUE / 1000L
+          || (entry.tokenId() != null && entry.tokenId() < 0)) {
         throw new IllegalArgumentException("日志条目非法");
       }
       return new NewApiLogRecord(
@@ -51,7 +52,8 @@ public final class NewApiLogMapper {
           entry.useTime() * 1000L,
           Boolean.TRUE.equals(entry.stream()),
           entry.quota(),
-          blankToNull(entry.requestId()));
+          blankToNull(entry.requestId()),
+          entry.tokenId());
     } catch (UpstreamException e) {
       throw e;
     } catch (Exception e) {
