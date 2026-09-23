@@ -102,4 +102,68 @@ describe('请求日志页面交互', () => {
     await user.click(screen.getByRole('button', { name: '重试' }));
     expect(await screen.findAllByText(/暂无数据/)).not.toHaveLength(0);
   });
+
+  it('Dashboard 下钻：URL 参数完整传递，显示“Dashboard 所选范围”', async () => {
+    const seen: string[] = [];
+    mockList((path) => {
+      seen.push(path);
+      return emptyPage;
+    });
+    const startTime = '2026-09-22T00:00:00.000Z';
+    const endTime = '2026-09-23T00:00:00.000Z';
+    const url = `/dashboard/request-logs?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(
+      endTime,
+    )}&result=SUCCESS&keyName=prod-key&model=gpt-4&page=1`;
+
+    renderApp(<RequestLogsPage />, {
+      authStatus: 'authenticated',
+      authProfile: profile,
+      initialEntries: [url],
+    });
+
+    // 显示 Dashboard 下钻提示而非时间 preset 选择器
+    await screen.findByText(/Dashboard 所选范围/);
+
+    // URL 参数被完整传递给后端
+    await waitFor(() => {
+      const statsCalls = seen.filter((p) => p.includes('/portal/api/request-logs'));
+      expect(statsCalls.length).toBeGreaterThanOrEqual(1);
+      const lastCall = statsCalls[statsCalls.length - 1];
+      expect(lastCall).toContain('startTime=' + encodeURIComponent(startTime));
+      expect(lastCall).toContain('endTime=' + encodeURIComponent(endTime));
+      expect(lastCall).toContain('result=SUCCESS');
+      expect(lastCall).toContain('keyName=prod-key');
+      expect(lastCall).toContain('model=gpt-4');
+      expect(lastCall).toContain('page=1');
+    });
+  });
+
+  it('非法 URL 参数被规范化（result/page 回退，单边时间清空）', async () => {
+    const seen: string[] = [];
+    mockList((path) => {
+      seen.push(path);
+      return emptyPage;
+    });
+    const url =
+      '/dashboard/request-logs?result=INVALID&page=abc&startTime=' +
+      encodeURIComponent('2026-09-22T00:00:00.000Z');
+
+    renderApp(<RequestLogsPage />, {
+      authStatus: 'authenticated',
+      authProfile: profile,
+      initialEntries: [url],
+    });
+
+    await screen.findByText(/当前筛选没有请求记录/);
+    await waitFor(() => {
+      const lastCall = seen.filter((p) => p.includes('/portal/api/request-logs')).pop();
+      expect(lastCall).toBeDefined();
+      // result 回退 SUCCESS、page 回退 1
+      expect(lastCall).toContain('result=SUCCESS');
+      expect(lastCall).toContain('page=1');
+      // 单边时间被丢弃，不会发送给后端
+      expect(lastCall).not.toContain('startTime=');
+      expect(lastCall).not.toContain('endTime=');
+    });
+  });
 });

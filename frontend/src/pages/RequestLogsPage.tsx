@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 import { PortalApiError } from '../api/envelope';
 import type { RequestLog } from '../api/requestLogs';
 import { Empty } from '../components/feedback/Feedback';
@@ -15,6 +16,11 @@ import {
   withFirstPage,
   type NormalizedRequestLogsParams,
 } from '../features/requestLogs/requestLogsCache';
+import {
+  isDashboardDrilldownRange,
+  parseRequestLogsSearch,
+  serializeRequestLogsSearch,
+} from '../features/requestLogs/requestLogsUrl';
 import { handleRequestLogsQueryError, useRequestLogsQuery } from '../features/requestLogs/useRequestLogs';
 import { normalizeUsageRange } from '../features/usage/usageCache';
 import './RequestLogsPage.css';
@@ -37,14 +43,27 @@ export function RequestLogsPage() {
   const profile = useAuthProfile();
   const userId = profile?.id ?? 0;
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [keyInput, setKeyInput] = useState('');
-  const [modelInput, setModelInput] = useState('');
-  const [resultInput, setResultInput] = useState('SUCCESS');
-  const [timePreset, setTimePreset] = useState<TimePreset>('24h');
-  const [submitted, setSubmitted] = useState<NormalizedRequestLogsParams>(() =>
-    normalizeRequestLogsParams({ page: 1, pageSize: PAGE_SIZE, result: 'SUCCESS' }),
+  // URL 即筛选状态：进入、刷新、前进/后退都从 URL 恢复。
+  // parseRequestLogsSearch 会把非法参数规范化，保证后续查询不发送非法请求。
+  const submitted: NormalizedRequestLogsParams = useMemo(
+    () => normalizeRequestLogsParams(parseRequestLogsSearch(searchParams.toString())),
+    [searchParams],
   );
+
+  // 输入框本地草稿：仅在提交时覆盖 URL。
+  const [keyInput, setKeyInput] = useState(submitted.keyName);
+  const [modelInput, setModelInput] = useState(submitted.model);
+  const [resultInput, setResultInput] = useState(submitted.result);
+  const [timePreset, setTimePreset] = useState<TimePreset>('24h');
+
+  // URL 变化（前进/后退、Dashboard 下钻）时同步草稿。
+  useEffect(() => {
+    setKeyInput(submitted.keyName);
+    setModelInput(submitted.model);
+    setResultInput(submitted.result);
+  }, [submitted.keyName, submitted.model, submitted.result]);
 
   const query = useRequestLogsQuery(userId, submitted);
   const data = query.data?.data;
@@ -56,24 +75,50 @@ export function RequestLogsPage() {
     }
   }, [queryClient, userId, error]);
 
+  // 首次进入：若 URL 携带非法参数被规范化，使用 replace 回写，不留下脏历史。
+  useEffect(() => {
+    const rawSearch = searchParams.toString();
+    const normalized = serializeRequestLogsSearch(submitted);
+    const normalizedRaw = normalized.startsWith('?') ? normalized.slice(1) : normalized;
+    if (rawSearch !== normalizedRaw) {
+      setSearchParams(new URLSearchParams(normalizedRaw), { replace: true });
+    }
+    // 仅在 URL 文本变化时对比一次，避免 setSearchParams 触发循环。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const submit = () => {
-    const end = Date.now();
-    const start = end - PRESET_HOURS[timePreset] * 60 * 60 * 1000;
-    const range = normalizeUsageRange(new Date(start).toISOString(), new Date(end).toISOString(), end);
-    setSubmitted(
-      withFirstPage(
-        normalizeRequestLogsParams({
-          page: 1,
-          pageSize: PAGE_SIZE,
-          result: resultInput,
-          keyName: keyInput,
-          model: modelInput,
-          startTime: range.startTime,
-          endTime: range.endTime,
-        }),
-      ),
+    // 若当前是 Dashboard 下钻范围（URL 自带 startTime/endTime）且用户未改时间 preset，
+    // 保留 Dashboard 范围，仅覆盖 result/keyName/model。
+    let startTime = submitted.startTime;
+    let endTime = submitted.endTime;
+    if (!isDashboardDrilldownRange(submitted)) {
+      const end = Date.now();
+      const start = end - PRESET_HOURS[timePreset] * 60 * 60 * 1000;
+      const range = normalizeUsageRange(new Date(start).toISOString(), new Date(end).toISOString(), end);
+      startTime = range.startTime;
+      endTime = range.endTime;
+    }
+    const next = withFirstPage(
+      normalizeRequestLogsParams({
+        page: 1,
+        pageSize: PAGE_SIZE,
+        result: resultInput,
+        keyName: keyInput,
+        model: modelInput,
+        startTime,
+        endTime,
+      }),
     );
+    setSearchParams(new URLSearchParams(serializeRequestLogsSearch(next).replace(/^\?/, '')));
   };
+
+  const changePage = (next: number) => {
+    // 翻页只更新 page，保留其余筛选。
+    setSearchParams(new URLSearchParams(serializeRequestLogsSearch({ ...submitted, page: next }).replace(/^\?/, '')));
+  };
+
+  const isDrilldown = isDashboardDrilldownRange(submitted);
 
   const columns = useMemo(
     () => [
@@ -141,17 +186,26 @@ export function RequestLogsPage() {
         <label className="request-logs-field" htmlFor="request-logs-range">
           {t('pages.dashboard.rangeLabel')}
         </label>
-        <Select
-          id="request-logs-range"
-          density="compact"
-          value={timePreset}
-          onValueChange={(value) => setTimePreset(value as TimePreset)}
-          options={[
-            { value: '24h', label: t('pages.dashboard.range24h') },
-            { value: '7d', label: t('pages.dashboard.range7d') },
-            { value: '30d', label: t('pages.dashboard.range30d') },
-          ]}
-        />
+        {isDrilldown ? (
+          <p className="request-logs-drilldown" role="note">
+            {t('pages.requestLogs.drilldownRange', {
+              start: submitted.startTime,
+              end: submitted.endTime,
+            })}
+          </p>
+        ) : (
+          <Select
+            id="request-logs-range"
+            density="compact"
+            value={timePreset}
+            onValueChange={(value) => setTimePreset(value as TimePreset)}
+            options={[
+              { value: '24h', label: t('pages.dashboard.range24h') },
+              { value: '7d', label: t('pages.dashboard.range7d') },
+              { value: '30d', label: t('pages.dashboard.range30d') },
+            ]}
+          />
+        )}
         <Button type="button" intent="primary" onClick={submit}>
           {t('pages.requestLogs.search')}
         </Button>
@@ -205,12 +259,7 @@ export function RequestLogsPage() {
                 </article>
               ))}
             </div>
-            <Pagination
-              page={data.page}
-              pageSize={data.pageSize}
-              total={data.total}
-              onChange={(next) => setSubmitted({ ...submitted, page: next })}
-            />
+            <Pagination page={data.page} pageSize={data.pageSize} total={data.total} onChange={changePage} />
           </>
         )
       ) : null}
