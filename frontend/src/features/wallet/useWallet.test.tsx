@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { AUTH_PROFILE_QUERY_KEY } from '../../api/auth';
 import { PortalApiError } from '../../api/envelope';
+import { USAGE_QUERY_KEY } from '../../api/usage';
 import { WALLET_QUERY_KEY } from '../../api/wallet';
 import {
   handleWalletQueryError,
@@ -11,6 +12,8 @@ import {
   useTopupOptionsQuery,
   useTopupRecordsQuery,
 } from './useWallet';
+import { buildWalletRange } from './walletRange';
+import { consumptionSummaryKey, transactionsKey } from './walletAnalyticsCache';
 
 vi.mock('../../api/wallet', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../api/wallet')>();
@@ -91,5 +94,45 @@ describe('钱包查询钩子', () => {
     client.setQueryData([...WALLET_QUERY_KEY, 42, 'options'], { enabled: false });
     handleWalletQueryError(client, failure('UPSTREAM_ERROR'));
     expect(client.getQueryData([...WALLET_QUERY_KEY, 42, 'options'])).toEqual({ enabled: false });
+  });
+
+  it('任一只读请求 401 清除认证、余额、钱包、汇总与流水用户作用域缓存', () => {
+    const client = new QueryClient();
+    const range = buildWalletRange('24h', new Date('2026-09-10T08:00:00.000Z'), 'UTC');
+    const summary = consumptionSummaryKey(42, range);
+    const tx = transactionsKey(42, range, 'ALL', 1);
+
+    client.setQueryData(AUTH_PROFILE_QUERY_KEY, { id: 42 });
+    client.setQueryData([...USAGE_QUERY_KEY, 42, 'balance'], { amount: '1' });
+    client.setQueryData([...WALLET_QUERY_KEY, 42, 'options'], { enabled: false });
+    client.setQueryData(topupRecordsKey(42, 1, 20), { total: 0 });
+    client.setQueryData(summary, { total: '60' });
+    client.setQueryData(tx, { total: 1 });
+
+    handleWalletQueryError(client, failure('UNAUTHENTICATED'));
+
+    expect(client.getQueryData(AUTH_PROFILE_QUERY_KEY)).toBeUndefined();
+    expect(client.getQueryData([...USAGE_QUERY_KEY, 42, 'balance'])).toBeUndefined();
+    expect(client.getQueryData([...WALLET_QUERY_KEY, 42, 'options'])).toBeUndefined();
+    expect(client.getQueryData(topupRecordsKey(42, 1, 20))).toBeUndefined();
+    expect(client.getQueryData(summary)).toBeUndefined();
+    expect(client.getQueryData(tx)).toBeUndefined();
+  });
+
+  it('普通区域失败不清除其他成功数据', () => {
+    const client = new QueryClient();
+    const range = buildWalletRange('24h', new Date('2026-09-10T08:00:00.000Z'), 'UTC');
+    const summary = consumptionSummaryKey(42, range);
+    const tx = transactionsKey(42, range, 'ALL', 1);
+
+    client.setQueryData([...USAGE_QUERY_KEY, 42, 'balance'], { amount: '1' });
+    client.setQueryData(summary, { total: '60' });
+    client.setQueryData(tx, { total: 1 });
+
+    handleWalletQueryError(client, failure('UPSTREAM_ERROR'));
+
+    expect(client.getQueryData([...USAGE_QUERY_KEY, 42, 'balance'])).toEqual({ amount: '1' });
+    expect(client.getQueryData(summary)).toEqual({ total: '60' });
+    expect(client.getQueryData(tx)).toEqual({ total: 1 });
   });
 });

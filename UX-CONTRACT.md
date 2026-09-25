@@ -13,7 +13,7 @@
 | Capability | Canonical owner | Source of truth | Allowed variants | Verification |
 | --- | --- | --- | --- | --- |
 | Form | `FormField`、`Input` 与页面现有 mutation | 本合同与页面 schema | 登录 / 注册 / 编辑 | 组件测试 + 页面测试 |
-| Select/Listbox | 原生 `<select>` | 本合同与 `DESIGN.md` | native | 键盘 + 浏览器外观 |
+| Select/Listbox | 共享 Radix `Select`（`src/components/ui/Select.tsx`） | 该组件实现与组件测试 | compact / standard density、disabled 选项 | 组件测试 + 真实浏览器打开态 |
 | Date | 原生 `datetime-local` Input | 本合同 | native | 值传递 + 平台弹层 |
 | Scrollbar | `src/design/global.css` | `DESIGN.md` | 表格稳定 gutter | 样式守卫 + 浏览器外观 |
 | Toast | Toast/Feedback | 本合同 | success / info / warning / error | live-region 测试 |

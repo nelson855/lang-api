@@ -32,6 +32,17 @@ describe('Portal API 路径白名单', () => {
     expect(isPortalApiPath('/portal/api/%2Fevil')).toBe(false);
   });
 
+  it('查询值中的合法编码斜线不视为路径穿越', () => {
+    // IANA 时区等合法查询值经 URL 编码后含 %2F,不得误杀。
+    expect(isPortalApiPath('/portal/api/account/consumption-summary?timezone=Asia%2FShanghai')).toBe(true);
+    expect(() =>
+      validatePortalApiPath('/portal/api/account/consumption-summary?timezone=Asia%2FShanghai'),
+    ).not.toThrow();
+    expect(
+      buildPortalApiUrl('/portal/api/account/consumption-summary', { timezone: 'Asia/Shanghai' }),
+    ).toBe('/portal/api/account/consumption-summary?timezone=Asia%2FShanghai');
+  });
+
   it('拒绝非 Portal 路径与原始管理路径', () => {
     expect(isPortalApiPath('/api/models')).toBe(false);
     expect(isPortalApiPath('/portal/other')).toBe(false);

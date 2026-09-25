@@ -11,7 +11,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'desktop', testMatch: ['desktop.spec.ts', 'language.spec.ts'], use: { ...devices['Desktop Chrome'] } },
+    { name: 'desktop', testMatch: ['desktop.spec.ts', 'language.spec.ts', 'wallet.spec.ts'], use: { ...devices['Desktop Chrome'] } },
     {
       name: 'mobile-320',
       testMatch: ['mobile.spec.ts'],

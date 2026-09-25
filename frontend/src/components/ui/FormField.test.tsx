@@ -80,8 +80,8 @@ describe('Textarea 多行输入', () => {
   it('默认 resize:none 且支持密度切换', () => {
     renderWithLocale(
       <>
-        <Textarea aria-label="备注" />
-        <Textarea aria-label="紧凑备注" density="compact" />
+        <Textarea aria-label="备注" className="resize-none" />
+        <Textarea aria-label="紧凑备注" density="compact" className="resize-none" />
       </>,
     );
     expect(screen.getByRole('textbox', { name: '备注' })).toHaveClass('input-standard');
@@ -91,7 +91,7 @@ describe('Textarea 多行输入', () => {
   it('与 FormField 组合时错误可关联', () => {
     renderWithLocale(
       <FormField label="说明" error="说明过长">
-        <Textarea />
+        <Textarea className="resize-none" />
       </FormField>,
     );
     const textarea = screen.getByRole('textbox', { name: '说明' });
