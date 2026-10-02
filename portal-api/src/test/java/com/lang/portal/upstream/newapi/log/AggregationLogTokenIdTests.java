@@ -54,7 +54,7 @@ class AggregationLogTokenIdTests {
 
   @Test
   void realDesensitizedFixtureKeepsTokenIdPresence() throws Exception {
-    java.nio.file.Path repo = locateRepoRoot();
+    java.nio.file.Path repo = com.lang.portal.testsupport.AggregationEvidenceRoot.locate();
     java.nio.file.Path fixture = repo.resolve("docs/new-api/samples/aggregation/log-self.nonempty.json");
     assertThat(fixture).exists();
     com.fasterxml.jackson.databind.JsonNode root = MAPPER.readTree(java.nio.file.Files.newInputStream(fixture));
@@ -64,16 +64,5 @@ class AggregationLogTokenIdTests {
     for (com.fasterxml.jackson.databind.JsonNode item : items) {
       assertThat(item.has("token_id")).as("desensitized fixture must preserve token_id presence").isTrue();
     }
-  }
-
-  private static java.nio.file.Path locateRepoRoot() {
-    java.nio.file.Path dir = java.nio.file.Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
-    while (dir != null && !java.nio.file.Files.isDirectory(dir.resolve("docs/new-api"))) {
-      dir = dir.getParent();
-    }
-    if (dir == null) {
-      throw new IllegalStateException("cannot locate repo root");
-    }
-    return dir;
   }
 }

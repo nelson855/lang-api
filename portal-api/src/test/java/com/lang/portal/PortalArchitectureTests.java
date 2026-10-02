@@ -1,16 +1,37 @@
 package com.lang.portal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import org.junit.jupiter.api.Test;
 
 class PortalArchitectureTests {
 
   private final JavaClasses classes =
-      new ClassFileImporter().importPackages("com.lang.portal");
+      new ClassFileImporter()
+          .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+          .importPackages("com.lang.portal");
+
+  @Test
+  void importedClassesComeOnlyFromProductionOutput() {
+    assertThat(classes).isNotEmpty();
+    assertThat(classes).allSatisfy(javaClass ->
+        assertThat(javaClass.getSource().orElseThrow().getUri().toString())
+            .doesNotContain("/test-classes/"));
+  }
+
+  @Test
+  void webReturnRuleStillRejectsUpstreamTypes() {
+    JavaClasses violations = new ClassFileImporter().importPackages("com.lang.portal.web.account.aggregation");
+    assertThatThrownBy(() -> webReturnRule().check(violations))
+        .isInstanceOf(AssertionError.class).hasMessageContaining("上游日志与传输类型");
+  }
 
   @Test
   void controllersAndServicesMustNotDependOnUpstreamDtoOrTransport() {
@@ -45,7 +66,11 @@ class PortalArchitectureTests {
 
   @Test
   void webLayerMustNotReturnUpstreamLogOrDtoTypes() {
-    ArchRuleDefinition.noMethods()
+    webReturnRule().check(classes);
+  }
+
+  private static com.tngtech.archunit.lang.ArchRule webReturnRule() {
+    return ArchRuleDefinition.noMethods()
         .that().areDeclaredInClassesThat().resideInAnyPackage("..web..")
         .should().haveRawReturnType(new DescribedPredicate<JavaClass>("上游日志与传输类型") {
           @Override
@@ -56,7 +81,6 @@ class PortalArchitectureTests {
                 || pkg.contains(".upstream.newapi.transport");
           }
         })
-        .allowEmptyShould(false)
-        .check(classes);
+        .allowEmptyShould(false);
   }
 }

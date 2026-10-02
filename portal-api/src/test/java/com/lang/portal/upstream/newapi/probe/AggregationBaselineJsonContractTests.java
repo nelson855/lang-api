@@ -38,7 +38,7 @@ class AggregationBaselineJsonContractTests {
 
   @Test
   void realRepositoryBaselineIsValidAgainstRealFixtures() {
-    Path repo = locateRepoRoot();
+    Path repo = com.lang.portal.testsupport.AggregationEvidenceRoot.locate();
     Path baseline = repo.resolve("docs/new-api/aggregation-baseline.json");
     assertThat(baseline).as("baseline json exists at docs/new-api").exists();
 
@@ -52,7 +52,7 @@ class AggregationBaselineJsonContractTests {
 
   @Test
   void realRepositoryManifestMatchesRealFixtures() {
-    Path repo = locateRepoRoot();
+    Path repo = com.lang.portal.testsupport.AggregationEvidenceRoot.locate();
     Path samples = repo.resolve("docs/new-api/samples/aggregation");
     assertThat(samples).as("samples dir exists").isDirectory();
 
@@ -66,7 +66,7 @@ class AggregationBaselineJsonContractTests {
 
   @Test
   void realRepositoryFixturesContainNoSensitiveContent() throws Exception {
-    Path repo = locateRepoRoot();
+    Path repo = com.lang.portal.testsupport.AggregationEvidenceRoot.locate();
     Path samples = repo.resolve("docs/new-api/samples/aggregation");
     AggregationSensitiveScanner scanner = new AggregationSensitiveScanner();
     try (var stream = Files.list(samples)) {
@@ -83,16 +83,6 @@ class AggregationBaselineJsonContractTests {
     }
   }
 
-  private static Path locateRepoRoot() {
-    Path dir = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
-    while (dir != null && !Files.isDirectory(dir.resolve("docs/new-api"))) {
-      dir = dir.getParent();
-    }
-    if (dir == null) {
-      throw new IllegalStateException("cannot locate repo root from " + System.getProperty("user.dir"));
-    }
-    return dir;
-  }
 
   @Test
   void rejectsMissingBaselineVersion() throws Exception {

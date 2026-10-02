@@ -77,7 +77,7 @@ modelRef = base64url_without_padding(UTF-8(catalogModel.id))
 
 详情直接引用快照内 `CatalogModel.pricing`，避免第二次计算导致舍入或 null 判定不一致。增强价格不混入 `CatalogPricing`，而是独立项目数组；允许的 type 和单位由 Portal 枚举限定，同一 type/currency/unit 必须唯一，任何负数、冲突、单位缺失或部分映射都使详情快照加载失败。
 
-当前 `/api/pricing` 的 ratio 与固定价只能支撑既有基础价格，不能证明 cache/image/audio/video/search 价格，因此 `enhancedPricing=null`。真实调用核对属于证据闭环：基础价按 Token 或请求数核对，用户组及特殊计费维度单列，不能为了通过核对把差额塞入基础价。
+当前 `/api/pricing` 的 ratio 与固定价只能支撑既有基础价格，不能证明 cache/image/audio/video/search 价格，因此 `enhancedPricing=null`。当前基线只要求对已接入的 TOKEN 模型完成真实调用核对；`REQUEST` 枚举和值对象保留为目录兼容能力，但没有真实固定按次来源时不得以静态值或人为配置冒充证据。后续接入图片生成、搜索或其他固定按次能力时，才按该来源的单位和语义单独补 REQUEST 样本。用户组及特殊计费维度单列，不能为了通过核对把差额塞入基础价。
 
 **替代方案：** 返回空增强价格数组或值为 0 的项目。两者都会被下游解释为已确认不收费，与“尚无证据”不同，因此不采用。
 
@@ -95,7 +95,8 @@ modelRef = base64url_without_padding(UTF-8(catalogModel.id))
 - **[列表与后续请求可能跨越 TTL 边界]** → 三个响应都返回 `pricingVersion`；同一快照内部严格一致，客户端检测版本差异后成对重取，不承诺跨 HTTP 请求事务。
 - **[当前详情新增字段大多为 null]** → 页面以“暂无可靠数据”表达，不用空集合或 false 美化；新证据必须通过新 baseline 和显式适配逐项开放。
 - **[供应商名称变化会改变筛选 value]** → 当前唯一可信公开标识就是名称；通过 pricingVersion 检测快照变化，不暴露不稳定的上游 vendor ID。
-- **[现有基础 USD 换算仍缺 P2 独立 quotaPerUsd 证据]** → 本变更不扩大其语义，只保证详情与列表一致；真实扣费任务未完成时阶段保持受阻。
+- **[现有基础 USD 换算仍缺 P2 独立 quotaPerUsd 证据]** → 本变更不扩大其语义，只保证详情与列表一致；当前 TOKEN 真实扣费任务未完成时阶段保持受阻。
+- **[当前无固定按次模型来源]** → REQUEST 契约和映射分支保持兼容但不对外伪称已验证；不为满足测试而接入无业务需求的供应商。
 - **[单快照增加索引和详情对象的内存]** → 当前目录有界且缓存容量仍为 1；索引引用不可变 DTO，禁止缓存原始上游响应与重复敏感结构。
 
 ## Migration Plan
@@ -103,5 +104,12 @@ modelRef = base64url_without_padding(UTF-8(catalogModel.id))
 1. 先增加模型引用编解码器、详情/供应商 DTO 与纯映射测试，冻结 JSON、空值和字段白名单。
 2. 将现有缓存内部值迁移为不可变 `CatalogSnapshot`，保持 `GET /portal/api/models` 输出逐字兼容，再增加详情索引和供应商派生。
 3. 增加两个匿名 GET 路由、安全规则、统一错误与纵向 MockWebServer 测试，验证三类请求共享一次加载。
-4. 补充接口文档和阶段总纲，保存能取得的真实扣费脱敏证据；证据不足的能力与阶段状态继续标记为受阻。
+4. 补充接口文档和阶段总纲，保存当前 TOKEN 模型能取得的真实扣费脱敏证据；无可信来源的增强能力与 REQUEST 样本继续保持未验证，不新增静态值或无业务需求的供应商。
 5. 部署 Portal API 后由 P2-08 前端接入。回滚到上一版本只会移除两个新 GET 路由，不涉及数据库、配置或上游数据恢复。
+
+## 2026-10-02 最终验证结果
+
+- `portal-api` 全量测试与最终根工程 `verify` 成功：后端 752 项（0 失败、0 错误、1 个既有 opt-in 跳过），包含 67 项 catalog 测试；前端 100 个文件、582 项通过。
+- Docker 完整构建成功并按明确授权更新本地 Compose；五服务健康、既有数据卷保留。
+- 列表、`deepseek-v4-flash` 详情与 providers 均 200、同 `pricingVersion`，列表/详情基础价格完全一致（TOKEN/USD/PER_MILLION_TOKENS，输入与输出均 75.0）。使用既有脱敏真实证据复核 `(108 + 252) × 75 / 1,000,000 = 0.027`，与扣费 0.027000 一致，6.1 与 7.1 已完成。
+- 所有增强字段及四项能力仍为 null；未将公开上游资料映射到当前订阅渠道。quotaPerUsd 独立证据与增强来源缺口继续在阶段文档记录，不由本次基础价格交叉核对自动填补。

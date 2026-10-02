@@ -1,6 +1,6 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { PortalApiError } from '../api/envelope';
 import { portalRequest } from '../api/portalClient';
 import { renderApp } from '../test/renderApp';
@@ -47,7 +47,12 @@ describe('Dashboard 页面迁移闭环', () => {
     vi.mocked(portalRequest).mockReset();
   });
 
-  it('成功展示余额与六指标，不调用旧用量接口', async () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('时间戳含 01.000 时仍成功展示余额与六指标，不调用旧用量接口', async () => {
+    vi.setSystemTime(new Date('2026-10-02T09:53:01.000Z'));
     vi.mocked(portalRequest).mockImplementation(async (path: string) => {
       if (path.includes('/portal/api/public-config')) {
         return { data: { siteName: '测试站', apiBaseUrls: [] }, requestId: 'req-d' };
@@ -64,7 +69,7 @@ describe('Dashboard 页面迁移闭环', () => {
     renderApp(<DashboardPage />, { authStatus: 'authenticated', authProfile: profile });
 
     // 余额可见
-    expect(await screen.findByText(/1\.0/)).toBeInTheDocument(); // 余额 display
+    expect(await within(await screen.findByRole('region', { name: '当前余额' })).findByText(/1\.0/)).toBeInTheDocument(); // 余额 display
 
     // 可用指标（Token 用量 90）可见
     expect(await screen.findByText('90')).toBeInTheDocument();
@@ -97,7 +102,7 @@ describe('Dashboard 页面迁移闭环', () => {
     const user = userEvent.setup();
     renderApp(<DashboardPage />, { authStatus: 'authenticated', authProfile: profile });
 
-    expect(await screen.findByText(/1\.0/)).toBeInTheDocument(); // 余额还在
+    expect(await within(await screen.findByRole('region', { name: '当前余额' })).findByText(/1\.0/)).toBeInTheDocument(); // 余额还在
     // 统计错误区域出现
     expect(await screen.findByText(/统计数据加载失败/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /重试/ }));

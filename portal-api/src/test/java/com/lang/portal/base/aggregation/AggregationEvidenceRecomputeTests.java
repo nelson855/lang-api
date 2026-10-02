@@ -19,13 +19,7 @@ class AggregationEvidenceRecomputeTests {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private JsonNode fixtureItems() throws Exception {
-    Path dir = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
-    while (dir != null && !Files.isDirectory(dir.resolve("docs/new-api"))) {
-      dir = dir.getParent();
-    }
-    if (dir == null) {
-      throw new IllegalStateException("cannot locate repo root");
-    }
+    Path dir = com.lang.portal.testsupport.AggregationEvidenceRoot.locate();
     JsonNode root =
         MAPPER.readTree(
             Files.newInputStream(dir.resolve("docs/new-api/samples/aggregation/log-self.nonempty.json")));

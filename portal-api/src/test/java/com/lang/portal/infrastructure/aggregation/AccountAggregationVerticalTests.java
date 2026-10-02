@@ -194,7 +194,9 @@ class AccountAggregationVerticalTests extends NewApiContractTestBase {
         new AccountConsumptionSnapshotService(
             logClient, props, new AggregationMetrics(new SimpleMeterRegistry()));
     AggregationQueryContext tooWide =
-        ctx(props, "2026-08-01T00:00:00Z", "2026-09-10T00:00:00Z");
+        AggregationQueryContext.of(
+            "2026-09-01T00:00:00Z", "2026-09-09T00:00:00Z", "UTC",
+            AggregationGranularity.DAY, props.aggregation().baselineVersion(), props.aggregation());
     assertThatThrownBy(() -> snapshots.loadSnapshot(SESSION, tooWide, FIXED))
         .isInstanceOf(PortalException.class)
         .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.INVALID_ARGUMENT);
