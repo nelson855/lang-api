@@ -1,3 +1,4 @@
+import { MODEL_ID_MAX_LENGTH } from '../../api/models';
 import type { CatalogModel } from '../../api/models';
 
 function fold(value: string): string {
@@ -33,16 +34,47 @@ export function providerOptions(models: CatalogModel[]): string[] {
   return [...set].sort();
 }
 
+/**
+ * 文档页的模型选择。
+ *
+ * 显式给出的 `model` 参数必须精确存在于目录中：未知、非法或已下线时都不生成示例，
+ * 不静默替换为其他模型。只有未指定参数时，才回退到按 ID 排序的首个可用模型。
+ */
+export type SelectedModelResolution =
+  | { kind: 'default'; model: CatalogModel | null }
+  | { kind: 'explicit'; model: CatalogModel }
+  | { kind: 'invalid' }
+  | { kind: 'unavailable' };
+
+function firstAvailable(models: CatalogModel[]): CatalogModel | null {
+  const sorted = [...models].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  return sorted.find((m) => m.availability === 'AVAILABLE') ?? null;
+}
+
 export function resolveSelectedModel(
   models: CatalogModel[],
   requested: string | null,
 ): CatalogModel | null {
-  const sorted = [...models].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  if (requested && requested.length <= 128) {
-    const hit = sorted.find((m) => m.id === requested);
-    if (hit && hit.availability === 'AVAILABLE') {
-      return hit;
-    }
+  const selection = resolveDocsModelSelection(models, requested);
+  return selection.kind === 'default' || selection.kind === 'explicit' ? selection.model : null;
+}
+
+export function resolveDocsModelSelection(
+  models: CatalogModel[],
+  requested: string | null,
+): SelectedModelResolution {
+  if (requested === null) {
+    return { kind: 'default', model: firstAvailable(models) };
   }
-  return sorted.find((m) => m.availability === 'AVAILABLE') ?? null;
+  if (requested.length === 0 || requested.length > MODEL_ID_MAX_LENGTH) {
+    return { kind: 'invalid' };
+  }
+  const hit = models.find((m) => m.id === requested);
+  if (!hit) {
+    return { kind: 'unavailable' };
+  }
+  if (hit.availability !== 'AVAILABLE') {
+    return { kind: 'unavailable' };
+  }
+  return { kind: 'explicit', model: hit };
 }

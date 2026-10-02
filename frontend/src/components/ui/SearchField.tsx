@@ -54,11 +54,13 @@ export function SearchField({
         onChange={onChange}
         disabled={disabled}
         onKeyDown={handleKeyDown}
-        onCompositionStart={() => {
+        onCompositionStart={(event) => {
           composingRef.current = true;
+          props.onCompositionStart?.(event);
         }}
-        onCompositionEnd={() => {
+        onCompositionEnd={(event) => {
           composingRef.current = false;
+          props.onCompositionEnd?.(event);
         }}
         className={['input', `input-${density}`, 'search-input'].join(' ')}
       />

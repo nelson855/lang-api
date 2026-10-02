@@ -49,3 +49,23 @@
 .region-list li { display: flex; justify-content: space-between; gap: 20px; padding: 18px; }
 .region-list code { color: var(--color-primary); }
 @media (width <= 768px) { .public-page { padding-top: 44px; } .home-hero { grid-template-columns: 1fr; min-height: auto; padding-top: 56px; } .home-section { padding-top: 64px; } .home-section-head { display: block; } .home-section-head p { margin-top: 12px; } .workflow-grid, .model-list, .region-list { grid-template-columns: 1fr; } .catalog-controls { grid-template-columns: 1fr; } }
+.catalog-result-count { margin: 0 0 12px; color: var(--color-text-muted); font-family: var(--font-mono); font-size: 0.75rem; }
+.catalog-consistency-note, .catalog-unknown-provider, .catalog-providers-error { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 14px; color: var(--color-text-muted); font-size: 0.875rem; }
+.catalog-providers-error p, .catalog-unknown-provider p { margin: 0; }
+.model-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.model-card-link { color: var(--color-primary); font-size: 0.875rem; font-weight: 700; }
+.copy-model-id { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.copy-model-id-status { color: var(--color-text-muted); font-size: 0.8125rem; }
+.copy-model-id-fallback { display: block; width: 100%; color: var(--color-text-muted); font-size: 0.75rem; overflow-wrap: anywhere; user-select: all; }
+.model-card-price { font-family: var(--font-mono); font-size: 0.8125rem; }
+.detail-back { display: inline-flex; margin: 20px 0 4px; color: var(--color-primary); font-size: 0.875rem; font-weight: 700; }
+.detail-state { display: grid; gap: 12px; justify-items: start; margin-top: 24px; }
+.detail-error { display: grid; gap: 12px; justify-items: start; margin-top: 24px; }
+.detail-stack { display: grid; gap: 18px; margin-top: 28px; }
+.detail-list { display: grid; grid-template-columns: minmax(140px, 220px) minmax(0, 1fr); gap: 8px 20px; margin: 0; }
+.detail-list dt { color: var(--color-text-muted); font-size: 0.8125rem; }
+.detail-list dd { margin: 0; overflow-wrap: anywhere; user-select: text; }
+.detail-note { margin: 14px 0 0; color: var(--color-text-muted); font-size: 0.8125rem; }
+.detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
+.detail-link { color: var(--color-primary); font-size: 0.875rem; font-weight: 700; }
+@media (width <= 768px) { .detail-list { grid-template-columns: 1fr; gap: 2px 0; } .detail-list dd { margin-bottom: 10px; } }

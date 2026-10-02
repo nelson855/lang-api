@@ -284,3 +284,166 @@ export async function mockAuthenticationApi(
     });
   });
 }
+
+export interface CatalogModelSeed {
+  id: string;
+  displayName?: string | null;
+  provider?: string | null;
+  pricing?: Record<string, unknown> | null;
+}
+
+export interface CatalogApiModes {
+  models?: 'ok' | 'empty' | 'fail';
+  providers?: 'ok' | 'empty' | 'fail' | 'version-conflict';
+  detail?: 'ok' | 'not-found' | 'fail' | 'contract-mismatch';
+  /** 列表与供应商使用的 pricingVersion，用于制造版本冲突。 */
+  modelsVersion?: string | null;
+  providersVersion?: string | null;
+}
+
+const CATALOG_TOKEN_PRICING = {
+  mode: 'TOKEN',
+  currency: 'USD',
+  unit: 'PER_MILLION_TOKENS',
+  input: '75.0',
+  output: '150.0',
+  request: null,
+};
+
+const CATALOG_SEEDS: CatalogModelSeed[] = [
+  { id: 'deepseek-v4-flash', provider: 'DeepSeek', pricing: CATALOG_TOKEN_PRICING },
+  { id: 'gpt-4o', provider: 'OpenAI', pricing: null },
+  { id: '中文/模型 v1', provider: 'DeepSeek', pricing: CATALOG_TOKEN_PRICING },
+];
+
+function catalogListModel(seed: CatalogModelSeed) {
+  return {
+    id: seed.id,
+    displayName: seed.displayName ?? null,
+    provider: seed.provider ?? null,
+    availability: 'AVAILABLE',
+    pricing: seed.pricing ?? null,
+  };
+}
+
+function catalogDetailModel(seed: CatalogModelSeed) {
+  return {
+    ...catalogListModel(seed),
+    contextWindowTokens: null,
+    maxOutputTokens: null,
+    inputModalities: null,
+    outputModalities: null,
+    capabilities: { toolCalling: null, reasoning: null, structuredOutput: null, attachments: null },
+    releaseDate: null,
+    description: null,
+    tags: null,
+    sortOrder: null,
+    enhancedPricing: null,
+  };
+}
+
+/** 与前端 modelRef 规则一致的 UTF-8 网址安全 Base64 无填充编码。 */
+export function encodeCatalogModelRef(id: string): string {
+  return Buffer.from(id, 'utf8').toString('base64url');
+}
+
+function catalogProviderOptions(seeds: CatalogModelSeed[]) {
+  const counts = new Map<string, number>();
+  for (const seed of seeds) {
+    if (seed.provider) {
+      counts.set(seed.provider, (counts.get(seed.provider) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([value, modelCount]) => ({ value, label: value, modelCount }));
+}
+
+export async function mockCatalogApis(
+  page: Page,
+  modes: CatalogApiModes = {},
+  seeds: CatalogModelSeed[] = CATALOG_SEEDS,
+) {
+  const {
+    models = 'ok',
+    providers = 'ok',
+    detail = 'ok',
+    modelsVersion = 'p2-2026-09-22-a',
+    providersVersion = modelsVersion,
+  } = modes;
+
+  await mockPublicConfig(page, {
+    siteName: 'E2E 站点',
+    apiBaseUrls: [{ protocol: 'OPENAI', url: 'https://api.example.test/v1' }],
+  });
+
+  await page.route('**/portal/api/models', (route) => {
+    if (models === 'fail') {
+      return route.fulfill({
+        status: 502,
+        contentType: 'application/json',
+        body: JSON.stringify({ requestId: 'req-e2e-catalog', error: { code: 'UPSTREAM_ERROR', message: '上游不可用' } }),
+      });
+    }
+    return route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        requestId: 'req-e2e-catalog',
+        data: {
+          pricingVersion: modelsVersion,
+          models: models === 'empty' ? [] : seeds.map(catalogListModel),
+        },
+      }),
+    });
+  });
+
+  await page.route('**/portal/api/model-providers', (route) => {
+    if (providers === 'fail') {
+      return route.fulfill({
+        status: 502,
+        contentType: 'application/json',
+        body: JSON.stringify({ requestId: 'req-e2e-catalog', error: { code: 'UPSTREAM_ERROR', message: '上游不可用' } }),
+      });
+    }
+    return route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        requestId: 'req-e2e-catalog',
+        data: {
+          pricingVersion: providers === 'version-conflict' ? 'p2-conflict' : providersVersion,
+          providers: providers === 'empty' ? [] : catalogProviderOptions(seeds),
+        },
+      }),
+    });
+  });
+
+  // 详情路由在列表路径之后注册，避免被 '**/portal/api/models' 吞掉。
+  await page.route('**/portal/api/models/*', (route) => {
+    if (detail === 'fail') {
+      return route.fulfill({
+        status: 502,
+        contentType: 'application/json',
+        body: JSON.stringify({ requestId: 'req-e2e-catalog', error: { code: 'UPSTREAM_ERROR', message: '上游不可用' } }),
+      });
+    }
+    const ref = decodeURIComponent(new URL(route.request().url()).pathname.split('/').pop() ?? '');
+    const seed = seeds.find((item) => encodeCatalogModelRef(item.id) === ref);
+    if (!seed || detail === 'not-found') {
+      return route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ requestId: 'req-e2e-catalog', error: { code: 'NOT_FOUND', message: '模型不存在' } }),
+      });
+    }
+    return route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        requestId: 'req-e2e-catalog',
+        data: {
+          pricingVersion: modelsVersion,
+          model: { ...catalogDetailModel(seed), ...(detail === 'contract-mismatch' ? { id: 'someone-else' } : {}) },
+        },
+      }),
+    });
+  });
+}

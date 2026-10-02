@@ -34,5 +34,10 @@ export function renderApp(ui: ReactElement, options: AppRenderOptions = {}) {
       </MemoryRouter>
     );
   }
-  return render(ui, { wrapper: Wrapper });
+  return Object.assign(render(ui, { wrapper: Wrapper }), { queryClient: client });
+}
+
+export interface AppRenderResult extends ReturnType<typeof render> {
+  /** 暴露查询客户端，便于用例预置缓存或核对跨响应状态。 */
+  queryClient: QueryClient;
 }
