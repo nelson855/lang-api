@@ -23,6 +23,26 @@ class AggregationPagedReaderTests {
   }
 
   @Test
+  void emptyResultConsumesOnePageAndNoRecords() {
+    AggregationReadBudget readBudget = budget(1, 2);
+    assertThat(AggregationPagedReader.readAll(readBudget, 2,
+        page -> new AggregationPagedReader.Page<String>(0, List.of()))).isEmpty();
+    assertThat(readBudget.usedPages()).isEqualTo(1);
+    assertThat(readBudget.usedRecords()).isZero();
+  }
+
+  @Test
+  void exactPageAndRecordLimitReturnsCompleteData() {
+    AggregationReadBudget readBudget = budget(2, 4);
+    assertThat(AggregationPagedReader.readAll(readBudget, 2,
+        page -> new AggregationPagedReader.Page<>(4,
+            page == 1 ? List.of("a", "b") : List.of("c", "d"))))
+        .containsExactly("a", "b", "c", "d");
+    assertThat(readBudget.usedPages()).isEqualTo(2);
+    assertThat(readBudget.usedRecords()).isEqualTo(4);
+  }
+
+  @Test
   void completeSinglePageIsReturned() {
     AggregationReadBudget readBudget = budget(10, 200);
     List<String> result =

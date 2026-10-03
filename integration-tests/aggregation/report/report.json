@@ -1,0 +1,240 @@
+{
+  "runId": "607a2a2f-c81b-49cb-9d42-18f7bee90e74",
+  "time": "2026-10-03T03:03:07.350441+00:00",
+  "suite": "all",
+  "checks": [
+    {
+      "id": "backend",
+      "expected": "后端时间、保护、缓存、安全、观测契约",
+      "actual": "exit=0",
+      "status": "PASS",
+      "reason": "命令执行完成",
+      "evidenceType": "controlled-contract",
+      "location": "portal-api/target/probe-raw/p210/backend.log"
+    },
+    {
+      "id": "frontend",
+      "expected": "前端加载、空、错误、不可用、部分与取消字段契约",
+      "actual": "exit=0",
+      "status": "PASS",
+      "reason": "命令执行完成",
+      "evidenceType": "controlled-contract",
+      "location": "portal-api/target/probe-raw/p210/frontend.log"
+    },
+    {
+      "id": "browser-contract",
+      "expected": "浏览器可控传输主流程及窄屏契约",
+      "actual": "exit=0",
+      "status": "PASS",
+      "reason": "命令执行完成",
+      "evidenceType": "controlled-contract",
+      "location": "portal-api/target/probe-raw/p210/browser-contract.log"
+    },
+    {
+      "id": "tool-tests",
+      "expected": "验收入口、判定、证据与性能分类自测",
+      "actual": "exit=0",
+      "status": "PASS",
+      "reason": "命令执行完成",
+      "evidenceType": "controlled-contract",
+      "location": "portal-api/target/probe-raw/p210/tool-tests.log"
+    },
+    {
+      "id": "observability",
+      "expected": "现有指标在真实聚合调用链产生，拒绝及HTTP计数含义明确",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "指标API与测试注册表已验证，但生产调用链未调用recordProtection；拒绝计数证据缺失，需后续观测变更",
+      "evidenceType": "source-and-controlled-contract",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "build",
+      "expected": "运行产物归属确认",
+      "actual": "见构建清单",
+      "status": "PASS",
+      "reason": "运行产物与前端摘要及非敏感配置核对",
+      "evidenceType": "real-build",
+      "location": "report.json#build"
+    },
+    {
+      "id": "unauthenticated",
+      "expected": "未登录受保护接口拒绝且监控不公开",
+      "actual": "[401, 401, 401, 401, 401, 401]",
+      "status": "PASS",
+      "reason": "匿名请求与监控关闭核验",
+      "evidenceType": "real-local",
+      "location": ""
+    },
+    {
+      "id": "identity",
+      "expected": "专用双用户身份隔离与清理恢复",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "browser-real",
+      "expected": "当前产物真实浏览器四页面及登录刷新",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "reconciliation",
+      "expected": "固定范围真实 Token、日志与定价对账",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "upstream-evidence",
+      "expected": "原阶段统计、金额、趋势、流水、时区、增强元数据证据",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "performance-smoke",
+      "expected": "真实 1h/24h/7d 冷热明细与 30d 保护",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "performance-baseline",
+      "expected": "代表性规模每范围各 20 次冷、热有效请求",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "performance-target",
+      "expected": "已确认负载、部署资源及正式性能目标比较",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    }
+  ],
+  "contractConclusion": "BLOCKED",
+  "releaseRequirements": [
+    {
+      "id": "P2-01",
+      "status": "BLOCKED",
+      "reason": "跨日/DST 上游证据、小时趋势、stat 时间过滤、流水与新基线未闭合",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-02",
+      "status": "BLOCKED",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-03",
+      "status": "BLOCKED",
+      "reason": "请求总数、成功率、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-04",
+      "status": "BLOCKED",
+      "reason": "双趋势、完整最近请求与原指标目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-05",
+      "status": "BLOCKED",
+      "reason": "正式金额、TOPUP/REFUND 与容量证据受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-06",
+      "status": "BLOCKED",
+      "reason": "真实充值/退款、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-07",
+      "status": "BLOCKED",
+      "reason": "增强元数据与增强计费可信来源缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-08",
+      "status": "BLOCKED",
+      "reason": "真实增强模型来源缺失，合成展示不解除阻塞",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09",
+      "status": "BLOCKED",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-10",
+      "status": "BLOCKED",
+      "reason": "真实环境、代表性规模、部署资源与正式性能目标缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09-protocol",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    },
+    {
+      "id": "P2-09-ttft",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    }
+  ],
+  "releaseConclusion": "BLOCKED",
+  "build": {
+    "status": "PASS",
+    "jarSha256": "88598f1586d21c2cb2cd7317fe5deeb39a5a72e94aa7fc29b7970771b9b22e7d",
+    "runningJarSha256": "88598f1586d21c2cb2cd7317fe5deeb39a5a72e94aa7fc29b7970771b9b22e7d",
+    "frontendEqual": true,
+    "frontendFiles": 58,
+    "frontendSha256": "161c78f34eca27b59b7f568872096b00d41df4de42c5eb2e990aa1b6e5a8f7e1",
+    "environment": "local-docker",
+    "profile": "dev",
+    "imageId": "sha256:97f13cbe0bcae7b92717ebca487550bde9e9d5ca44eaa187dd68cde86fb04f63",
+    "newApiImageId": "sha256:98361b3114f043f94ffd5affc457ee8d64923a0cc53e2824f2e727017ac098f1",
+    "newApiVersion": "calciumion/new-api:v0.13.2@sha256:0c6aa7afce4747f0fc4fab9c7934d7c2e4b69fda6844065acca6a5e1bf258506",
+    "newApiDigest": "calciumion/new-api@sha256:0c6aa7afce4747f0fc4fab9c7934d7c2e4b69fda6844065acca6a5e1bf258506",
+    "effectiveConfig": {
+      "lang.aggregation.baseline-version": "p2-2026-09-22-a",
+      "lang.aggregation.page-size": "20",
+      "lang.aggregation.max-pages": "10",
+      "lang.aggregation.max-records": "200",
+      "lang.aggregation.single-call-timeout": "5s",
+      "lang.aggregation.total-timeout": "30s",
+      "lang.aggregation.max-live-log-range": "168h",
+      "lang.aggregation.cache-ttl": "30s",
+      "lang.aggregation.cache-maximum-size": "1000",
+      "lang.aggregation.five-minutes-max-span": "24h",
+      "lang.aggregation.hour-max-span": "168h",
+      "lang.aggregation.day-max-span": "720h",
+      "management.endpoints.web.exposure.include": "health,info",
+      "management.endpoint.health.show-details": "never"
+    },
+    "configConfirmed": true
+  }
+}

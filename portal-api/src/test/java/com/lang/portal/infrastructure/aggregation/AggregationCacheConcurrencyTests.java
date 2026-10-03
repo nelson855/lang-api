@@ -37,7 +37,7 @@ class AggregationCacheConcurrencyTests {
             "usage-summary", "user-42", context("2026-09-01T00:00:00Z", "2026-09-01T02:00:00Z", "UTC"), Map.of());
     AtomicInteger loads = new AtomicInteger();
     CountDownLatch releaseLoader = new CountDownLatch(1);
-    int threads = 8;
+    int threads = 10;
     ExecutorService pool = Executors.newFixedThreadPool(threads);
     try {
       List<Future<List<String>>> futures = new ArrayList<>();
@@ -124,6 +124,14 @@ class AggregationCacheConcurrencyTests {
             shanghaiKey.filters());
     cache.get(futureBaselineKey, k -> "v" + loads.incrementAndGet());
 
-    assertThat(loads.get()).isEqualTo(5);
+    AggregationQueryContext nextRange = context("2026-09-02T00:00:00Z", "2026-09-02T02:00:00Z", "UTC");
+    AggregationCacheKey nextRangeKey = AggregationCacheKey.of("usage-summary", "user-42", nextRange, Map.of("model", "a"));
+    assertThat(cache.get(nextRangeKey, k -> "v" + loads.incrementAndGet())).isEqualTo("v6");
+    AggregationCacheKey hourKey = new AggregationCacheKey(
+        shanghaiKey.operation(), shanghaiKey.userId(), shanghaiKey.start(), shanghaiKey.end(),
+        AggregationGranularity.HOUR, shanghaiKey.zoneId(), shanghaiKey.baselineVersion(), shanghaiKey.filters());
+    assertThat(cache.get(hourKey, k -> "v" + loads.incrementAndGet())).isEqualTo("v7");
+    assertThat(cache.get(shanghaiKey, k -> "wrong")).isEqualTo("v1");
+    assertThat(loads.get()).isEqualTo(7);
   }
 }
