@@ -1,5 +1,7 @@
 package com.lang.portal.infrastructure.aggregation;
 
+import com.lang.portal.base.aggregation.ProtectReason;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;

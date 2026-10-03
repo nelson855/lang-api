@@ -21,7 +21,11 @@ python3 -m unittest discover -s integration-tests/aggregation -p 'test_*.py'
 
 当前 HTTP 测量仅能证明客户端延迟及响应分类；缓存命中、真实上游调用数、页数和记录规模若没有受控观测来源，保存 null/unknown，不能推断或发布典型规模基线。`performance.py` 只对有明确冷热观测、非负规模计数、代表性数据、部署资源确认且各范围冷热≥20有效样本计算最近秩 p50/p95（排序后第 ceil(n×p) 项）。小样本保留明细，基线及目标保持 BLOCKED。完整请求数/成功率、金额、趋势、TOPUP/REFUND、上游真实时区和增强元数据不因本地样本存在而解除阻塞。
 
-真实双身份、浏览器、固定范围对账尚需专用身份和适用证据；入口明确列出 BLOCKED，不接受任意外部 PASS JSON 覆盖结果。身份未提供时不尝试管理员账号或读取历史 Cookie。
+真实双身份`identity`已接通；浏览器、固定范围对账仍需适用证据。不接受任意外部PASS JSON覆盖结果。身份未提供时不尝试管理员账号或读取历史Cookie。
+
+身份检查通过`P210_IDENTITY_FILE`读取权限600的专用输入JSON，结构为两条记录，每条提供`username`、`password`、`sample_key_name`；最后一项是各自已存在真实成功日志的Key名称，不能用两个空账号替代。凭据文件必须位于受保护忽略目录。通过`P210_IDENTITY_START`与`--end`指定带时区、秒精度、不超过1小时且包含两条样本的同一窗口。`local`只有当前构建核对PASS后才运行身份检查；使用独立临时实例，通过该实例日志的真实log-self调用事件核验冷热缓存。同一固定窗口重复运行前应等待缓存TTL到期，或使用新隔离实例；不清空共享缓存。不新增供应商调用、额度分配或账号注册。
+
+适配独立登录，创建临时零额度Key，核对Key/成功日志/聚合和流水归属，检查伪造输入及退出旧Cookie重放；finally删除登记Key并清除客户端Cookie，保留账号和真实日志。清除Cookie与服务端撤销分别记录：旧Cookie仍有效时返回FAIL。`identity.json`只保存断言、次数、范围和恢复状态，扫描通过后才落盘；缺前提为BLOCKED，实际错误或清理失败为FAIL。受控`fail_after_keys=True`演练只证明Key清理和客户端Cookie清除，不能替代会话撤销。
 
 ## 报告与退出码
 
@@ -39,6 +43,6 @@ python3 -m unittest discover -s integration-tests/aggregation -p 'test_*.py'
 4. 应用回退先核对旧镜像ID与JAR摘要、对应前端资源及配置档案，按运维流程恢复旧镜像和配置，保留数据库、Redis与所有命名卷。本文不是执行发布的授权。
 5. 恢复后重新核对运行摘要、等待健康，验证登录刷新、Dashboard范围/不可用状态、钱包覆盖、模型价格与详情、日志筛选和匿名401，再运行受支持范围冷热冒烟及敏感扫描。禁止 `down -v`。统计基线升级或启用受阻能力必须另行设计。
 
-保护拒绝计数目前未接入生产调用链，observability项保持BLOCKED；这是待完成观测条件，不新增公开监控接口。
+`observability`已接通实际执行：运行`AggregationObservabilityChainTests`的16项双聚合调用链场景，检查拒绝、失败HTTP尝试、已接纳页/记录、缓存、共享加载、耗时与有限标签。只在本次测试通过并有注册表证据时返回PASS；断言失败为FAIL，工具或本次证据缺失为BLOCKED。安全扫描后的`observability.json`与报告保存在同一输出目录，原始诊断仍在忽略目录。计数定义见[逐项方案B1](../../docs/20_LANG-P2-10阻塞项与逐项推进方案.md)：HTTP尝试覆盖所有成功/错误log-self调用，逻辑读取只由聚合来源收口，二者不可互换。注册表是本地受控HTTP测试进程，不是运行容器或真实New API指标；不新增公开监控接口。
 
 原阶段差距、配置差异与测试复用见 [matrix.md](matrix.md)。本轮结果见 [results.md](results.md)。

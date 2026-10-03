@@ -46,6 +46,7 @@ class AuthenticationJourneyIntegrationTests {
   @Autowired private PortalCommonProperties properties;
   @Autowired private PublicationProperties publication;
   @MockitoBean private NewApiAuthenticationClient client;
+  @MockitoBean private com.lang.portal.infrastructure.session.PortalSessionStore sessionStore;
   @MockitoBean private com.lang.portal.web.legal.LegalContentService legalContent;
 
   @AfterEach
@@ -74,6 +75,7 @@ class AuthenticationJourneyIntegrationTests {
 
     doReturn(new NewApiLoginResult(SESSION, USER))
         .when(client).login(new com.lang.portal.upstream.newapi.auth.NewApiCredentials("ordinary", "correct-horse"));
+    doReturn("server-side-session-id").when(sessionStore).create("upstream-session", 42L);
     mvc.perform(authPost("/portal/api/auth/login", csrf)
             .content("{\"username\":\"ordinary\",\"password\":\"correct-horse\"}"))
         .andExpect(status().isOk())
@@ -81,16 +83,25 @@ class AuthenticationJourneyIntegrationTests {
 
     doReturn(USER).doReturn(USER).doThrow(new PortalException(PortalErrorCode.UNAUTHENTICATED))
         .when(client).currentUser(SESSION);
-    Cookie[] sessionCookies = {new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42")};
+    doReturn(new com.lang.portal.infrastructure.session.PortalSessionRecord(
+        "server-side-session-id", "upstream-session", 42L))
+        .when(sessionStore).find("server-side-session-id");
+    Cookie[] sessionCookies = {new Cookie("LANG_SESSION", "server-side-session-id"), new Cookie("LANG_UID", "42")};
     mvc.perform(get("/portal/api/profile").cookie(sessionCookies))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.role").doesNotExist());
     mvc.perform(authPost("/portal/api/auth/refresh", csrf).cookie(sessionCookies))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.email").value("ordinary@example.test"));
+
+    doReturn(true).when(sessionStore).delete("server-side-session-id");
     mvc.perform(authPost("/portal/api/auth/logout", csrf).cookie(sessionCookies))
         .andExpect(status().isOk());
+    verify(sessionStore).delete("server-side-session-id");
     verify(client).logout(SESSION);
+
+    // 服务端记录已删除：即使上游仍接受旧凭证，旧 Cookie 也必须失效。
+    doReturn(null).when(sessionStore).find("server-side-session-id");
     mvc.perform(get("/portal/api/profile").cookie(sessionCookies))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.error.code").value("UNAUTHENTICATED"));

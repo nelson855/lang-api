@@ -1,0 +1,20 @@
+{
+  "fullVerify": "FAIL",
+  "backend": {
+    "tests": 813,
+    "failures": 3,
+    "errors": 2,
+    "skipped": 1
+  },
+  "frontend": {
+    "testsPassed": 766,
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "packagingWithoutBackendTests": "PASS",
+  "acceptanceToolTests": {
+    "tests": 23,
+    "status": "PASS"
+  },
+  "scope": "本轮打包与采样；完整verify失败不影响记录实际HTTP冒烟，但不证明整体构建通过"
+}

@@ -61,12 +61,20 @@ services:
       # LANG-P1-07：本地 OPENAI Base URL 与网关模型站点保持一致，由 6.8 预检校验。
       PORTAL_ENABLED_PROTOCOLS: ${PORTAL_ENABLED_PROTOCOLS:-OPENAI}
       PORTAL_OPENAI_URL: ${PORTAL_OPENAI_URL:-http://api.localhost:${EDGE_HTTP_PORT:-8081}/v1}
+      # Portal 服务端会话的权威存储：退出即删除记录，使旧 Cookie 跨实例立即失效。
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:?请在 deploy/.env 设置 REDIS_PASSWORD}
+      SPRING_DATA_REDIS_DATABASE: 1
     depends_on:
       new-api:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - web
       - control
+      - data
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/actuator/health | grep -q '\"status\":\"UP\"' || exit 1"]
       interval: 15s

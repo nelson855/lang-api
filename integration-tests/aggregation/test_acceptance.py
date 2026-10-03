@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).with_name('acceptance.py')
 
@@ -50,10 +51,50 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual(states['P2-09-protocol'],'CANCELLED')
         self.assertEqual(self.module.conclusion(states.values()),'BLOCKED')
 
+    def test_observability_executes_current_chain_and_keeps_failures(self):
+        with patch.object(self.module, 'command_check', return_value=self.module.check('observability', 'metrics', 'FAIL')) as execute:
+            result = self.module.observability_check('metrics')
+            self.assertEqual(result['status'], 'FAIL')
+            self.assertIn('-Dtest=AggregationObservabilityChainTests', execute.call_args.args[2])
+
+    def test_observability_missing_current_evidence_stays_blocked(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(self.module, 'ROOT', Path(tmp)):
+            with patch.object(self.module, 'command_check', return_value=self.module.check('observability', 'metrics', 'PASS')):
+                self.assertEqual(self.module.observability_check('metrics')['status'], 'BLOCKED')
+
+    def test_observability_invalid_evidence_fails(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(self.module, 'ROOT', Path(tmp)):
+            def execute(*args):
+                source = Path(tmp) / 'portal-api/target/p210-observability.json'
+                source.parent.mkdir(parents=True)
+                source.write_text('{"observationSource":"wrong","scenarios":[]}')
+                return self.module.check('observability', 'metrics', 'PASS')
+            with patch.object(self.module, 'command_check', side_effect=execute), patch.object(self.module, 'scan'):
+                self.assertEqual(self.module.observability_check('metrics')['status'], 'FAIL')
+
     def test_failure_takes_priority_over_blocked(self):
         self.assertEqual(self.module.conclusion(['BLOCKED', 'FAIL', 'PASS']), 'FAIL')
         self.assertEqual(self.module.exit_code('FAIL'), 1)
         self.assertEqual(self.module.conclusion(['PASS', 'CANCELLED']), 'PASS')
+
+    def test_identity_missing_credentials_stays_blocked(self):
+        with patch.dict('os.environ', {}, clear=True):
+            self.assertEqual(self.module.identity_check('isolation', 'http://127.0.0.1:18081',
+                                                       'isolated', 'end', Path('.'))['status'], 'BLOCKED')
+
+    def test_identity_keeps_real_failure_and_scans_before_saving(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.dict('os.environ',
+                {'P210_IDENTITY_FILE': 'private-input', 'P210_IDENTITY_START': 'start'}):
+            evidence = dict(status='FAIL', checks=[dict(assertion='logout-replay', passed=False)],
+                            observationSource='real-local-dual-user')
+            with patch.object(self.module, 'run_identity', return_value=evidence) as execute:
+                result = self.module.identity_check('isolation', 'http://127.0.0.1:18081', 'isolated', 'end', Path(tmp))
+                self.assertEqual(result['status'], 'FAIL')
+                self.assertEqual(execute.call_count, 1)
+                self.assertEqual(json.loads((Path(tmp) / 'identity.json').read_text())['status'], 'FAIL')
+            with patch.object(self.module, 'run_identity', return_value=dict(evidence, password='forbidden')):
+                self.assertEqual(self.module.identity_check('isolation', 'http://127.0.0.1:18081',
+                                                           'isolated', 'end', Path(tmp))['status'], 'FAIL')
 
 if __name__ == '__main__':
     unittest.main()

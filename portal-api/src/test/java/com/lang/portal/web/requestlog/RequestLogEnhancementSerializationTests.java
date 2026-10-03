@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lang.portal.base.response.ApiResponse;
 import com.lang.portal.base.response.PageData;
+import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import com.lang.portal.upstream.newapi.log.NewApiLogClient;
@@ -42,7 +43,7 @@ class RequestLogEnhancementSerializationTests {
     request.setCookies(
         new jakarta.servlet.http.Cookie("LANG_SESSION", "upstream-session"),
         new jakarta.servlet.http.Cookie("LANG_UID", "42"));
-    return request;
+    return validated(request);
   }
 
   @Test
@@ -75,4 +76,12 @@ class RequestLogEnhancementSerializationTests {
     assertThat(json).contains("\"amount\":\"1.0\"").contains("\"currency\":\"USD\"");
     assertThat(json).contains("\"total\":1").contains("\"page\":1").contains("\"pageSize\":20");
   }
+
+  /** 标记该请求已通过会话校验；上游凭证只能来自这里，不再由浏览器 Cookie 提供。 */
+  private static MockHttpServletRequest validated(MockHttpServletRequest request) {
+    request.setAttribute(
+        PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, new NewApiSession("upstream-session", 42L));
+    return request;
+  }
+
 }

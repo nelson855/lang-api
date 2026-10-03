@@ -1,0 +1,122 @@
+{
+  "runId": "170e7bd4-c4c4-4039-a9e0-d472079509fa",
+  "time": "2026-10-03T07:31:28.559274+00:00",
+  "suite": "B1-follow-up",
+  "checks": [
+    {
+      "id": "backend",
+      "expected": "后端时间、保护、缓存、安全、观测契约",
+      "actual": "783项；0失败、0错误、1项既有跳过",
+      "status": "PASS",
+      "reason": "指定Maven/settings.xml后端test通过",
+      "evidenceType": "controlled-contract",
+      "location": "portal-api/target/probe-raw/p210/b1/lang-b1-full.log"
+    },
+    {
+      "id": "tool-tests",
+      "expected": "验收入口、判定、证据与性能分类自测",
+      "actual": "17项通过",
+      "status": "PASS",
+      "reason": "Python unittest通过",
+      "evidenceType": "controlled-contract",
+      "location": "portal-api/target/probe-raw/p210/b1/lang-b1-python-final.log"
+    },
+    {
+      "id": "observability",
+      "expected": "现有指标在真实聚合调用链产生，拒绝及HTTP计数含义明确",
+      "actual": "双聚合入口16场景通过",
+      "status": "PASS",
+      "reason": "受控HTTP来源及进程内注册表；不代表运行容器指标",
+      "evidenceType": "controlled-http-and-process-registry",
+      "location": "observability.json"
+    }
+  ],
+  "contractConclusion": "PASS",
+  "releaseRequirements": [
+    {
+      "id": "P2-01",
+      "status": "BLOCKED",
+      "reason": "跨日/DST 上游证据、小时趋势、stat 时间过滤、流水与新基线未闭合",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-02",
+      "status": "PASS",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-03",
+      "status": "BLOCKED",
+      "reason": "请求总数、成功率、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-04",
+      "status": "BLOCKED",
+      "reason": "双趋势、完整最近请求与原指标目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-05",
+      "status": "BLOCKED",
+      "reason": "正式金额、TOPUP/REFUND 与容量证据受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-06",
+      "status": "BLOCKED",
+      "reason": "真实充值/退款、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-07",
+      "status": "BLOCKED",
+      "reason": "增强元数据与增强计费可信来源缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-08",
+      "status": "BLOCKED",
+      "reason": "真实增强模型来源缺失，合成展示不解除阻塞",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09",
+      "status": "BLOCKED",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-10",
+      "status": "BLOCKED",
+      "reason": "真实环境、代表性规模、部署资源与正式性能目标缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09-protocol",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    },
+    {
+      "id": "P2-09-ttft",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    }
+  ],
+  "releaseConclusion": "BLOCKED",
+  "scope": "仅B1代码与受控契约补充；未重跑完整all、未重建部署容器，历史报告保持原样",
+  "sourceSha256": {
+    "portal-api/src/test/java/com/lang/portal/infrastructure/aggregation/AggregationObservabilityChainTests.java": "ee9d5aaf31fd70f4cbc64d84d61fac48c3cf631096893c080aa83bad02d0d63e",
+    "portal-api/src/main/java/com/lang/portal/web/dashboard/DashboardStatsQueryService.java": "025a7f6fe31d40fdc7c0c5ed645fba8944705e9d83bb335d610d911a9b39bb2c",
+    "portal-api/src/main/java/com/lang/portal/web/account/aggregation/AccountConsumptionSnapshotService.java": "0bb2f388cfd2efbb3d2c168b09dc29abdf066b3fa02950f373c40b933d780520",
+    "portal-api/src/main/java/com/lang/portal/infrastructure/aggregation/AggregationMetrics.java": "3bc1c5f8246435d6405a2989525618329219cd21db4e0529859e46b5089f9faa",
+    "portal-api/src/main/java/com/lang/portal/infrastructure/aggregation/AggregationPagedReader.java": "e3b43b7edee5e63e50a5bfddfbc896e38df5d8587619d97499c89398bafe2828",
+    "portal-api/src/main/java/com/lang/portal/base/aggregation/ProtectReason.java": "b60654fefe048771b36a0b8e80f24ec78c90caf8d58ded3ce584185189386894",
+    "portal-api/src/main/java/com/lang/portal/base/aggregation/AggregationReadBudget.java": "81775c7186b525bed5a6a413e36ad817ae9057eaead0ece9286510876bb241ff",
+    "portal-api/src/main/java/com/lang/portal/upstream/newapi/transport/NewApiExchange.java": "8cf0f07be4e53a0061d04d57b53dedc422d320cb7e53c23154030df7bc898cd1",
+    "portal-api/src/main/java/com/lang/portal/upstream/newapi/log/AggregationLogReader.java": "2dd588dcefee64d18dd792eb130f670f1c879730ea914db1b59366c110074244"
+  }
+}

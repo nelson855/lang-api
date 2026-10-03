@@ -14,6 +14,8 @@ import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.UpstreamException;
 import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
+import com.lang.portal.infrastructure.session.PortalSessionRecord;
+import com.lang.portal.infrastructure.session.PortalSessionStore;
 import com.lang.portal.upstream.newapi.auth.NewApiAuthenticationClient;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import com.lang.portal.upstream.newapi.policy.NewApiCookiePolicy;
@@ -47,12 +49,15 @@ class AuthenticationSecurityEventTests {
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
     when(client.currentUser(new NewApiSession("upstream-session", 42L)))
         .thenThrow(new PortalException(PortalErrorCode.UNAUTHENTICATED));
+    PortalSessionStore store = mock(PortalSessionStore.class);
+    when(store.find("server-side-session-id"))
+        .thenReturn(new PortalSessionRecord("server-side-session-id", "upstream-session", 42L));
     ListAppender<ILoggingEvent> events = attach(PortalSessionAuthenticationFilter.class);
     PortalSessionAuthenticationFilter filter = new PortalSessionAuthenticationFilter(
-        properties, client, new NewApiCookiePolicy(properties));
+        properties, client, new NewApiCookiePolicy(properties), store);
     MockHttpServletRequest request = new MockHttpServletRequest("GET", "/portal/api/profile");
     request.setRemoteAddr("203.0.113.9");
-    request.setCookies(new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42"));
+    request.setCookies(new Cookie("LANG_SESSION", "server-side-session-id"), new Cookie("LANG_UID", "42"));
 
     filter.doFilter(request, new MockHttpServletResponse(), (ignoredRequest, ignoredResponse) -> {});
 
@@ -66,10 +71,14 @@ class AuthenticationSecurityEventTests {
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
     doThrow(new UpstreamException(PortalErrorCode.UPSTREAM_UNAVAILABLE))
         .when(client).logout(new NewApiSession("upstream-session", 42L));
+    PortalSessionStore store = mock(PortalSessionStore.class);
+    when(store.find("server-side-session-id"))
+        .thenReturn(new PortalSessionRecord("server-side-session-id", "upstream-session", 42L));
+    when(store.delete("server-side-session-id")).thenReturn(true);
     RegistrationPolicyService registrationPolicy = mock(RegistrationPolicyService.class);
     when(registrationPolicy.evaluate()).thenReturn(new RegistrationPolicy(true, null));
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(registrationPolicy, client), new AuthCsrfService(properties),
+        new AuthApplicationService(registrationPolicy, client, store), new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties), properties,
         new AuthenticationRateLimiter(properties, new PortalClientAddressResolver(properties)));
     ListAppender<ILoggingEvent> events = attach(AuthenticationController.class);
@@ -77,7 +86,7 @@ class AuthenticationSecurityEventTests {
     request.addHeader("Origin", "http://portal.test");
     request.addHeader("X-XSRF-TOKEN", "csrf-token");
     request.setCookies(new Cookie("XSRF-TOKEN", "csrf-token"),
-        new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42"));
+        new Cookie("LANG_SESSION", "server-side-session-id"), new Cookie("LANG_UID", "42"));
 
     assertThatThrownBy(() -> controller.logout(request)).isInstanceOf(UpstreamException.class);
 

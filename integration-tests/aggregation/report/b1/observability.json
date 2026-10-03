@@ -1,0 +1,951 @@
+{
+  "observationSource": "controlled-http-and-process-registry",
+  "scenarios": [
+    {
+      "operation": "dashboard-stats",
+      "scenario": "concurrentQueriesShareOneReadWithoutDuplicatingMetrics",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "miss",
+            "operation": "dashboard-stats"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "success"
+          },
+          "count": 10.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "coalesced",
+            "operation": "dashboard-stats"
+          },
+          "count": 9.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "concurrentQueriesShareOneReadWithoutDuplicatingMetrics",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "miss",
+            "operation": "account-consumption-snapshot"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "coalesced",
+            "operation": "account-consumption-snapshot"
+          },
+          "count": 9.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "success"
+          },
+          "count": 10.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "dashboard-stats",
+      "scenario": "singleHttpTimeoutIsCountedAndNotCached",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "dashboard-stats",
+            "reason": "single-timeout"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "singleHttpTimeoutIsCountedAndNotCached",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "reason": "single-timeout"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "operation": "dashboard-stats",
+      "scenario": "totalDeadlineRejectsBeforeSecondHttp",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "dashboard-stats",
+            "reason": "deadline"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "totalDeadlineRejectsBeforeSecondHttp",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "reason": "deadline"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "dashboard-stats",
+      "scenario": "recordLimitDoesNotAcceptFetchedPage",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "dashboard-stats",
+            "reason": "records"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "recordLimitDoesNotAcceptFetchedPage",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "reason": "records"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "operation": "dashboard-stats",
+      "scenario": "failedSecondPageKeepsAcceptedFirstPageAndCanRecover",
+      "httpReceived": 3,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "miss",
+            "operation": "dashboard-stats"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "success"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 3.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "hit",
+            "operation": "dashboard-stats"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "failedSecondPageKeepsAcceptedFirstPageAndCanRecover",
+      "httpReceived": 3,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 3.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "miss",
+            "operation": "account-consumption-snapshot"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "success"
+          },
+          "count": 2.0
+        },
+        {
+          "metric": "portal.aggregation.cache",
+          "tags": {
+            "cacheOutcome": "hit",
+            "operation": "account-consumption-snapshot"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "success",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "dashboard-stats",
+      "scenario": "thirtyDaysRejectsOnceWithoutHttp",
+      "httpReceived": 0,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "dashboard-stats",
+            "reason": "range"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "thirtyDaysRejectsOnceWithoutHttp",
+      "httpReceived": 0,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "reason": "range"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "operation": "dashboard-stats",
+      "scenario": "inconsistentPageIsNotAccepted",
+      "httpReceived": 2,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 2.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "dashboard-stats",
+            "reason": "inconsistent-page"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "inconsistentPageIsNotAccepted",
+      "httpReceived": 2,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 2.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "reason": "inconsistent-page"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "dashboard-stats",
+      "scenario": "pageLimitRejectsBeforeNextHttp",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "dashboard-stats",
+            "reason": "pages"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "dashboard-stats",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        }
+      ]
+    },
+    {
+      "operation": "account-consumption-snapshot",
+      "scenario": "pageLimitRejectsBeforeNextHttp",
+      "httpReceived": 1,
+      "metrics": [
+        {
+          "metric": "portal.aggregation.upstream.http-attempts",
+          "tags": {
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.pages",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.duration",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "outcome": "failure"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.calls",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.upstream.records",
+          "tags": {
+            "outcome": "failure",
+            "source": "success-log"
+          },
+          "count": 1.0
+        },
+        {
+          "metric": "portal.aggregation.rejections",
+          "tags": {
+            "operation": "account-consumption-snapshot",
+            "reason": "pages"
+          },
+          "count": 1.0
+        }
+      ]
+    }
+  ]
+}

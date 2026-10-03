@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import jakarta.servlet.http.Cookie;
@@ -28,14 +29,14 @@ class ProfileUpdateControllerTests {
   private final PortalCommonProperties properties = new PortalCommonProperties();
 
   private ProfileController controller() {
-    return new ProfileController(applicationService, properties);
+    return new ProfileController(applicationService);
   }
 
   private MockHttpServletRequest validRequest() {
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setCookies(
         new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42"));
-    return request;
+    return validated(request);
   }
 
   private Map<String, String> validBody() {
@@ -117,4 +118,12 @@ class ProfileUpdateControllerTests {
         .matches(e -> e instanceof PortalException
             && ((PortalException) e).errorCode() == PortalErrorCode.OPERATION_RESULT_UNKNOWN);
   }
+
+  /** 标记该请求已通过会话校验；上游凭证只能来自这里，不再由浏览器 Cookie 提供。 */
+  private static MockHttpServletRequest validated(MockHttpServletRequest request) {
+    request.setAttribute(
+        PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, new NewApiSession("upstream-session", 42L));
+    return request;
+  }
+
 }

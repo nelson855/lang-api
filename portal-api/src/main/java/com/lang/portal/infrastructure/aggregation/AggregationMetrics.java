@@ -1,5 +1,7 @@
 package com.lang.portal.infrastructure.aggregation;
 
+import com.lang.portal.base.aggregation.ProtectReason;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Duration;
 import java.util.Objects;
@@ -28,6 +30,12 @@ public final class AggregationMetrics {
     registry.counter("portal.aggregation.upstream.calls", "source", source.tag(), "outcome", outcome.tag()).increment();
     registry.counter("portal.aggregation.upstream.pages", "source", source.tag(), "outcome", outcome.tag()).increment(pages);
     registry.counter("portal.aggregation.upstream.records", "source", source.tag(), "outcome", outcome.tag()).increment(records);
+  }
+
+  /** HTTP 执行尝试在发送边界计数，响应失败或超时不会撤销。 */
+  public void recordHttpAttempt(AggregationSource source) {
+    Objects.requireNonNull(source, "上游来源不能为空");
+    registry.counter("portal.aggregation.upstream.http-attempts", "source", source.tag()).increment();
   }
 
   public void recordCache(String operation, CacheOutcome outcome) {

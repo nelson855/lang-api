@@ -7,6 +7,7 @@ import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.response.ApiResponse;
 import com.lang.portal.base.response.ApiResponses;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalUpstreamSessions;
 import com.lang.portal.base.security.ProtectedEndpoint;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
@@ -66,7 +67,7 @@ public class DashboardStatsController {
     if (startTime == null || endTime == null || granularity == null || timezone == null) {
       throw new PortalException(PortalErrorCode.INVALID_ARGUMENT, "四个查询参数均为必填");
     }
-    NewApiSession session = session(request);
+    NewApiSession session = PortalUpstreamSessions.require(request);
     if (user != null && user.id() != session.userId()) {
       throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
     }
@@ -98,34 +99,4 @@ public class DashboardStatsController {
     return raw.trim();
   }
 
-  private NewApiSession session(HttpServletRequest request) {
-    Cookie[] cookies = request.getCookies();
-    if (cookies == null) {
-      throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-    }
-    Map<String, String> values = new HashMap<>();
-    for (Cookie cookie : cookies) {
-      String name = cookie.getName();
-      if (!properties.auth().cookie().sessionName().equals(name)
-          && !properties.auth().cookie().userIdName().equals(name)) {
-        continue;
-      }
-      if (values.putIfAbsent(name, cookie.getValue()) != null) {
-        throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-      }
-    }
-    String session = values.get(properties.auth().cookie().sessionName());
-    String userId = values.get(properties.auth().cookie().userIdName());
-    if (session == null || session.isBlank() || userId == null || userId.isBlank()) {
-      throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-    }
-    try {
-      long id = Long.parseLong(userId);
-      if (id > 0) {
-        return new NewApiSession(session, id);
-      }
-    } catch (NumberFormatException ignored) {
-    }
-    throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-  }
 }

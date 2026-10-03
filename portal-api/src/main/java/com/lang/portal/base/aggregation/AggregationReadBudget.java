@@ -13,6 +13,7 @@ public final class AggregationReadBudget {
   private final int maxRecords;
   private final Instant deadline;
   private final Clock clock;
+  private ProtectReason protectionReason;
   private int usedPages;
   private int usedRecords;
 
@@ -28,11 +29,10 @@ public final class AggregationReadBudget {
 
   public synchronized void checkBeforeCall() {
     if (!clock.instant().isBefore(deadline)) {
-      throw new UpstreamException(PortalErrorCode.UPSTREAM_TIMEOUT);
+      throw reject(ProtectReason.DEADLINE);
     }
     if (usedPages >= maxPages) {
-      throw new PortalException(
-          PortalErrorCode.INVALID_ARGUMENT, "聚合数据量超过保护上限，请缩小时间范围后重试");
+      throw reject(ProtectReason.PAGES);
     }
   }
 
@@ -40,12 +40,31 @@ public final class AggregationReadBudget {
     if (recordCount < 0) {
       throw new IllegalArgumentException("记录数不能为负");
     }
+    if (usedPages >= maxPages) {
+      throw reject(ProtectReason.PAGES);
+    }
+    if (recordCount > remainingRecords()) {
+      throw reject(ProtectReason.RECORDS);
+    }
     usedPages++;
     usedRecords += recordCount;
-    if (usedPages > maxPages || usedRecords > maxRecords) {
-      throw new PortalException(
-          PortalErrorCode.INVALID_ARGUMENT, "聚合数据量超过保护上限，请缩小时间范围后重试");
-    }
+  }
+
+  /** 保留拒绝原因，供一次来源读取的收口处计数；异常类型及错误码保持原契约。 */
+  public synchronized PortalException reject(ProtectReason reason) {
+    protectionReason = reason;
+    return switch (reason) {
+      case DEADLINE, SINGLE_TIMEOUT -> new UpstreamException(PortalErrorCode.UPSTREAM_TIMEOUT);
+      case INCONSISTENT_PAGE -> new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
+      case RANGE -> new PortalException(PortalErrorCode.INVALID_ARGUMENT,
+          "实时日志扫描范围超过当前证据允许上限，请缩小时间范围后重试");
+      case PAGES, RECORDS -> new PortalException(PortalErrorCode.INVALID_ARGUMENT,
+          "聚合数据量超过保护上限，请缩小时间范围后重试");
+    };
+  }
+
+  public synchronized ProtectReason protectionReason() {
+    return protectionReason;
   }
 
   public synchronized int remainingRecords() {

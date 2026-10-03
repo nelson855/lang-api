@@ -8,7 +8,6 @@ import com.lang.portal.infrastructure.aggregation.AggregationCache;
 import com.lang.portal.infrastructure.aggregation.AggregationCacheKey;
 import com.lang.portal.infrastructure.aggregation.AggregationMetrics;
 import com.lang.portal.infrastructure.aggregation.AggregationOutcome;
-import com.lang.portal.infrastructure.aggregation.AggregationSource;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import com.lang.portal.upstream.newapi.log.AggregationLogReader;
 import com.lang.portal.upstream.newapi.log.NewApiLogClient;
@@ -106,9 +105,7 @@ public class AccountConsumptionSnapshotService {
             agg.maxPages(), agg.maxRecords(), clock.instant().plus(agg.totalTimeout()), clock);
     List<AggregationLogRecord> records =
         AggregationLogReader.readSuccessLogs(
-            session, context, null, null, budget, agg.pageSize(), agg.maxLiveLogRange(), logClient);
-    metrics.recordUpstream(
-        AggregationSource.SUCCESS_LOG, AggregationOutcome.SUCCESS, budget.usedPages(), records.size());
+            session, context, null, null, budget, agg.pageSize(), agg.maxLiveLogRange(), logClient, metrics, SNAPSHOT_OPERATION);
     return ConsumptionSnapshot.from(records);
   }
 }

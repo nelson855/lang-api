@@ -22,6 +22,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.BeforeEach;
+import com.lang.portal.infrastructure.session.PortalSessionRecord;
+import com.lang.portal.infrastructure.session.PortalSessionStore;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
@@ -35,6 +38,13 @@ class AccountSecurityRoutingTests {
   @MockBean private NewApiBalanceClient balanceClient;
   @MockBean private NewApiTopupInfoClient topupInfoClient;
   @MockBean private NewApiTopupRecordsClient topupRecordsClient;
+  @MockBean private PortalSessionStore sessionStore;
+
+  @BeforeEach
+  void acceptAnyBrowserSession() {
+    when(sessionStore.find("upstream-session"))
+        .thenReturn(new PortalSessionRecord("upstream-session", "upstream-session", 42L));
+  }
 
   @Test
   void anonymousTopupsIsUnauthenticatedWithoutUpstream() throws Exception {

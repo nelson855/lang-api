@@ -40,6 +40,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import com.lang.portal.infrastructure.session.PortalSessionRecord;
+import com.lang.portal.infrastructure.session.PortalSessionStore;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -54,6 +56,8 @@ class ApiKeyJourneyIntegrationTests {
 
   @MockitoBean private NewApiAuthenticationClient authClient;
   @MockitoBean private NewApiTokenClient tokenClient;
+  @MockitoBean private PortalSessionStore sessionStore;
+
 
   private static final NewApiSession SESSION_A = new NewApiSession("session-a", 1L);
   private static final NewApiSession SESSION_B = new NewApiSession("session-b", 2L);
@@ -128,6 +132,15 @@ class ApiKeyJourneyIntegrationTests {
     return new Cookie[] {
       new Cookie("LANG_SESSION", session.value()), new Cookie("LANG_UID", Long.toString(session.userId())),
     };
+  }
+
+
+  @BeforeEach
+  void acceptAnyBrowserSessionAsTheUpstreamSession() {
+    when(sessionStore.find(SESSION_A.value()))
+        .thenReturn(new PortalSessionRecord(SESSION_A.value(), SESSION_A.value(), SESSION_A.userId()));
+    when(sessionStore.find(SESSION_B.value()))
+        .thenReturn(new PortalSessionRecord(SESSION_B.value(), SESSION_B.value(), SESSION_B.userId()));
   }
 
   @Test

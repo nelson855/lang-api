@@ -1,0 +1,26 @@
+{
+  "status": "FAIL",
+  "observationSource": "real-local-dual-user",
+  "checks": [
+    {
+      "assertion": "cross-user-key-detail-not-found",
+      "passed": false,
+      "httpStatus": 502
+    },
+    {
+      "assertion": "cross-user-key-detail-not-found",
+      "passed": false,
+      "httpStatus": 502
+    },
+    {
+      "assertion": "logged-out-session-replay",
+      "passed": false,
+      "httpStatus": 200
+    },
+    {
+      "assertion": "logged-out-session-replay",
+      "passed": false,
+      "httpStatus": 200
+    }
+  ]
+}

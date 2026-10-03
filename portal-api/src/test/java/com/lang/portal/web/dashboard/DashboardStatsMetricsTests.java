@@ -6,7 +6,7 @@ import com.lang.portal.infrastructure.aggregation.AggregationMetrics;
 import com.lang.portal.infrastructure.aggregation.AggregationOutcome;
 import com.lang.portal.infrastructure.aggregation.AggregationSource;
 import com.lang.portal.infrastructure.aggregation.CacheOutcome;
-import com.lang.portal.infrastructure.aggregation.ProtectReason;
+import com.lang.portal.base.aggregation.ProtectReason;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;

@@ -1,5 +1,7 @@
 package com.lang.portal.infrastructure.aggregation;
 
+import com.lang.portal.base.aggregation.ProtectReason;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.micrometer.core.instrument.Meter;
@@ -19,6 +21,7 @@ class AggregationMetricWhitelistTests {
       Set.of(
           "portal.aggregation.duration",
           "portal.aggregation.upstream.calls",
+          "portal.aggregation.upstream.http-attempts",
           "portal.aggregation.upstream.pages",
           "portal.aggregation.upstream.records",
           "portal.aggregation.cache",
@@ -31,6 +34,7 @@ class AggregationMetricWhitelistTests {
 
     metrics.recordAggregation("usage-summary", AggregationOutcome.SUCCESS, Duration.ofMillis(50));
     metrics.recordUpstream(AggregationSource.ERROR_LOG, AggregationOutcome.FAILURE, 3, 60);
+    metrics.recordHttpAttempt(AggregationSource.SUCCESS_LOG);
     metrics.recordCache("usage-summary", CacheOutcome.COALESCED);
     metrics.recordProtection("usage-summary", ProtectReason.INCONSISTENT_PAGE);
 
@@ -51,6 +55,7 @@ class AggregationMetricWhitelistTests {
 
     metrics.recordAggregation("usage-summary", AggregationOutcome.FAILURE, Duration.ofMillis(5));
     metrics.recordUpstream(AggregationSource.SUCCESS_LOG, AggregationOutcome.SUCCESS, 1, 20);
+    metrics.recordHttpAttempt(AggregationSource.SUCCESS_LOG);
     metrics.recordCache("usage-summary", CacheOutcome.MISS);
     metrics.recordProtection("usage-summary", ProtectReason.DEADLINE);
 

@@ -38,7 +38,8 @@
 - 预算：AggregationPagedReader/ReadBudgetTimeout、Dashboard/Account Vertical；分页超限、记录超限、共享预算、单次/总超时、失败恢复已有覆盖；补充 0 条、准确上限验收。
 - 缓存：Cache/Failure/Outcome/Concurrency/Key；补充 10 并发以及以实际加载结果验证每一个身份维度隔离。
 - 安全：Dashboard/Account/RequestLog/Model Controller 与 NewApi 客户端测试；未登录、越权参数、非法模型标识、错误脱敏已有覆盖。
-- 观测：AggregationMetrics/MetricWhitelist、Vertical；计数与有限标签已有覆盖。upstream.calls 是 recordUpstream 的逻辑记录次数，不等于 retry 后的 HTTP 尝试；页数和记录来自已处理页，拒绝之前未接纳页不能当作真实总量。进程内 SimpleMeterRegistry 是契约来源，不是容器运行指标。进一步核对实际生产调用链：recordProtection目前只有定义、没有生产调用；上游计数也只在完整读取成功后记录，不能表示失败HTTP尝试。拒绝指标集成仍缺证据，3.5保持未完成，不以直接调用指标API的测试代替生产观测。
+- 真实双身份：B2专用普通身份各一条真实成功日志，Key、Dashboard/账户/消费流水、冷热缓存及伪造身份检查通过；Key业务NOT_FOUND适配已修正。退出后旧Cookie仍被上游和Portal接受，identity实测FAIL，4.5未完成；不得把客户端清除Cookie当作服务端撤销。见[报告](report/b2/report.md)。
+- 观测：B1已补齐双聚合入口的拒绝和失败路径计数，16项受控HTTP与进程内注册表检查PASS。upstream.calls是一次来源逻辑读取（含早拒绝），新增upstream.http-attempts在HTTP发送边界计数（包括普通log-self读取），pages/records仅统计已接纳数据。缓存命中无来源读取，共享加载只收口一次。有限标签和计数定义见docs/20及[补充报告](report/b1/report.md)。证据不是运行容器指标，真实性能观测仍需后续采样。
 - 浏览器：已有 desktop/mobile/wallet/catalog/catalogStates/requestLogs；使用 Playwright route 的合成响应为 controlled-contract，不能证明真实 New API 来源。真实四页面与双身份验证须独立证据。
 - 脱敏：复用 AggregationSensitiveScanner；补充验收工具白名单投影与报告扫描桥接。
 - 性能：缺少冷热采样与独立百分位分类；需新工具。真实小样本仅冒烟，模拟大数据仅保护契约，代表性真实规模各范围冷热≥20次才可发布基线，未确认目标仍 BLOCKED。

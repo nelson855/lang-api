@@ -1,0 +1,62 @@
+{
+  "status": "FAIL",
+  "observationSource": "real-local-dual-user",
+  "checks": [
+    {
+      "assertion": "cross-user-key-detail-not-found",
+      "passed": true,
+      "httpStatus": 404
+    },
+    {
+      "assertion": "cross-user-key-detail-not-found",
+      "passed": true,
+      "httpStatus": 404
+    },
+    {
+      "assertion": "nonempty-key-list-and-cross-user-detail",
+      "passed": true
+    },
+    {
+      "assertion": "nonempty-real-log-isolation",
+      "passed": true,
+      "records": [
+        1,
+        1
+      ]
+    },
+    {
+      "assertion": "dashboard-account-and-transaction-cache-isolation",
+      "passed": true,
+      "coldLogCalls": 6,
+      "hotLogCalls": 0,
+      "observationSource": "isolated-container-upstream-call-events"
+    },
+    {
+      "assertion": "forged-query-cookie-and-invalid-session",
+      "passed": true
+    },
+    {
+      "assertion": "key-cleanup-and-browser-cookie-clearing",
+      "passed": true
+    },
+    {
+      "assertion": "logged-out-session-replay",
+      "passed": false,
+      "httpStatus": 200
+    },
+    {
+      "assertion": "logged-out-session-replay",
+      "passed": false,
+      "httpStatus": 200
+    }
+  ],
+  "accountsRetained": true,
+  "temporaryKeysRemoved": true,
+  "sessionsCookiesCleared": true,
+  "sessionRevocationVerified": false,
+  "range": {
+    "start": "2026-10-03T08:16:22+00:00",
+    "end": "2026-10-03T09:16:22+00:00",
+    "timezone": "UTC"
+  }
+}

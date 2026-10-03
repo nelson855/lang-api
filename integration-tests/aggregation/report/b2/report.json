@@ -1,0 +1,168 @@
+{
+  "runId": "67fb9785-c7fd-4ba0-91c0-5f191c7905d1",
+  "time": "2026-10-03T09:16:31.416950+00:00",
+  "suite": "local",
+  "checks": [
+    {
+      "id": "build",
+      "expected": "运行 JAR、镜像、前端、上游版本与有效配置一致",
+      "actual": "见构建清单",
+      "status": "PASS",
+      "reason": "运行产物与前端摘要及非敏感配置核对",
+      "evidenceType": "real-build",
+      "location": "report.json#build"
+    },
+    {
+      "id": "unauthenticated",
+      "expected": "未登录受保护接口拒绝且监控不公开",
+      "actual": "[401, 401, 401, 401, 401, 401]",
+      "status": "PASS",
+      "reason": "匿名请求与监控关闭核验",
+      "evidenceType": "real-local",
+      "location": ""
+    },
+    {
+      "id": "identity",
+      "expected": "专用双用户身份隔离与清理恢复",
+      "actual": "真实双身份断言失败数=2",
+      "status": "FAIL",
+      "reason": "非空日志、Key、聚合缓存、伪造身份、退出旧会话重放及资源清理实测",
+      "evidenceType": "real-local-dual-user",
+      "location": "identity.json"
+    },
+    {
+      "id": "browser-real",
+      "expected": "当前产物真实浏览器四页面及登录刷新",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "reconciliation",
+      "expected": "固定范围真实 Token、日志与定价对账",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "upstream-evidence",
+      "expected": "原阶段统计、金额、趋势、流水、时区、增强元数据证据",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    }
+  ],
+  "contractConclusion": "FAIL",
+  "releaseRequirements": [
+    {
+      "id": "P2-01",
+      "status": "BLOCKED",
+      "reason": "跨日/DST 上游证据、小时趋势、stat 时间过滤、流水与新基线未闭合",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-02",
+      "status": "BLOCKED",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-03",
+      "status": "BLOCKED",
+      "reason": "请求总数、成功率、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-04",
+      "status": "BLOCKED",
+      "reason": "双趋势、完整最近请求与原指标目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-05",
+      "status": "BLOCKED",
+      "reason": "正式金额、TOPUP/REFUND 与容量证据受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-06",
+      "status": "BLOCKED",
+      "reason": "真实充值/退款、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-07",
+      "status": "BLOCKED",
+      "reason": "增强元数据与增强计费可信来源缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-08",
+      "status": "BLOCKED",
+      "reason": "真实增强模型来源缺失，合成展示不解除阻塞",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09",
+      "status": "BLOCKED",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-10",
+      "status": "BLOCKED",
+      "reason": "真实环境、代表性规模、部署资源与正式性能目标缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09-protocol",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    },
+    {
+      "id": "P2-09-ttft",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    }
+  ],
+  "releaseConclusion": "BLOCKED",
+  "build": {
+    "status": "PASS",
+    "jarSha256": "ccd13752ba45b81249b6b80b0f38a2a2016a1269a79aeacb1ac639dc5d7093cd",
+    "runningJarSha256": "ccd13752ba45b81249b6b80b0f38a2a2016a1269a79aeacb1ac639dc5d7093cd",
+    "frontendEqual": true,
+    "frontendFiles": 58,
+    "frontendSha256": "161c78f34eca27b59b7f568872096b00d41df4de42c5eb2e990aa1b6e5a8f7e1",
+    "environment": "local-docker",
+    "profile": "dev",
+    "imageId": "sha256:76fc18e57c7b300ad67be4845c602e2678bdd578093d469f34a6dedc86c16416",
+    "newApiImageId": "sha256:98361b3114f043f94ffd5affc457ee8d64923a0cc53e2824f2e727017ac098f1",
+    "newApiVersion": "calciumion/new-api:v0.13.2@sha256:0c6aa7afce4747f0fc4fab9c7934d7c2e4b69fda6844065acca6a5e1bf258506",
+    "newApiDigest": "calciumion/new-api@sha256:0c6aa7afce4747f0fc4fab9c7934d7c2e4b69fda6844065acca6a5e1bf258506",
+    "effectiveConfig": {
+      "lang.aggregation.baseline-version": "p2-2026-09-22-a",
+      "lang.aggregation.page-size": "20",
+      "lang.aggregation.max-pages": "10",
+      "lang.aggregation.max-records": "200",
+      "lang.aggregation.single-call-timeout": "5s",
+      "lang.aggregation.total-timeout": "30s",
+      "lang.aggregation.max-live-log-range": "168h",
+      "lang.aggregation.cache-ttl": "30s",
+      "lang.aggregation.cache-maximum-size": "1000",
+      "lang.aggregation.five-minutes-max-span": "24h",
+      "lang.aggregation.hour-max-span": "168h",
+      "lang.aggregation.day-max-span": "720h",
+      "management.endpoints.web.exposure.include": "health,info",
+      "management.endpoint.health.show-details": "never"
+    },
+    "configConfirmed": true
+  }
+}

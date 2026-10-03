@@ -28,6 +28,10 @@ function isIsoDateTime(value: string): boolean {
   return Number.isFinite(t);
 }
 
+function toSecondPrecision(value: string): string {
+  return new Date(value).toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
 function parsePositiveInt(raw: string | null, fallback: number): number {
   if (raw === null || raw === '') return fallback;
   const n = Number(raw);
@@ -60,8 +64,8 @@ export function parseRequestLogsSearch(search: string): NormalizedRequestLogsPar
   let startTime = '';
   let endTime = '';
   if (startRaw !== '' && endRaw !== '' && isIsoDateTime(startRaw) && isIsoDateTime(endRaw)) {
-    startTime = startRaw;
-    endTime = endRaw;
+    startTime = toSecondPrecision(startRaw);
+    endTime = toSecondPrecision(endRaw);
   }
 
   return {

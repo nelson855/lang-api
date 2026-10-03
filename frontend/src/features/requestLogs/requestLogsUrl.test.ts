@@ -22,12 +22,21 @@ describe('requestLogsUrl: 解析与序列化', () => {
     const search =
       '?startTime=2026-09-22T00%3A00%3A00.000Z&endTime=2026-09-23T00%3A00%3A00.000Z&result=SUCCESS&keyName=prod-key&model=gpt-4&page=1';
     const parsed = parseRequestLogsSearch(search);
-    expect(parsed.startTime).toBe('2026-09-22T00:00:00.000Z');
-    expect(parsed.endTime).toBe('2026-09-23T00:00:00.000Z');
+    expect(parsed.startTime).toBe('2026-09-22T00:00:00Z');
+    expect(parsed.endTime).toBe('2026-09-23T00:00:00Z');
     expect(parsed.result).toBe('SUCCESS');
     expect(parsed.keyName).toBe('prod-key');
     expect(parsed.model).toBe('gpt-4');
     expect(parsed.page).toBe(1);
+  });
+
+  it('将带毫秒的时间范围规范为后端接受的秒级 UTC', () => {
+    const parsed = parseRequestLogsSearch(
+      '?startTime=2026-09-22T08%3A00%3A00.158%2B08%3A00&endTime=2026-09-23T00%3A00%3A00.999Z',
+    );
+
+    expect(parsed.startTime).toBe('2026-09-22T00:00:00Z');
+    expect(parsed.endTime).toBe('2026-09-23T00:00:00Z');
   });
 
   it('缺少可选 Key/模型时回退空字符串', () => {

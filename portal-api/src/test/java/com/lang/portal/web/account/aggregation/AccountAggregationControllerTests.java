@@ -7,6 +7,7 @@ import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.response.ApiResponse;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import jakarta.servlet.http.Cookie;
@@ -39,6 +40,9 @@ class AccountAggregationControllerTests {
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setCookies(
         new Cookie("LANG_SESSION", "sess"), new Cookie("LANG_UID", "42"));
+    // 上游凭证只来自已通过校验的会话记录，不再由浏览器 Cookie 提供。
+    request.setAttribute(
+        PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, new NewApiSession("sess", 42L));
     return request;
   }
 

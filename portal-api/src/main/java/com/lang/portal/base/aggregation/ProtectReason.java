@@ -1,9 +1,10 @@
-package com.lang.portal.infrastructure.aggregation;
+package com.lang.portal.base.aggregation;
 
 public enum ProtectReason {
   RANGE("range"),
   PAGES("pages"),
   RECORDS("records"),
+  SINGLE_TIMEOUT("single-timeout"),
   DEADLINE("deadline"),
   INCONSISTENT_PAGE("inconsistent-page");
 

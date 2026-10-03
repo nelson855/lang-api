@@ -1,0 +1,26 @@
+{
+  "observationSource": "real-local-upstream-account-quota",
+  "sampleRequests": 2,
+  "allocatedQuotaTotal": 50000,
+  "usedQuotaTotals": [
+    4238,
+    8400
+  ],
+  "quotaPerUsd": 500000,
+  "totalCostUsd": "0.025276",
+  "approvedMaximumUsd": "0.10",
+  "remainingKeyCounts": [
+    0,
+    0
+  ],
+  "upstreamSessionReplay": [
+    {
+      "httpStatus": 200,
+      "acceptedAfterLogout": true
+    },
+    {
+      "httpStatus": 200,
+      "acceptedAfterLogout": true
+    }
+  ]
+}

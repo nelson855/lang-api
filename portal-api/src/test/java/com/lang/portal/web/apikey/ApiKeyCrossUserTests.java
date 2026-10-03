@@ -16,6 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.upstream.newapi.auth.NewApiAuthenticationClient;
+import com.lang.portal.infrastructure.session.PortalSessionRecord;
+import com.lang.portal.infrastructure.session.PortalSessionStore;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import com.lang.portal.upstream.newapi.auth.NewApiUserProfile;
 import com.lang.portal.upstream.newapi.token.NewApiToken;
@@ -42,11 +44,14 @@ class ApiKeyCrossUserTests {
 
   @MockBean private NewApiAuthenticationClient authClient;
   @MockBean private NewApiTokenClient tokenClient;
+  @MockBean private PortalSessionStore sessionStore;
 
   private static final NewApiSession SESSION_A = new NewApiSession("user-a-session", 1L);
 
   @BeforeEach
   void authenticatedAsUserA() {
+    when(sessionStore.find("user-a-session"))
+        .thenReturn(new PortalSessionRecord("user-a-session", SESSION_A.value(), SESSION_A.userId()));
     when(authClient.currentUser(SESSION_A))
         .thenReturn(new NewApiUserProfile(1L, "user-a", "User A", "a@example.test"));
   }

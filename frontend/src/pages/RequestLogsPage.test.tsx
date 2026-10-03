@@ -129,8 +129,8 @@ describe('请求日志页面交互', () => {
       const statsCalls = seen.filter((p) => p.includes('/portal/api/request-logs'));
       expect(statsCalls.length).toBeGreaterThanOrEqual(1);
       const lastCall = statsCalls[statsCalls.length - 1];
-      expect(lastCall).toContain('startTime=' + encodeURIComponent(startTime));
-      expect(lastCall).toContain('endTime=' + encodeURIComponent(endTime));
+      expect(lastCall).toContain('startTime=' + encodeURIComponent('2026-09-22T00:00:00Z'));
+      expect(lastCall).toContain('endTime=' + encodeURIComponent('2026-09-23T00:00:00Z'));
       expect(lastCall).toContain('result=SUCCESS');
       expect(lastCall).toContain('keyName=prod-key');
       expect(lastCall).toContain('model=gpt-4');

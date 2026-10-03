@@ -178,6 +178,7 @@ public class NewApiTokenClient {
       if (raw.status() == 400) {
         throw new PortalException(PortalErrorCode.INVALID_ARGUMENT);
       }
+      throwIfBusinessNotFound(raw);
       if (!raw.success() || raw.status() < 200 || raw.status() >= 300) {
         if (raw.status() >= 200 && raw.status() < 300 && !raw.success()) {
           throw new PortalException(PortalErrorCode.RESOURCE_CONFLICT);
@@ -235,8 +236,17 @@ public class NewApiTokenClient {
     if (raw.status() == 404) {
       throw new PortalException(PortalErrorCode.NOT_FOUND);
     }
+    throwIfBusinessNotFound(raw);
     if (raw.status() < 200 || raw.status() >= 300 || !raw.success()) {
       throw exchange.failure(raw);
+    }
+  }
+
+  private void throwIfBusinessNotFound(NewApiRawResponse<?> raw) {
+    // 冻结版 v0.13.2 用 HTTP 200 的业务失败表达无权访问或不存在的 Token。
+    if (raw.status() == 200 && !raw.success() && raw.data() == null
+        && "record not found".equals(raw.message())) {
+      throw new PortalException(PortalErrorCode.NOT_FOUND);
     }
   }
 

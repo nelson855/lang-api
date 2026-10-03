@@ -1,9 +1,9 @@
 package com.lang.portal.infrastructure.aggregation;
 
 import com.lang.portal.base.aggregation.AggregationReadBudget;
+import com.lang.portal.base.aggregation.ProtectReason;
 import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
-import com.lang.portal.base.exception.UpstreamException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,39 +39,38 @@ public final class AggregationPagedReader {
       budget.checkBeforeCall();
       Page<T> fetched = fetcher.fetch(page);
       if (fetched == null || fetched.items() == null || fetched.total() < 0) {
-        throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
+        throw budget.reject(ProtectReason.INCONSISTENT_PAGE);
       }
       List<T> items = List.copyOf(fetched.items());
       if (frozenTotal == null) {
         frozenTotal = fetched.total();
         if (frozenTotal > budget.remainingRecords()) {
-          throw new PortalException(
-              PortalErrorCode.INVALID_ARGUMENT, "聚合数据量超过保护上限，请缩小时间范围后重试");
+          throw budget.reject(ProtectReason.RECORDS);
         }
       } else if (!frozenTotal.equals(fetched.total())) {
-        throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
+        throw budget.reject(ProtectReason.INCONSISTENT_PAGE);
       }
       if (items.size() > pageSize) {
-        throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
+        throw budget.reject(ProtectReason.INCONSISTENT_PAGE);
       }
       if (!fingerprints.add(items.toString())) {
-        throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
+        throw budget.reject(ProtectReason.INCONSISTENT_PAGE);
       }
       boolean isLast = collected.size() + items.size() >= frozenTotal;
       if (!isLast) {
         if (items.isEmpty()) {
-          throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
+          throw budget.reject(ProtectReason.INCONSISTENT_PAGE);
         }
         if (items.size() != pageSize) {
-          throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
+          throw budget.reject(ProtectReason.INCONSISTENT_PAGE);
         }
+      }
+      if (collected.size() + items.size() > frozenTotal) {
+        throw budget.reject(ProtectReason.INCONSISTENT_PAGE);
       }
       budget.recordPage(items.size());
       collected.addAll(items);
       if (collected.size() >= frozenTotal) {
-        if (collected.size() > frozenTotal) {
-          throw new UpstreamException(PortalErrorCode.UPSTREAM_ERROR);
-        }
         return List.copyOf(collected);
       }
       page++;

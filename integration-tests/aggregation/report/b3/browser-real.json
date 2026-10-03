@@ -1,0 +1,28 @@
+{
+  "status": "PARTIAL_FAIL",
+  "observationSource": "real-local-browser-and-controlled-temporary-upstream-disconnect",
+  "build": {
+    "status": "PASS",
+    "jarMatchesRunningContainer": true,
+    "frontendMatches": true,
+    "frontendFiles": 58,
+    "profile": "dev",
+    "newApiVersion": "v0.13.2"
+  },
+  "checks": [
+    { "assertion": "anonymous-dashboard-redirects-to-login", "passed": true },
+    { "assertion": "browser-login-and-dashboard-refresh", "passed": true },
+    { "assertion": "dashboard-time-switch-unavailable-and-partial-states", "passed": true },
+    { "assertion": "wallet-summary-consumption-filter-and-unavailable-states", "passed": true },
+    { "assertion": "model-catalog-detail-pricing-unknown-metadata-and-invalid-link", "passed": true },
+    { "assertion": "temporary-upstream-disconnect-shows-retry-and-recovers", "passed": true },
+    { "assertion": "request-log-real-record-second-precision-empty-result-and-mobile-card", "passed": true },
+    { "assertion": "request-log-submitted-filter-uses-second-precision", "passed": false, "observedHttpStatus": 400 }
+  ],
+  "limitations": [
+    "真实多页、错误日志和全部页面异常状态没有足够样本或可重复入口",
+    "请求日志筛选时间精度问题使B3不能完成"
+  ],
+  "temporaryResourcesRestored": true,
+  "supplierCallsAdded": 0
+}

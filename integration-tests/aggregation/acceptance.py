@@ -10,6 +10,7 @@ import uuid
 from evidence import capture_build, scan, project
 from performance import sample, summarize
 from transport import fetch, measure
+from identity import run_identity, IdentityBlocked, IdentityFailure
 import urllib.parse
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -76,6 +77,31 @@ def command_check(identifier, expected, command, cwd=ROOT):
         return check(identifier, expected, reason='工具不可用或执行超时', location=str(log.relative_to(ROOT)))
 
 
+def observability_check(expected, output=RAW):
+    evidence_path = ROOT / 'portal-api/target/p210-observability.json'
+    evidence_path.unlink(missing_ok=True)
+    result = command_check('observability', expected,
+                           [MAVEN, '-s', SETTINGS, '-pl', 'portal-api',
+                            '-Dtest=AggregationObservabilityChainTests', 'test'])
+    if result['status'] != 'PASS':
+        return result
+    if not evidence_path.exists():
+        return check('observability', expected, reason='本次执行未产生注册表证据')
+    try:
+        evidence = json.loads(evidence_path.read_text())
+        scan(evidence)
+        if (evidence['observationSource'] != 'controlled-http-and-process-registry'
+                or len(evidence['scenarios']) != 16):
+            raise ValueError('场景证据不足')
+        output.mkdir(parents=True, exist_ok=True)
+        (output / 'observability.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + '\n')
+    except (OSError, ValueError, KeyError, TypeError):
+        return check('observability', expected, 'FAIL', reason='注册表证据格式或安全检查失败')
+    return check('observability', expected, 'PASS', '双聚合入口16场景；拒绝、HTTP尝试、已接纳页/记录及缓存断言通过',
+                 '实际生产调用链使用受控HTTP来源及进程内注册表；不代表运行容器指标',
+                 'controlled-http-and-process-registry', 'observability.json')
+
+
 def release_matrix(checks=()):
     states = {row['id']: row['status'] for row in checks}
     reasons = {
@@ -98,6 +124,26 @@ def release_matrix(checks=()):
     rows.extend([dict(id='P2-09-protocol', status='CANCELLED', reason='用户于 2026-10-03 明确取消', location='docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9'),
                  dict(id='P2-09-ttft', status='CANCELLED', reason='用户于 2026-10-03 明确取消', location='docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9')])
     return rows
+
+
+def identity_check(expected, base, container, end, output):
+    credentials = os.environ.get('P210_IDENTITY_FILE')
+    start = os.environ.get('P210_IDENTITY_START')
+    if not credentials or not start:
+        return check('identity', expected, reason='缺少受保护双身份输入或固定范围开始时间')
+    try:
+        evidence = run_identity(base, credentials, start, end, container)
+        scan(evidence)
+        output.mkdir(parents=True, exist_ok=True)
+        (output / 'identity.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + '\n')
+        failures = sum(not row['passed'] for row in evidence['checks'])
+        return check('identity', expected, evidence['status'], f'真实双身份断言失败数={failures}',
+                     '非空日志、Key、聚合缓存、伪造身份、退出旧会话重放及资源清理实测',
+                     'real-local-dual-user', 'identity.json')
+    except IdentityBlocked:
+        return check('identity', expected, reason='身份、成功样本或隔离实例观测前提不足')
+    except (IdentityFailure, OSError, ValueError, KeyError, TypeError, RuntimeError, subprocess.SubprocessError):
+        return check('identity', expected, 'FAIL', reason='真实断言、清理或安全投影失败；原始信息不输出')
 
 
 def write_report(report, output):
@@ -162,6 +208,8 @@ def main():
                 checks.append(check(identifier, expected, state, str(statuses), '匿名请求与监控关闭核验', 'real-local'))
             except OSError:
                 checks.append(check(identifier, expected, reason='本地 HTTP 不可达'))
+        elif not args.plan_only and identifier == 'identity' and build and build['status'] == 'PASS':
+            checks.append(identity_check(expected, args.base_url, args.container, args.end, args.output))
         elif not args.plan_only and identifier == 'performance-smoke' and build and build['status'] == 'PASS' and os.environ.get('P210_COOKIE'):
             try:
                 ttl = build['effectiveConfig']['lang.aggregation.cache-ttl']
@@ -177,7 +225,7 @@ def main():
             command, cwd = commands[identifier]
             checks.append(command_check(identifier, expected, command, cwd))
         elif not args.plan_only and identifier == 'observability':
-            checks.append(check(identifier, expected, reason='指标API与测试注册表已验证，但生产调用链未调用recordProtection；拒绝计数证据缺失，需后续观测变更', evidence_type='source-and-controlled-contract', location='integration-tests/aggregation/matrix.md'))
+            checks.append(observability_check(expected, args.output))
         else:
             checks.append(check(identifier, expected, reason='仅列前提，未执行' if args.plan_only else '缺少当前构建、专用身份或经核验的真实证据'))
     report = dict(runId=str(uuid.uuid4()), time=datetime.now(timezone.utc).isoformat(), suite=args.suite,

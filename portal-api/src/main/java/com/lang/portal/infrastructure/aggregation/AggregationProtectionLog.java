@@ -1,5 +1,7 @@
 package com.lang.portal.infrastructure.aggregation;
 
+import com.lang.portal.base.aggregation.ProtectReason;
+
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

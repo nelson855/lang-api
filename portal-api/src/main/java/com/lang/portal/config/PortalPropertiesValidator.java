@@ -88,6 +88,14 @@ public class PortalPropertiesValidator {
   }
 
   static void validateAuthentication(String environment, PortalCommonProperties.Auth auth) {
+    if (auth.session() == null || auth.session().ttl() == null
+        || auth.session().ttl().isZero() || auth.session().ttl().isNegative()) {
+      throw new IllegalStateException("非法配置 lang.auth.session.ttl：必须为正数");
+    }
+    if (auth.session().ttl().compareTo(auth.cookie().maxAge()) > 0) {
+      throw new IllegalStateException(
+          "非法配置 lang.auth.session.ttl：不得长于 lang.auth.cookie.max-age，否则服务端记录先于浏览器 Cookie 失效");
+    }
     if (!"prod".equalsIgnoreCase(environment)) {
       return;
     }

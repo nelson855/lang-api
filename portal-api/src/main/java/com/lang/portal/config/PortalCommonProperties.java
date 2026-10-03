@@ -431,6 +431,7 @@ public class PortalCommonProperties {
   public static class Auth {
     @Valid @NotNull private Registration registration = new Registration();
     @Valid @NotNull private AuthCookie cookie = new AuthCookie();
+    @Valid @NotNull private Session session = new Session();
     @Valid @NotNull private Csrf csrf = new Csrf();
     @Valid @NotNull private RateLimit rateLimit = new RateLimit();
     @Valid @NotNull private TrustedProxy trustedProxy = new TrustedProxy();
@@ -452,6 +453,14 @@ public class PortalCommonProperties {
 
     public void setCookie(AuthCookie cookie) {
       this.cookie = cookie;
+    }
+
+    public Session session() {
+      return session;
+    }
+
+    public void setSession(Session session) {
+      this.session = session;
     }
 
     public Csrf csrf() {
@@ -718,6 +727,20 @@ public class PortalCommonProperties {
 
     public void setSecure(boolean secure) {
       this.secure = secure;
+    }
+  }
+
+  @Validated
+  public static class Session {
+    /** 服务端会话记录有效期；不得超过 Cookie max-age，避免浏览器仍持有 Cookie 而服务端已无记录。 */
+    @NotNull private Duration ttl = Duration.ofDays(30);
+
+    public Duration ttl() {
+      return ttl;
+    }
+
+    public void setTtl(Duration ttl) {
+      this.ttl = ttl;
     }
   }
 

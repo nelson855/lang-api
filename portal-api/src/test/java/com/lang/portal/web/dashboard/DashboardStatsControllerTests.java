@@ -5,12 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import jakarta.servlet.http.Cookie;
@@ -39,7 +41,7 @@ class DashboardStatsControllerTests {
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setCookies(
         new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42"));
-    return request;
+    return validated(request);
   }
 
   private Map<String, String> validParams() {
@@ -89,22 +91,23 @@ class DashboardStatsControllerTests {
   }
 
   @Test
-  void mismatchedPrincipalAndDuplicateCookiesDoNotLeakAcrossUsers() {
-    PortalAuthenticatedUser other =
-        new PortalAuthenticatedUser(77L, "other", "Other", "other@example.test");
-    assertThatThrownBy(() -> controller().stats(validParams(), other, validRequest()))
-        .isInstanceOf(PortalException.class)
-        .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.UNAUTHENTICATED);
-
-    MockHttpServletRequest duplicated = new MockHttpServletRequest();
-    duplicated.setCookies(
+  void controllerUsesOnlyTheSessionValidatedByTheAuthenticationFilter() {
+    // 上游凭证只来自过滤器校验过的会话记录：Controller 无法再被跨用户 Cookie 绕过。
+    NewApiSession validatedSession = new NewApiSession("upstream-session", 42L);
+    MockHttpServletRequest forged = new MockHttpServletRequest();
+    forged.setCookies(
         new Cookie("LANG_SESSION", "a"),
         new Cookie("LANG_SESSION", "b"),
-        new Cookie("LANG_UID", "42"));
-    assertThatThrownBy(() -> controller().stats(validParams(), USER, duplicated))
-        .isInstanceOf(PortalException.class)
-        .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.UNAUTHENTICATED);
-    verifyNoInteractions(queryService);
+        new Cookie("LANG_UID", "77"));
+    forged.setAttribute(PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, validatedSession);
+    when(queryService.query(
+            eq(validatedSession), any(), any(), any(), any(), any(), any()))
+        .thenReturn(null);
+
+    controller().stats(validParams(), USER, forged);
+
+    // 传给下游的仍是校验过的会话，而不是浏览器 Cookie 声称的身份。
+    verify(queryService).query(eq(validatedSession), any(), any(), any(), any(), any(), any());
   }
 
   @Test
@@ -157,4 +160,12 @@ class DashboardStatsControllerTests {
     assertThat(firstResponse.getBody().requestId()).isEqualTo("req-first");
     assertThat(secondResponse.getBody().requestId()).isEqualTo("req-second");
   }
+
+  /** 标记该请求已通过会话校验；上游凭证只能来自这里，不再由浏览器 Cookie 提供。 */
+  private static MockHttpServletRequest validated(MockHttpServletRequest request) {
+    request.setAttribute(
+        PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, new NewApiSession("upstream-session", 42L));
+    return request;
+  }
+
 }

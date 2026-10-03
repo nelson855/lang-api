@@ -1,0 +1,349 @@
+{
+  "runId": "ac09c6b2-82fd-4633-8794-0bc9476fcb4b",
+  "time": "2026-10-03T10:15:47.407233+00:00",
+  "suite": "performance",
+  "checks": [
+    {
+      "id": "build",
+      "expected": "运行产物归属确认",
+      "actual": "见构建清单",
+      "status": "PASS",
+      "reason": "运行产物与前端摘要及非敏感配置核对",
+      "evidenceType": "real-build",
+      "location": "report.json#build"
+    },
+    {
+      "id": "performance-smoke",
+      "expected": "真实 1h/24h/7d 冷热明细与 30d 保护",
+      "actual": "7 次；仅冒烟",
+      "status": "PASS",
+      "reason": "隔离实例逐请求日志差分；完整固定成功样本计数；TTL过期后一次来源读取，热查询无来源读取且结果一致；不是容器指标注册表",
+      "evidenceType": "real-small-sample",
+      "location": "report.json#samples"
+    },
+    {
+      "id": "performance-baseline",
+      "expected": "代表性规模每范围各 20 次冷、热有效请求",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    },
+    {
+      "id": "performance-target",
+      "expected": "已确认负载、部署资源及正式性能目标比较",
+      "actual": "未执行",
+      "status": "BLOCKED",
+      "reason": "缺少当前构建、专用身份或经核验的真实证据",
+      "evidenceType": "none",
+      "location": ""
+    }
+  ],
+  "contractConclusion": "BLOCKED",
+  "releaseRequirements": [
+    {
+      "id": "P2-01",
+      "status": "BLOCKED",
+      "reason": "跨日/DST 上游证据、小时趋势、stat 时间过滤、流水与新基线未闭合",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-02",
+      "status": "BLOCKED",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-03",
+      "status": "BLOCKED",
+      "reason": "请求总数、成功率、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-04",
+      "status": "BLOCKED",
+      "reason": "双趋势、完整最近请求与原指标目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-05",
+      "status": "BLOCKED",
+      "reason": "正式金额、TOPUP/REFUND 与容量证据受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-06",
+      "status": "BLOCKED",
+      "reason": "真实充值/退款、正式金额与30d 原目标受阻",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-07",
+      "status": "BLOCKED",
+      "reason": "增强元数据与增强计费可信来源缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-08",
+      "status": "BLOCKED",
+      "reason": "真实增强模型来源缺失，合成展示不解除阻塞",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09",
+      "status": "BLOCKED",
+      "reason": "本轮适用检查结论；缺项不得用历史证据代替",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-10",
+      "status": "BLOCKED",
+      "reason": "真实环境、代表性规模、部署资源与正式性能目标缺失",
+      "location": "integration-tests/aggregation/matrix.md"
+    },
+    {
+      "id": "P2-09-protocol",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    },
+    {
+      "id": "P2-09-ttft",
+      "status": "CANCELLED",
+      "reason": "用户于 2026-10-03 明确取消",
+      "location": "docs/18_LANG-P2-09-请求日志协议与TTFT与费用信息增强说明.md#9"
+    }
+  ],
+  "releaseConclusion": "BLOCKED",
+  "build": {
+    "status": "PASS",
+    "jarSha256": "e449764a3d982d5452a80c1da68c52b175f27674205ad643482cdec2be866e59",
+    "runningJarSha256": "e449764a3d982d5452a80c1da68c52b175f27674205ad643482cdec2be866e59",
+    "frontendEqual": true,
+    "frontendFiles": 58,
+    "frontendSha256": "f6bb0ecbafbbb0c3ce38820947b65c1ec6dc41a9f1d35f315dbc54172c3e5402",
+    "environment": "local-docker",
+    "profile": "dev",
+    "imageId": "sha256:bbacc7e7e712c6524de5e931eded173ff3537ea2e0dfb36a62464e98a6f22c63",
+    "newApiImageId": "sha256:98361b3114f043f94ffd5affc457ee8d64923a0cc53e2824f2e727017ac098f1",
+    "newApiVersion": "calciumion/new-api:v0.13.2@sha256:0c6aa7afce4747f0fc4fab9c7934d7c2e4b69fda6844065acca6a5e1bf258506",
+    "newApiDigest": "calciumion/new-api@sha256:0c6aa7afce4747f0fc4fab9c7934d7c2e4b69fda6844065acca6a5e1bf258506",
+    "effectiveConfig": {
+      "lang.aggregation.baseline-version": "p2-2026-09-22-a",
+      "lang.aggregation.page-size": "20",
+      "lang.aggregation.max-pages": "10",
+      "lang.aggregation.max-records": "200",
+      "lang.aggregation.single-call-timeout": "5s",
+      "lang.aggregation.total-timeout": "30s",
+      "lang.aggregation.max-live-log-range": "168h",
+      "lang.aggregation.cache-ttl": "30s",
+      "lang.aggregation.cache-maximum-size": "1000",
+      "lang.aggregation.five-minutes-max-span": "24h",
+      "lang.aggregation.hour-max-span": "168h",
+      "lang.aggregation.day-max-span": "720h",
+      "management.endpoints.web.exposure.include": "health,info",
+      "management.endpoint.health.show-details": "never"
+    },
+    "configConfirmed": true
+  },
+  "samples": [
+    {
+      "durationMs": 98.127,
+      "outcome": "success",
+      "records": 1,
+      "pages": 1,
+      "upstreamCalls": 1,
+      "cacheObserved": "miss",
+      "observationSource": "isolated-container-log-events-and-fixed-source-count",
+      "range": "1h",
+      "mode": "cold"
+    },
+    {
+      "durationMs": 21.803,
+      "outcome": "success",
+      "records": 1,
+      "pages": 0,
+      "upstreamCalls": 0,
+      "cacheObserved": "hit",
+      "observationSource": "isolated-container-log-events-and-fixed-source-count",
+      "range": "1h",
+      "mode": "hot"
+    },
+    {
+      "durationMs": 30.521,
+      "outcome": "success",
+      "records": 1,
+      "pages": 1,
+      "upstreamCalls": 1,
+      "cacheObserved": "miss",
+      "observationSource": "isolated-container-log-events-and-fixed-source-count",
+      "range": "24h",
+      "mode": "cold"
+    },
+    {
+      "durationMs": 17.492,
+      "outcome": "success",
+      "records": 1,
+      "pages": 0,
+      "upstreamCalls": 0,
+      "cacheObserved": "hit",
+      "observationSource": "isolated-container-log-events-and-fixed-source-count",
+      "range": "24h",
+      "mode": "hot"
+    },
+    {
+      "durationMs": 26.43,
+      "outcome": "success",
+      "records": 1,
+      "pages": 1,
+      "upstreamCalls": 1,
+      "cacheObserved": "miss",
+      "observationSource": "isolated-container-log-events-and-fixed-source-count",
+      "range": "7d",
+      "mode": "cold"
+    },
+    {
+      "durationMs": 18.487,
+      "outcome": "success",
+      "records": 1,
+      "pages": 0,
+      "upstreamCalls": 0,
+      "cacheObserved": "hit",
+      "observationSource": "isolated-container-log-events-and-fixed-source-count",
+      "range": "7d",
+      "mode": "hot"
+    },
+    {
+      "durationMs": 22.159,
+      "outcome": "protected",
+      "records": 0,
+      "pages": 0,
+      "upstreamCalls": 0,
+      "cacheObserved": "unknown",
+      "observationSource": "isolated-container-log-events-and-fixed-source-count",
+      "range": "30d",
+      "mode": "cold"
+    }
+  ],
+  "performance": {
+    "ranges": {
+      "1h": {
+        "cold": {
+          "validSamples": 1,
+          "successfulSamples": 1,
+          "p50Ms": null,
+          "p95Ms": null,
+          "status": "BLOCKED"
+        },
+        "hot": {
+          "validSamples": 1,
+          "successfulSamples": 1,
+          "p50Ms": null,
+          "p95Ms": null,
+          "status": "BLOCKED"
+        }
+      },
+      "24h": {
+        "cold": {
+          "validSamples": 1,
+          "successfulSamples": 1,
+          "p50Ms": null,
+          "p95Ms": null,
+          "status": "BLOCKED"
+        },
+        "hot": {
+          "validSamples": 1,
+          "successfulSamples": 1,
+          "p50Ms": null,
+          "p95Ms": null,
+          "status": "BLOCKED"
+        }
+      },
+      "7d": {
+        "cold": {
+          "validSamples": 1,
+          "successfulSamples": 1,
+          "p50Ms": null,
+          "p95Ms": null,
+          "status": "BLOCKED"
+        },
+        "hot": {
+          "validSamples": 1,
+          "successfulSamples": 1,
+          "p50Ms": null,
+          "p95Ms": null,
+          "status": "BLOCKED"
+        }
+      }
+    },
+    "status": "BLOCKED",
+    "targetStatus": "BLOCKED",
+    "errors": 0,
+    "protected": 1
+  },
+  "observationDetails": [
+    {
+      "httpStatus": 200,
+      "protectionEvents": 0,
+      "rangeProtectionConfirmed": false,
+      "legalDayControlPassed": null
+    },
+    {
+      "httpStatus": 200,
+      "protectionEvents": 0,
+      "rangeProtectionConfirmed": false,
+      "legalDayControlPassed": null
+    },
+    {
+      "httpStatus": 200,
+      "protectionEvents": 0,
+      "rangeProtectionConfirmed": false,
+      "legalDayControlPassed": null
+    },
+    {
+      "httpStatus": 200,
+      "protectionEvents": 0,
+      "rangeProtectionConfirmed": false,
+      "legalDayControlPassed": null
+    },
+    {
+      "httpStatus": 200,
+      "protectionEvents": 0,
+      "rangeProtectionConfirmed": false,
+      "legalDayControlPassed": null
+    },
+    {
+      "httpStatus": 200,
+      "protectionEvents": 0,
+      "rangeProtectionConfirmed": false,
+      "legalDayControlPassed": null
+    },
+    {
+      "httpStatus": 400,
+      "protectionEvents": 0,
+      "rangeProtectionConfirmed": true,
+      "legalDayControlPassed": true
+    }
+  ],
+  "sampleSemantics": {
+    "records": "固定窗口成功来源记录数；不包含失败请求",
+    "pages": "本次请求成功接纳的日志页；热查询为0",
+    "upstreamCalls": "本次请求实际log-self HTTP次数；不包含每次认证的profile调用",
+    "cacheObserved": "在独占实例、固定结果及TTL条件下由来源调用差分确认，不按耗时推断"
+  },
+  "cleanup": {
+    "logoutAccepted": true,
+    "clientStateCleared": true,
+    "temporaryContainerRemoved": true,
+    "originalServicesUnchanged": true,
+    "providerCallsAdded": 0
+  },
+  "validationLocation": "validation.json",
+  "scopeNotes": [
+    "当前打包产物的真实小样本；完整verify存在后端失败，不声明整体构建通过",
+    "每范围1条成功记录、冷热各1次，不代表典型规模，不发布p50/p95",
+    "30d为合法DAY参数的范围拒绝对照；未观察运行时指标注册表",
+    "初次运行额外要求不存在的保护日志事件造成误判，修正编排后完整重跑通过；未修改业务代码"
+  ]
+}
