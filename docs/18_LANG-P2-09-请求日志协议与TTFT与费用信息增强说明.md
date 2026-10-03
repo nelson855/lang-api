@@ -165,3 +165,8 @@ OpenSpec strict 与 `git diff --check` 通过。UI 静态检查仍有 7 项既�
 本地测试产物同步：通过指定 Maven/settings.xml 的 `-pl portal-api -DskipTests package` 仅重新打包（不是本轮后端测试结果）；已逐文件核对 JAR 静态资源与最新 frontend/dist 相同。当前取消后 JAR SHA-256 为 `a0bdf280586c1c27a41cf3a7635634ab4c3a4ad9ea28e833f84b60f875b5463f`，替换现有本地测试镜像。第 8 节指纹保留为取消前实测历史。
 
 最新 Docker 无 mock 浏览器验证通过：真实登录、重新加载、9 条真实记录、单页分页边界、费用说明、375px 下取消指标不展示、ERROR 页及清理会话后 401。容器内 JAR 指纹与上列一致；探测端口保持关闭，未新增模型请求或扣费。OpenSpec strict 与 git diff --check 通过，P2-09 当前收缩范围已完成，原 6.1 仅为取消记录。
+
+
+## 10. 2026-10-03 归档
+
+用户确认满足条件后归档。现行任务 32/32 完成，原 6.1 明确为用户取消而非验证通过；主 spec request-log-viewing 已同步 1 项修改、2 项新增要求，保留其余原有要求和场景。全部 28 项主 spec strict 校验及变更 strict 校验通过。归档目录为 `openspec/changes/archive/2026-10-02-03-lang-p2-09-request-log-enhancements/`，保留原目录名和 .openspec.yaml；保留未提交代码、测试和文档改动，不执行 Git 提交或发布。
