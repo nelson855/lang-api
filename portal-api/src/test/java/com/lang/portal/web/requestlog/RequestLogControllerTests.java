@@ -113,4 +113,26 @@ class RequestLogControllerTests {
         .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.UNAUTHENTICATED);
     verifyNoInteractions(queryService);
   }
+
+  /** 本变更不新增协议/TTFT 筛选，两个参数名必须与其他未知参数一样被拒绝。 */
+  @Test
+  void listRejectsProtocolAndTtftFiltersThatAreNotSupportedUpstream() {
+    for (String param : List.of("protocol", "firstTokenLatencyMs", "ttft")) {
+      assertThatThrownBy(() -> controller().list(Map.of(param, "OPENAI"), USER, validRequest()))
+          .isInstanceOf(PortalException.class)
+          .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.INVALID_ARGUMENT);
+    }
+    verifyNoInteractions(queryService);
+  }
+
+  /** 上游只允许访问当前用户自己的日志，不接受任何指定用户或管理员入口的参数。 */
+  @Test
+  void listRejectsArbitraryUserSelectionParams() {
+    for (String param : List.of("userId", "username", "tokenId", "admin")) {
+      assertThatThrownBy(() -> controller().list(Map.of(param, "42"), USER, validRequest()))
+          .isInstanceOf(PortalException.class)
+          .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.INVALID_ARGUMENT);
+    }
+    verifyNoInteractions(queryService);
+  }
 }

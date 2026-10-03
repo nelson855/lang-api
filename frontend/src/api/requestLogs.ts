@@ -6,6 +6,44 @@ const decimalString = z.string().regex(/^\d+(\.\d{1,6})?$/);
 
 export const requestLogResultSchema = z.enum(['SUCCESS', 'ERROR']);
 
+/**
+ * Portal 展示词表，仅用于安全展示受控值；不代表上游已提供该协议映射，
+ * 也不构成任何公共协议开放承诺。词表外的字符串一律降级为 null，不原样透传。
+ */
+const CONTROLLED_PROTOCOLS = ['OPENAI', 'ANTHROPIC', 'GEMINI'] as const;
+export type ControlledProtocol = (typeof CONTROLLED_PROTOCOLS)[number];
+
+const controlledProtocolSchema = z.custom<string>(
+  (value) => typeof value === 'string' && (CONTROLLED_PROTOCOLS as readonly string[]).includes(value),
+  { message: '协议不在受控词表内' },
+);
+
+/** 缺失、非受控字符串或异常类型 → null；合法受控值原样保留。 */
+const optionalProtocolSchema = z
+  .unknown()
+  .optional()
+  .transform((value) => {
+    const parsed = controlledProtocolSchema.safeParse(value);
+    return parsed.success ? parsed.data : null;
+  });
+
+/**
+ * 缺失或 null → null；合法非负安全整数毫秒值（含真实零）→ 原值；其余一律降级为 null。
+ * 不以总耗时推断上下界：其单位分辨率与测量边界尚不能支撑该推断。
+ */
+const optionalFirstTokenLatencySchema = z
+  .unknown()
+  .optional()
+  .transform((value) => {
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) {
+      return null;
+    }
+    if (!Number.isFinite(value) || !Number.isSafeInteger(value)) {
+      return null;
+    }
+    return value;
+  });
+
 export const requestLogSchema = z
   .object({
     occurredAt: z.string().datetime({ offset: true }),
@@ -20,8 +58,8 @@ export const requestLogSchema = z
     quota: decimalString,
     amount: decimalString,
     currency: z.literal('USD'),
-    protocol: z.string().min(1).nullable(),
-    firstTokenLatencyMs: z.number().int().nonnegative().nullable(),
+    protocol: optionalProtocolSchema,
+    firstTokenLatencyMs: optionalFirstTokenLatencySchema,
   })
   .strict();
 

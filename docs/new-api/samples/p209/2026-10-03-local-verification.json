@@ -1,0 +1,166 @@
+{
+  "observedOn": "2026-10-03",
+  "version": "v0.13.2",
+  "kind": "sanitized-live-field-projection",
+  "upstreamStatus": {
+    "version": "v0.13.2",
+    "quota_per_unit": 500000,
+    "usd_exchange_rate": 7.3,
+    "display_in_currency": true
+  },
+  "successLog": {
+    "created_at": 1790990104,
+    "type": 2,
+    "prompt_tokens": 85,
+    "completion_tokens": 23,
+    "quota": 4050,
+    "use_time": 1,
+    "is_stream": false,
+    "other": "{\"frt\":-1000,\"request_conversion\":[\"OpenAI Compatible\"]}"
+  },
+  "historicalStreamLogs": [
+    {
+      "created_at": 1790065952,
+      "type": 2,
+      "prompt_tokens": 31,
+      "completion_tokens": 20,
+      "quota": 0,
+      "use_time": 3,
+      "is_stream": true,
+      "other": "{\"frt\":3220,\"request_conversion\":[\"OpenAI Compatible\"]}"
+    },
+    {
+      "created_at": 1790065949,
+      "type": 2,
+      "prompt_tokens": 31,
+      "completion_tokens": 20,
+      "quota": 0,
+      "use_time": 2,
+      "is_stream": true,
+      "other": "{\"frt\":860,\"request_conversion\":[\"OpenAI Compatible\"]}"
+    },
+    {
+      "created_at": 1790065947,
+      "type": 2,
+      "prompt_tokens": 31,
+      "completion_tokens": 20,
+      "quota": 0,
+      "use_time": 1,
+      "is_stream": true,
+      "other": "{\"frt\":1044,\"request_conversion\":[\"OpenAI Compatible\"]}"
+    }
+  ],
+  "errorLog": {
+    "created_at": 1790990507,
+    "type": 5,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "quota": 0,
+    "use_time": 1,
+    "is_stream": false,
+    "other": "{\"status_code\":400}"
+  },
+  "portalSuccess": {
+    "occurredAt": "2026-10-03T01:15:04Z",
+    "result": "SUCCESS",
+    "inputTokens": 85,
+    "outputTokens": 23,
+    "durationMs": 1000,
+    "stream": false,
+    "quota": "4050",
+    "amount": "0.0081",
+    "currency": "USD",
+    "protocol": null,
+    "firstTokenLatencyMs": null
+  },
+  "portalError": {
+    "occurredAt": "2026-10-03T01:21:47Z",
+    "result": "ERROR",
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "durationMs": 1000,
+    "stream": false,
+    "quota": "0",
+    "amount": "0.0",
+    "currency": "USD",
+    "protocol": null,
+    "firstTokenLatencyMs": null
+  },
+  "apiChecks": [
+    {
+      "query": "page=1&pageSize=1&result=SUCCESS&startTime=2026-09-21T00:00:00Z&endTime=2026-10-04T00:00:00Z",
+      "status": 200,
+      "total": 9,
+      "count": 1,
+      "nullEnhancements": true
+    },
+    {
+      "query": "page=2&pageSize=1&result=SUCCESS&startTime=2026-09-21T00:00:00Z&endTime=2026-10-04T00:00:00Z",
+      "status": 200,
+      "total": 9,
+      "count": 1,
+      "nullEnhancements": true
+    },
+    {
+      "query": "result=ERROR",
+      "status": 200,
+      "total": 1,
+      "count": 1,
+      "nullEnhancements": true
+    },
+    {
+      "query": "protocol=OPENAI",
+      "status": 400,
+      "total": null,
+      "count": 0,
+      "nullEnhancements": true
+    },
+    {
+      "query": "firstTokenLatencyMs=1",
+      "status": 400,
+      "total": null,
+      "count": 0,
+      "nullEnhancements": true
+    },
+    {
+      "query": "userId=1",
+      "status": 400,
+      "total": null,
+      "count": 0,
+      "nullEnhancements": true
+    },
+    {
+      "query": "page=0",
+      "status": 400,
+      "total": null,
+      "count": 0,
+      "nullEnhancements": true
+    },
+    {
+      "query": "startTime=2099-01-01T00:00:00Z&endTime=2099-01-02T00:00:00Z",
+      "status": 200,
+      "total": 0,
+      "count": 0,
+      "nullEnhancements": true
+    }
+  ],
+  "unauthenticatedStatus": 401,
+  "consumption": {
+    "balanceBefore": 500000,
+    "balanceAfter": 495950,
+    "usedQuotaBefore": 0,
+    "usedQuotaAfter": 4050,
+    "quotaPerUsd": 500000,
+    "inputUsdPerMillion": "75.0",
+    "outputUsdPerMillion": "75.0",
+    "calculatedUsd": "0.0081",
+    "summary": {
+      "quota": "4050",
+      "amount": "0.0081",
+      "currency": "USD",
+      "rpm": 0,
+      "tpm": 0,
+      "rateWindowSeconds": 60
+    }
+  }
+}

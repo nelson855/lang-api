@@ -1,3 +1,9 @@
 package com.lang.portal.web.auth;
 
-public record AuthProfile(long id, String username, String displayName, String email) {}
+public record AuthProfile(long id, String username, String displayName, String email) {
+  public AuthProfile {
+    if (email != null && email.isBlank()) {
+      email = null;
+    }
+  }
+}

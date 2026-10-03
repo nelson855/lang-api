@@ -57,6 +57,8 @@ export function RequestLogsPage() {
   const [modelInput, setModelInput] = useState(submitted.model);
   const [resultInput, setResultInput] = useState(submitted.result);
   const [timePreset, setTimePreset] = useState<TimePreset>('24h');
+  // 费用说明默认折叠，按钮始终可聚焦，不依赖悬停。
+  const [costNoteOpen, setCostNoteOpen] = useState(false);
 
   // URL 变化（前进/后退、Dashboard 下钻）时同步草稿。
   useEffect(() => {
@@ -120,11 +122,34 @@ export function RequestLogsPage() {
 
   const isDrilldown = isDashboardDrilldownRange(submitted);
 
+  const costNote = (
+    <div className="request-logs-cost-note">
+      <button
+        type="button"
+        className="request-logs-cost-toggle"
+        aria-expanded={costNoteOpen}
+        aria-controls="request-logs-cost-note-body"
+        onClick={() => setCostNoteOpen((open) => !open)}
+      >
+        {t('pages.requestLogs.costNoteTitle')}
+      </button>
+      <p id="request-logs-cost-note-body" role="note" hidden={!costNoteOpen}>
+        {t('pages.requestLogs.costNote')}
+      </p>
+    </div>
+  );
+
   const columns = useMemo(
     () => [
       { key: 'occurredAt', header: t('pages.requestLogs.colTime'), render: (row: RequestLog) => row.occurredAt },
       { key: 'keyName', header: t('pages.requestLogs.colKey'), render: (row: RequestLog) => missingText(row.keyName, t('pages.requestLogs.noData')) },
       { key: 'model', header: t('pages.requestLogs.colModel'), render: (row: RequestLog) => missingText(row.model, t('pages.requestLogs.noData')) },
+      {
+        key: 'stream',
+        header: t('pages.requestLogs.colStream'),
+        render: (row: RequestLog) =>
+          row.stream ? t('pages.requestLogs.streamYes') : t('pages.requestLogs.streamNo'),
+      },
       {
         key: 'tokens',
         header: t('pages.requestLogs.colTokens'),
@@ -135,7 +160,14 @@ export function RequestLogsPage() {
       {
         key: 'amount',
         header: t('pages.requestLogs.colCost'),
-        render: (row: RequestLog) => `${row.amount} ${row.currency}`,
+        render: (row: RequestLog) => (
+          <>
+            <span>{`${row.amount} ${row.currency}`}</span>
+            <span className="request-logs-quota">
+              {t('pages.requestLogs.quotaSuffix', { quota: row.quota })}
+            </span>
+          </>
+        ),
       },
       {
         key: 'requestId',
@@ -227,6 +259,7 @@ export function RequestLogsPage() {
           <Empty description={t('pages.requestLogs.empty')} />
         ) : (
           <>
+            {costNote}
             <DataTable<RequestLog>
               columns={columns}
               rows={data.items}
@@ -245,13 +278,23 @@ export function RequestLogsPage() {
                     {t('pages.requestLogs.colModel')}: {missingText(row.model, t('pages.requestLogs.noData'))}
                   </p>
                   <p>
+                    {t('pages.requestLogs.colStream')}:{' '}
+                    {row.stream ? t('pages.requestLogs.streamYes') : t('pages.requestLogs.streamNo')}
+                  </p>
+                  <p>
                     {t('pages.requestLogs.colTokens')}: {row.inputTokens}/{row.outputTokens}
+                  </p>
+                  <p>
+                    {t('pages.requestLogs.colDuration')}: {row.durationMs}ms
                   </p>
                   <p>
                     {t('pages.requestLogs.colResult')}: {row.result}
                   </p>
                   <p>
                     {t('pages.requestLogs.colCost')}: {row.amount} {row.currency}
+                    <span className="request-logs-quota">
+                      {t('pages.requestLogs.quotaSuffix', { quota: row.quota })}
+                    </span>
                   </p>
                   <p>
                     {t('pages.requestLogs.colRequestId')}: {missingText(row.requestId, t('pages.requestLogs.noData'))}
