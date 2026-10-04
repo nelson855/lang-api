@@ -65,7 +65,7 @@ public class AuthenticationController {
     rateLimiter.checkLogin(request.username(), servletRequest);
     AuthLoginResult result = service.login(request);
     ResponseEntity.BodyBuilder response = ResponseEntity.ok();
-    cookiePolicy.createSessionCookies(result.session().value(), result.session().userId())
+    cookiePolicy.createSessionCookies(result.session().sessionId(), result.session().userId())
         .forEach(cookie -> response.header("Set-Cookie", cookie.toString()));
     return response.body(ApiResponses.ok(servletRequest, result.profile()));
   }
@@ -88,10 +88,10 @@ public class AuthenticationController {
     List<String> expiredCookies = cookiePolicy.expireSessionCookies().stream()
         .map(Object::toString)
         .toList();
-    NewApiSession session = session(servletRequest.getCookies());
-    if (session != null) {
+    BrowserSession browserSession = session(servletRequest.getCookies());
+    if (browserSession != null) {
       try {
-        service.logout(session);
+        service.revoke(browserSession.sessionId(), browserSession.userId());
       } catch (com.lang.portal.base.exception.UpstreamException exception) {
         servletRequest.setAttribute(EXPIRE_SESSION_COOKIES_ATTRIBUTE, expiredCookies);
         log.warn("event=revocation_unconfirmed");
@@ -107,7 +107,7 @@ public class AuthenticationController {
     return new AuthProfile(user.id(), user.username(), user.displayName(), user.email());
   }
 
-  private NewApiSession session(Cookie[] cookies) {
+  private BrowserSession session(Cookie[] cookies) {
     if (cookies == null) {
       return null;
     }
@@ -128,11 +128,14 @@ public class AuthenticationController {
     }
     try {
       long id = Long.parseLong(userId);
-      return id > 0 ? new NewApiSession(session, id) : null;
+      return id > 0 ? new BrowserSession(session, id) : null;
     } catch (NumberFormatException ignored) {
       return null;
     }
   }
+
+  /** 浏览器持有的会话标识与用户标识；是否可撤销以服务端记录为准。 */
+  private record BrowserSession(String sessionId, long userId) {}
 
   private boolean cookiePolicyName(String name) {
     return properties.auth().cookie().sessionName().equals(name)

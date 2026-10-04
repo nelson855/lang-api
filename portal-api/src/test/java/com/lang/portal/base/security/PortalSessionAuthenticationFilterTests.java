@@ -10,6 +10,8 @@ import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.exception.UpstreamException;
 import com.lang.portal.config.PortalCommonProperties;
+import com.lang.portal.infrastructure.session.PortalSessionRecord;
+import com.lang.portal.infrastructure.session.PortalSessionStore;
 import com.lang.portal.upstream.newapi.auth.NewApiAuthenticationClient;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import com.lang.portal.upstream.newapi.auth.NewApiUserProfile;
@@ -24,8 +26,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 class PortalSessionAuthenticationFilterTests {
 
   private final NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
+  private final PortalSessionStore store = mock(PortalSessionStore.class);
   private final PortalSessionAuthenticationFilter filter = new PortalSessionAuthenticationFilter(
-      new PortalCommonProperties(), client, new NewApiCookiePolicy(new PortalCommonProperties()));
+      new PortalCommonProperties(), client, new NewApiCookiePolicy(new PortalCommonProperties()), store);
 
   @AfterEach
   void clearSecurityContext() {
@@ -51,6 +54,8 @@ class PortalSessionAuthenticationFilterTests {
 
   @Test
   void validatedSessionCreatesOnlyOrdinaryUserAuthentication() throws Exception {
+    when(store.find("upstream-session"))
+        .thenReturn(new PortalSessionRecord("upstream-session", "upstream-session", 42L));
     when(client.currentUser(new NewApiSession("upstream-session", 42L)))
         .thenReturn(new NewApiUserProfile(42L, "ordinary", "Ordinary User", "ordinary@example.test"));
 
@@ -68,6 +73,8 @@ class PortalSessionAuthenticationFilterTests {
 
   @Test
   void forgedNewApiUserHeaderIsIgnoredInFavorOfValidatedCookies() throws Exception {
+    when(store.find("upstream-session"))
+        .thenReturn(new PortalSessionRecord("upstream-session", "upstream-session", 42L));
     when(client.currentUser(new NewApiSession("upstream-session", 42L)))
         .thenReturn(new NewApiUserProfile(42L, "ordinary", null, null));
     MockHttpServletRequest request = request(new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42"));
@@ -81,6 +88,8 @@ class PortalSessionAuthenticationFilterTests {
 
   @Test
   void upstreamUnauthorizedLeavesRequestAnonymous() throws Exception {
+    when(store.find("upstream-session"))
+        .thenReturn(new PortalSessionRecord("upstream-session", "upstream-session", 42L));
     when(client.currentUser(new NewApiSession("upstream-session", 42L)))
         .thenThrow(new PortalException(PortalErrorCode.UNAUTHENTICATED));
 
@@ -96,6 +105,8 @@ class PortalSessionAuthenticationFilterTests {
 
   @Test
   void upstreamFailureIsNotReclassifiedAsAnonymousSession() {
+    when(store.find("upstream-session"))
+        .thenReturn(new PortalSessionRecord("upstream-session", "upstream-session", 42L));
     when(client.currentUser(new NewApiSession("upstream-session", 42L)))
         .thenThrow(new UpstreamException(PortalErrorCode.UPSTREAM_UNAVAILABLE));
 

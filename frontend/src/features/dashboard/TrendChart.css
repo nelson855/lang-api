@@ -1,0 +1,71 @@
+.trend-chart {
+  margin: 0.5rem 0;
+}
+
+.trend-chart-canvas {
+  position: relative;
+}
+
+.trend-chart-svg {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  overflow: visible;
+}
+
+.trend-chart-path {
+  stroke: var(--color-accent, #2463eb);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.trend-chart-axis {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+.trend-chart-empty {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.trend-chart-fallback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trend-animate {
+    animation: none;
+  }
+}
+
+.trend-animate {
+  animation: trendGrow 0.5s ease-out;
+}
+
+@keyframes trendGrow {
+  from {
+    stroke-dashoffset: 500;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

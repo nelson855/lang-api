@@ -12,6 +12,7 @@ import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.response.PageData;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import jakarta.servlet.http.Cookie;
@@ -42,7 +43,7 @@ class RequestLogControllerTests {
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setCookies(
         new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42"));
-    return request;
+    return validated(request);
   }
 
   @Test
@@ -113,4 +114,34 @@ class RequestLogControllerTests {
         .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.UNAUTHENTICATED);
     verifyNoInteractions(queryService);
   }
+
+  /** 本变更不新增协议/TTFT 筛选，两个参数名必须与其他未知参数一样被拒绝。 */
+  @Test
+  void listRejectsProtocolAndTtftFiltersThatAreNotSupportedUpstream() {
+    for (String param : List.of("protocol", "firstTokenLatencyMs", "ttft")) {
+      assertThatThrownBy(() -> controller().list(Map.of(param, "OPENAI"), USER, validRequest()))
+          .isInstanceOf(PortalException.class)
+          .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.INVALID_ARGUMENT);
+    }
+    verifyNoInteractions(queryService);
+  }
+
+  /** 上游只允许访问当前用户自己的日志，不接受任何指定用户或管理员入口的参数。 */
+  @Test
+  void listRejectsArbitraryUserSelectionParams() {
+    for (String param : List.of("userId", "username", "tokenId", "admin")) {
+      assertThatThrownBy(() -> controller().list(Map.of(param, "42"), USER, validRequest()))
+          .isInstanceOf(PortalException.class)
+          .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.INVALID_ARGUMENT);
+    }
+    verifyNoInteractions(queryService);
+  }
+
+  /** 标记该请求已通过会话校验；上游凭证只能来自这里，不再由浏览器 Cookie 提供。 */
+  private static MockHttpServletRequest validated(MockHttpServletRequest request) {
+    request.setAttribute(
+        PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, new NewApiSession("upstream-session", 42L));
+    return request;
+  }
+
 }

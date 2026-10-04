@@ -26,6 +26,9 @@ COPY frontend/package-lock.json frontend/package-lock.json
 COPY portal-api/pom.xml portal-api/pom.xml
 COPY frontend/ frontend/
 COPY portal-api/ portal-api/
+# 完整测试读取的冻结脱敏证据；只进入构建阶段
+COPY docs/new-api/aggregation-baseline.json docs/new-api/aggregation-baseline.json
+COPY docs/new-api/samples/aggregation/ docs/new-api/samples/aggregation/
 
 # 与本机正式构建同一入口；Maven 私服凭据只经 BuildKit secret 注入，不进镜像层
 RUN --mount=type=secret,id=maven_settings \

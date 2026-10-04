@@ -6,7 +6,7 @@
 
 - 验证“正式构建产物”从用户视角的行为：页面可访问、路由刷新、接口返回、健康检查。
 - 不复制后端单元测试或前端单元测试已经覆盖的内容。
-- 不伪造 New API、数据库、消息队列等外部依赖；需要外部依赖的场景等到对应子需求接入真实环境后再写。
+- 可控传输 fixture 只用于契约与保护测试；不得向真实 New API 数据库写入伪造日志。真实环境与性能结论必须单独采集真实证据。
 
 ## 命名约定
 
@@ -31,3 +31,5 @@ bash integration-tests/gateway/real-provider-check.sh --with-restrictions
 ```
 
 缺少真实 Base URL、模型、有效 Key 或四类限制 Key 时，脚本返回 `BLOCKED`/退出码 2，相关 OpenSpec 任务保持未完成。
+
+- `aggregation/`：LANG-P2-10 四层验收入口、构建归属、安全报告、冷热采样与阶段阻塞矩阵；运行方法见该目录 README.md。

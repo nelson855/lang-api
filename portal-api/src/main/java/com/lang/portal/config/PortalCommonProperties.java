@@ -23,6 +23,7 @@ public class PortalCommonProperties {
   @Valid @NotNull private Auth auth = new Auth();
   @Valid @NotNull private ApiKey apiKey = new ApiKey();
   @Valid @NotNull private Catalog catalog = new Catalog();
+  @Valid @NotNull private Aggregation aggregation = new Aggregation();
   private String env = "";
 
   public Request request() {
@@ -71,6 +72,14 @@ public class PortalCommonProperties {
 
   public void setCatalog(Catalog catalog) {
     this.catalog = catalog;
+  }
+
+  public Aggregation aggregation() {
+    return aggregation;
+  }
+
+  public void setAggregation(Aggregation aggregation) {
+    this.aggregation = aggregation;
   }
 
   public String env() {
@@ -422,6 +431,7 @@ public class PortalCommonProperties {
   public static class Auth {
     @Valid @NotNull private Registration registration = new Registration();
     @Valid @NotNull private AuthCookie cookie = new AuthCookie();
+    @Valid @NotNull private Session session = new Session();
     @Valid @NotNull private Csrf csrf = new Csrf();
     @Valid @NotNull private RateLimit rateLimit = new RateLimit();
     @Valid @NotNull private TrustedProxy trustedProxy = new TrustedProxy();
@@ -443,6 +453,14 @@ public class PortalCommonProperties {
 
     public void setCookie(AuthCookie cookie) {
       this.cookie = cookie;
+    }
+
+    public Session session() {
+      return session;
+    }
+
+    public void setSession(Session session) {
+      this.session = session;
     }
 
     public Csrf csrf() {
@@ -713,6 +731,20 @@ public class PortalCommonProperties {
   }
 
   @Validated
+  public static class Session {
+    /** 服务端会话记录有效期；不得超过 Cookie max-age，避免浏览器仍持有 Cookie 而服务端已无记录。 */
+    @NotNull private Duration ttl = Duration.ofDays(30);
+
+    public Duration ttl() {
+      return ttl;
+    }
+
+    public void setTtl(Duration ttl) {
+      this.ttl = ttl;
+    }
+  }
+
+  @Validated
   public static class Csrf {
     @NotBlank private String cookieName = "XSRF-TOKEN";
     @NotBlank private String headerName = "X-XSRF-TOKEN";
@@ -811,6 +843,118 @@ public class PortalCommonProperties {
 
     public void setCacheTtl(Duration cacheTtl) {
       this.cacheTtl = cacheTtl;
+    }
+  }
+
+  @Validated
+  public static class Aggregation {
+    @NotBlank private String baselineVersion = "p2-2026-09-22-a";
+    @Min(1) private int pageSize = 20;
+    @Min(1) private int maxPages = 10;
+    @Min(1) private int maxRecords = 200;
+    @NotNull private Duration singleCallTimeout = Duration.ofSeconds(5);
+    @NotNull private Duration totalTimeout = Duration.ofSeconds(30);
+    @NotNull private Duration maxLiveLogRange = Duration.ofHours(168);
+    @NotNull private Duration cacheTtl = Duration.ofSeconds(30);
+    @Min(1) private int cacheMaximumSize = 1000;
+    @NotNull private Duration fiveMinutesMaxSpan = Duration.ofHours(24);
+    @NotNull private Duration hourMaxSpan = Duration.ofHours(168);
+    @NotNull private Duration dayMaxSpan = Duration.ofHours(720);
+
+    public String baselineVersion() {
+      return baselineVersion;
+    }
+
+    public void setBaselineVersion(String baselineVersion) {
+      this.baselineVersion = baselineVersion;
+    }
+
+    public int pageSize() {
+      return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+      this.pageSize = pageSize;
+    }
+
+    public int maxPages() {
+      return maxPages;
+    }
+
+    public void setMaxPages(int maxPages) {
+      this.maxPages = maxPages;
+    }
+
+    public int maxRecords() {
+      return maxRecords;
+    }
+
+    public void setMaxRecords(int maxRecords) {
+      this.maxRecords = maxRecords;
+    }
+
+    public Duration singleCallTimeout() {
+      return singleCallTimeout;
+    }
+
+    public void setSingleCallTimeout(Duration singleCallTimeout) {
+      this.singleCallTimeout = singleCallTimeout;
+    }
+
+    public Duration totalTimeout() {
+      return totalTimeout;
+    }
+
+    public void setTotalTimeout(Duration totalTimeout) {
+      this.totalTimeout = totalTimeout;
+    }
+
+    public Duration maxLiveLogRange() {
+      return maxLiveLogRange;
+    }
+
+    public void setMaxLiveLogRange(Duration maxLiveLogRange) {
+      this.maxLiveLogRange = maxLiveLogRange;
+    }
+
+    public Duration cacheTtl() {
+      return cacheTtl;
+    }
+
+    public void setCacheTtl(Duration cacheTtl) {
+      this.cacheTtl = cacheTtl;
+    }
+
+    public int cacheMaximumSize() {
+      return cacheMaximumSize;
+    }
+
+    public void setCacheMaximumSize(int cacheMaximumSize) {
+      this.cacheMaximumSize = cacheMaximumSize;
+    }
+
+    public Duration fiveMinutesMaxSpan() {
+      return fiveMinutesMaxSpan;
+    }
+
+    public void setFiveMinutesMaxSpan(Duration fiveMinutesMaxSpan) {
+      this.fiveMinutesMaxSpan = fiveMinutesMaxSpan;
+    }
+
+    public Duration hourMaxSpan() {
+      return hourMaxSpan;
+    }
+
+    public void setHourMaxSpan(Duration hourMaxSpan) {
+      this.hourMaxSpan = hourMaxSpan;
+    }
+
+    public Duration dayMaxSpan() {
+      return dayMaxSpan;
+    }
+
+    public void setDayMaxSpan(Duration dayMaxSpan) {
+      this.dayMaxSpan = dayMaxSpan;
     }
   }
 }

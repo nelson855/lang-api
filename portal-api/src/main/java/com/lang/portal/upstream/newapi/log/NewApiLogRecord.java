@@ -13,7 +13,8 @@ public record NewApiLogRecord(
     long durationMs,
     boolean stream,
     long quota,
-    String requestId) {
+    String requestId,
+    Long tokenId) {
 
   public NewApiLogRecord {
     if (occurredAt == null) {

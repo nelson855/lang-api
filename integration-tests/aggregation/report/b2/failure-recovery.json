@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "observationSource": "real-local-controlled-failure",
+  "checks": [
+    {
+      "assertion": "injected-failure-after-key-creation",
+      "passed": true
+    },
+    {
+      "assertion": "temporary-keys-removed-and-browser-cookies-cleared",
+      "passed": true
+    }
+  ],
+  "accountsRetained": true,
+  "temporaryKeysRemoved": true,
+  "sessionsCookiesCleared": true,
+  "sessionRevocationVerified": false
+}

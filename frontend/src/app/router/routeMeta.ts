@@ -15,6 +15,7 @@ export interface RouteMeta {
 export const ROUTE_META: RouteMeta[] = [
   { id: 'home', path: '/', layout: 'public', access: 'public', titleKey: 'pages.home.title', descriptionKey: 'pages.home.description', navKey: 'nav.home', navOrder: 0 },
   { id: 'models', path: '/models', layout: 'public', access: 'public', titleKey: 'pages.models.title', descriptionKey: 'pages.models.description', navKey: 'nav.models', navOrder: 1 },
+  { id: 'modelDetail', path: '/models/:modelRef', layout: 'public', access: 'public', titleKey: 'pages.models.detail.title', descriptionKey: 'pages.models.detail.description' },
   { id: 'docs', path: '/docs', layout: 'public', access: 'public', titleKey: 'pages.docs.title', descriptionKey: 'pages.docs.description', navKey: 'nav.docs', navOrder: 2 },
   { id: 'regions', path: '/regions', layout: 'public', access: 'public', titleKey: 'pages.regions.title', descriptionKey: 'pages.regions.description', navKey: 'nav.regions', navOrder: 3 },
   { id: 'terms', path: '/terms', layout: 'public', access: 'public', titleKey: 'pages.terms.title', descriptionKey: 'pages.terms.description' },
@@ -29,8 +30,17 @@ export const ROUTE_META: RouteMeta[] = [
   { id: 'notFound', path: '*', layout: 'public', access: 'public', titleKey: 'pages.notFound.title', descriptionKey: 'pages.notFound.description' },
 ];
 
+/** 精确路径优先；/models/:modelRef 只匹配单层引用，多层路径仍按未找到处理。 */
 export function metaForPath(pathname: string): RouteMeta {
-  return ROUTE_META.find((meta) => meta.path === pathname) ?? ROUTE_META[ROUTE_META.length - 1];
+  const exact = ROUTE_META.find((meta) => meta.path === pathname);
+  if (exact) {
+    return exact;
+  }
+  const detail = ROUTE_META.find((meta) => meta.path === '/models/:modelRef');
+  if (detail && /^\/models\/[^/]+$/.test(pathname)) {
+    return detail;
+  }
+  return ROUTE_META[ROUTE_META.length - 1];
 }
 
 export function getPublicNavItems(): RouteMeta[] {

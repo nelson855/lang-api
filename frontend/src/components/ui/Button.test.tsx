@@ -34,7 +34,7 @@ describe('Button 按钮', () => {
   });
 
   it('busy 别名与 loading 等价', () => {
-    renderWithLocale(<Button busy>保存</Button>);
+    renderWithLocale(<Button busy type="button" onClick={() => undefined}>保存</Button>);
     const button = screen.getByRole('button', { name: '保存' });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-busy', 'true');
@@ -43,9 +43,9 @@ describe('Button 按钮', () => {
   it('新 API：intent × emphasis 可组合', () => {
     renderWithLocale(
       <>
-        <Button intent="primary" emphasis="solid">主操作</Button>
-        <Button intent="danger" emphasis="outline">危险描边</Button>
-        <Button intent="neutral" emphasis="ghost">幽灵</Button>
+        <Button intent="primary" emphasis="solid" type="button" onClick={() => undefined}>主操作</Button>
+        <Button intent="danger" emphasis="outline" type="button" onClick={() => undefined}>危险描边</Button>
+        <Button intent="neutral" emphasis="ghost" type="button" onClick={() => undefined}>幽灵</Button>
       </>,
     );
     expect(screen.getByRole('button', { name: '主操作' })).toHaveClass('btn-intent-primary', 'btn-emphasis-solid');
@@ -56,10 +56,10 @@ describe('Button 按钮', () => {
   it('旧 variant 兼容映射到新 intent/emphasis', () => {
     renderWithLocale(
       <>
-        <Button variant="primary">V主</Button>
-        <Button variant="secondary">V次</Button>
-        <Button variant="quiet">V幽</Button>
-        <Button variant="danger">V危</Button>
+        <Button variant="primary" type="button" onClick={() => undefined}>V主</Button>
+        <Button variant="secondary" type="button" onClick={() => undefined}>V次</Button>
+        <Button variant="quiet" type="button" onClick={() => undefined}>V幽</Button>
+        <Button variant="danger" type="button" onClick={() => undefined}>V危</Button>
       </>,
     );
     expect(screen.getByRole('button', { name: 'V主' })).toHaveClass('btn-intent-primary', 'btn-emphasis-solid');

@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { useModels } from '../api/useModels';
 import { usePublicConfig } from '../api/usePublicConfig';
-import { resolveSelectedModel } from '../features/catalog/filter';
+import { resolveDocsModelSelection } from '../features/catalog/filter';
 import {
   buildCurlNonStreaming,
   buildCurlStreaming,
@@ -29,12 +29,12 @@ export function DocsPage() {
     () => modelsQuery.data?.data.models ?? [],
     [modelsQuery.data],
   );
-  const requested = params.get('model');
-  const safeRequested = requested && requested.length <= 128 ? requested : null;
-  const selected = useMemo(
-    () => resolveSelectedModel(models, safeRequested),
-    [models, safeRequested],
+  // 参数缺失与参数显式为空是两种状态：前者走默认选择，后者视为非法。
+  const selection = useMemo(
+    () => resolveDocsModelSelection(models, params.has('model') ? params.get('model') : null),
+    [models, params],
   );
+  const selected = selection.kind === 'default' || selection.kind === 'explicit' ? selection.model : null;
   const baseUrlRaw = configQuery.data ? openAiBaseUrl(configQuery.data.data.apiBaseUrls) : null;
   const baseUrl = baseUrlRaw ? normalizeBaseUrl(baseUrlRaw) : null;
   const ready = !!baseUrl && !!selected;
@@ -60,9 +60,22 @@ export function DocsPage() {
         <p>{t('pages.docs.openChat')}</p>
         <p>{t('pages.docs.closedNote')}</p>
       </section>
-      {!ready ? (
+      {selection.kind === 'invalid' ? (
+        <div className="detail-state" role="alert">
+          <p>{t('pages.docs.selectedModelInvalid')}</p>
+          <Link to="/models">{t('pages.docs.backToCatalog')}</Link>
+        </div>
+      ) : null}
+      {selection.kind === 'unavailable' ? (
+        <div className="detail-state" role="alert">
+          <p>{t('pages.docs.selectedModelUnavailable')}</p>
+          <Link to="/models">{t('pages.docs.backToCatalog')}</Link>
+        </div>
+      ) : null}
+      {!ready && selection.kind === 'default' ? (
         <p>{t('pages.docs.noModel')}</p>
-      ) : (
+      ) : null}
+      {ready ? (
         <>
           <section className="docs-section">
             <h2>{t('pages.docs.nonStreamingTitle')}</h2>
@@ -79,7 +92,7 @@ export function DocsPage() {
             <CodeBlock code={buildSdkStreaming(baseUrl, selected.id)} language="typescript" />
           </section>
         </>
-      )}
+      ) : null}
       </div>
     </div>
   );

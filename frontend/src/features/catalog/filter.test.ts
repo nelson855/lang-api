@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { filterModels, providerOptions, resolveSelectedModel } from './filter';
+import {
+  filterModels,
+  providerOptions,
+  resolveDocsModelSelection,
+  resolveSelectedModel,
+} from './filter';
 import type { CatalogModel } from '../../api/models';
 
 const models: CatalogModel[] = [
@@ -17,7 +22,30 @@ describe('catalog filter', () => {
     expect(providerOptions(models)).toEqual(['Example']);
   });
 
-  it('resolves unknown model param to first sorted available', () => {
-    expect(resolveSelectedModel(models, 'missing')?.id).toBe('GPT-Example');
+  it('未指定模型时回退到按 ID 排序的首个可用模型', () => {
+    expect(resolveDocsModelSelection(models, null)).toEqual({
+      kind: 'default',
+      model: expect.objectContaining({ id: 'GPT-Example' }),
+    });
+  });
+
+  it('显式指定未知模型时不再静默替换', () => {
+    expect(resolveDocsModelSelection(models, 'missing')).toEqual({ kind: 'unavailable' });
+  });
+
+  it('显式空值或超长参数视为非法', () => {
+    expect(resolveDocsModelSelection(models, '')).toEqual({ kind: 'invalid' });
+    expect(resolveDocsModelSelection(models, 'z'.repeat(200))).toEqual({ kind: 'invalid' });
+  });
+
+  it('显式指定存在的模型时精确采用', () => {
+    expect(resolveDocsModelSelection(models, 'a-model')).toEqual({
+      kind: 'explicit',
+      model: expect.objectContaining({ id: 'a-model' }),
+    });
+  });
+
+  it('保留旧的默认选择包装函数', () => {
+    expect(resolveSelectedModel(models, 'a-model')?.id).toBe('a-model');
   });
 });

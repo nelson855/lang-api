@@ -11,6 +11,7 @@ import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.response.PageData;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import jakarta.servlet.http.Cookie;
@@ -36,7 +37,7 @@ class AccountTopupControllerTests {
     MockHttpServletRequest request = new MockHttpServletRequest();
     request.setCookies(
         new Cookie("LANG_SESSION", "upstream-session"), new Cookie("LANG_UID", "42"));
-    return request;
+    return validated(request);
   }
 
   @Test
@@ -140,4 +141,12 @@ class AccountTopupControllerTests {
     assertThatThrownBy(() -> controller().topups(Map.of(), USER, validRequest()))
         .matches(e -> e instanceof com.lang.portal.base.exception.UpstreamException);
   }
+
+  /** 标记该请求已通过会话校验；上游凭证只能来自这里，不再由浏览器 Cookie 提供。 */
+  private static MockHttpServletRequest validated(MockHttpServletRequest request) {
+    request.setAttribute(
+        PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, new NewApiSession("upstream-session", 42L));
+    return request;
+  }
+
 }

@@ -41,6 +41,10 @@ export function buildRoutes(): RouteObject[] {
       children: [
         { index: true, lazy: () => lazyPage(() => import('../../pages/HomePage'), 'HomePage') },
         { path: 'models', lazy: () => lazyPage(() => import('../../pages/ModelsPage'), 'ModelsPage') },
+        {
+          path: 'models/:modelRef',
+          lazy: () => lazyPage(() => import('../../pages/ModelDetailPage'), 'ModelDetailPage'),
+        },
         { path: 'docs', lazy: () => lazyPage(() => import('../../pages/DocsPage'), 'DocsPage') },
         { path: 'terms', lazy: () => lazyPage(() => import('../../pages/TermsPage'), 'TermsPage') },
         { path: 'privacy', lazy: () => lazyPage(() => import('../../pages/PrivacyPage'), 'PrivacyPage') },

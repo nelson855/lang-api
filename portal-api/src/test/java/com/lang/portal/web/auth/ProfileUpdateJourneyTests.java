@@ -3,6 +3,7 @@ package com.lang.portal.web.auth;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.BeforeEach;
+import com.lang.portal.infrastructure.session.PortalSessionRecord;
+import com.lang.portal.infrastructure.session.PortalSessionStore;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -42,6 +46,8 @@ class ProfileUpdateJourneyTests {
 
   @MockitoBean private NewApiAuthenticationClient authClient;
   @MockitoBean private NewApiProfileUpdateClient profileUpdateClient;
+  @MockitoBean private PortalSessionStore sessionStore;
+
 
   private static final NewApiSession SESSION = new NewApiSession("upstream-session", 42L);
 
@@ -55,6 +61,14 @@ class ProfileUpdateJourneyTests {
     return new Cookie[] {
       new Cookie("LANG_SESSION", SESSION.value()), new Cookie("LANG_UID", "42"),
     };
+  }
+
+
+  @BeforeEach
+  void acceptAnyBrowserSessionAsTheUpstreamSession() {
+    when(sessionStore.find(anyString()))
+        .thenAnswer(invocation -> new PortalSessionRecord(
+            invocation.getArgument(0), SESSION.value(), SESSION.userId()));
   }
 
   @Test

@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;
 
 import com.lang.portal.config.PortalCommonProperties;
+import com.lang.portal.infrastructure.session.PortalSessionRecord;
+import com.lang.portal.infrastructure.session.PortalSessionStore;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
 import com.lang.portal.upstream.newapi.auth.NewApiAuthenticationClient;
 import com.lang.portal.upstream.newapi.auth.NewApiCredentials;
@@ -30,8 +32,10 @@ class AuthenticationControllerTests {
     when(client.login(new NewApiCredentials("ordinary", "correct-horse"))).thenReturn(new NewApiLoginResult(
         new NewApiSession("upstream-session", 42L),
         new NewApiUserProfile(42L, "ordinary", "Ordinary User", "ordinary@example.test")));
+    PortalSessionStore sessionStore = mock(PortalSessionStore.class);
+    when(sessionStore.create("upstream-session", 42L)).thenReturn("server-side-session-id");
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(openPolicy(), client),
+        new AuthApplicationService(openPolicy(), client, sessionStore),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -42,7 +46,9 @@ class AuthenticationControllerTests {
 
     assertThat(response.getBody().data()).isEqualTo(new AuthProfile(42L, "ordinary", "Ordinary User", "ordinary@example.test"));
     assertThat(response.getHeaders().get("Set-Cookie")).hasSize(2);
-    assertThat(response.getHeaders().get("Set-Cookie").get(0)).contains("LANG_SESSION=upstream-session", "HttpOnly", "Path=/portal");
+    // 浏览器拿到的是服务端签发的不透明会话标识，不是上游会话值。
+    assertThat(response.getHeaders().get("Set-Cookie").get(0))
+        .contains("LANG_SESSION=server-side-session-id", "HttpOnly", "Path=/portal");
     assertThat(response.getHeaders().get("Set-Cookie").get(1)).contains("LANG_UID=42", "HttpOnly", "Path=/portal");
   }
 
@@ -51,7 +57,7 @@ class AuthenticationControllerTests {
     PortalCommonProperties properties = new PortalCommonProperties();
     properties.auth().setAllowedOrigins("http://portal.test");
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(openPolicy(), mock(NewApiAuthenticationClient.class)),
+        new AuthApplicationService(openPolicy(), mock(NewApiAuthenticationClient.class), mock(PortalSessionStore.class)),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -69,7 +75,7 @@ class AuthenticationControllerTests {
     PortalCommonProperties properties = new PortalCommonProperties();
     properties.auth().setAllowedOrigins("http://portal.test");
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(openPolicy(), mock(NewApiAuthenticationClient.class)),
+        new AuthApplicationService(openPolicy(), mock(NewApiAuthenticationClient.class), mock(PortalSessionStore.class)),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -88,8 +94,12 @@ class AuthenticationControllerTests {
     PortalCommonProperties properties = new PortalCommonProperties();
     properties.auth().setAllowedOrigins("http://portal.test");
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
+    PortalSessionStore sessionStore = mock(PortalSessionStore.class);
+    when(sessionStore.find("server-side-session-id"))
+        .thenReturn(new PortalSessionRecord("server-side-session-id", "upstream-session", 42L));
+    when(sessionStore.delete("server-side-session-id")).thenReturn(true);
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(openPolicy(), client),
+        new AuthApplicationService(openPolicy(), client, sessionStore),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -97,11 +107,13 @@ class AuthenticationControllerTests {
     MockHttpServletRequest request = validCsrfRequest();
     request.setCookies(
         new Cookie("XSRF-TOKEN", "csrf-token"),
-        new Cookie("LANG_SESSION", "upstream-session"),
+        new Cookie("LANG_SESSION", "server-side-session-id"),
         new Cookie("LANG_UID", "42"));
 
     var response = controller.logout(request);
 
+    // 先删除服务端记录，再退出上游：旧 Cookie 因此立即失效。
+    verify(sessionStore).delete("server-side-session-id");
     verify(client).logout(new NewApiSession("upstream-session", 42L));
     assertThat(response.getHeaders().get("Set-Cookie")).hasSize(2);
   }
@@ -114,7 +126,7 @@ class AuthenticationControllerTests {
     properties.auth().rateLimit().registration().setClientAttempts(1);
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(openPolicy(), client),
+        new AuthApplicationService(openPolicy(), client, mock(PortalSessionStore.class)),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -136,10 +148,14 @@ class AuthenticationControllerTests {
     PortalCommonProperties properties = new PortalCommonProperties();
     properties.auth().setAllowedOrigins("http://portal.test");
     NewApiAuthenticationClient client = mock(NewApiAuthenticationClient.class);
+    PortalSessionStore sessionStore = mock(PortalSessionStore.class);
+    when(sessionStore.find("server-side-session-id"))
+        .thenReturn(new PortalSessionRecord("server-side-session-id", "upstream-session", 42L));
+    when(sessionStore.delete("server-side-session-id")).thenReturn(true);
     doThrow(new UpstreamException(PortalErrorCode.UPSTREAM_UNAVAILABLE))
         .when(client).logout(new NewApiSession("upstream-session", 42L));
     AuthenticationController controller = new AuthenticationController(
-        new AuthApplicationService(openPolicy(), client),
+        new AuthApplicationService(openPolicy(), client, sessionStore),
         new AuthCsrfService(properties),
         new NewApiCookiePolicy(properties),
         properties,
@@ -147,11 +163,13 @@ class AuthenticationControllerTests {
     MockHttpServletRequest request = validCsrfRequest();
     request.setCookies(
         new Cookie("XSRF-TOKEN", "csrf-token"),
-        new Cookie("LANG_SESSION", "upstream-session"),
+        new Cookie("LANG_SESSION", "server-side-session-id"),
         new Cookie("LANG_UID", "42"));
 
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> controller.logout(request))
         .isInstanceOf(UpstreamException.class);
+    // 上游退出失败也不能让本地会话复活：记录必须已经删除。
+    verify(sessionStore).delete("server-side-session-id");
     assertThat(request.getAttribute("portal.auth.expire-session-cookies"))
         .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.LIST)
         .hasSize(2);

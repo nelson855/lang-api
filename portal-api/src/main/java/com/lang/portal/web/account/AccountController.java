@@ -6,6 +6,7 @@ import com.lang.portal.base.response.ApiResponse;
 import com.lang.portal.base.response.ApiResponses;
 import com.lang.portal.base.response.PageData;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalUpstreamSessions;
 import com.lang.portal.base.security.ProtectedEndpoint;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
@@ -41,7 +42,7 @@ public class AccountController {
     if (!params.isEmpty()) {
       throw new PortalException(PortalErrorCode.INVALID_ARGUMENT, "余额接口不接受查询参数");
     }
-    NewApiSession session = session(request);
+    NewApiSession session = PortalUpstreamSessions.require(request);
     return ResponseEntity.ok()
         .header("Cache-Control", "no-store")
         .header("Pragma", "no-cache")
@@ -56,7 +57,7 @@ public class AccountController {
     if (!params.isEmpty()) {
       throw new PortalException(PortalErrorCode.INVALID_ARGUMENT, "充值能力接口不接受查询参数");
     }
-    NewApiSession session = session(request);
+    NewApiSession session = PortalUpstreamSessions.require(request);
     return ResponseEntity.ok()
         .header("Cache-Control", "no-store")
         .header("Pragma", "no-cache")
@@ -73,41 +74,11 @@ public class AccountController {
             params,
             properties.portal().usage().defaultPageSize(),
             properties.portal().usage().maxPageSize());
-    NewApiSession session = session(request);
+    NewApiSession session = PortalUpstreamSessions.require(request);
     return ResponseEntity.ok()
         .header("Cache-Control", "no-store")
         .header("Pragma", "no-cache")
         .body(ApiResponses.ok(request, queryService.topups(session, query.page(), query.pageSize())));
   }
 
-  private NewApiSession session(HttpServletRequest request) {
-    Cookie[] cookies = request.getCookies();
-    if (cookies == null) {
-      throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-    }
-    Map<String, String> values = new HashMap<>();
-    for (Cookie cookie : cookies) {
-      String name = cookie.getName();
-      if (!properties.auth().cookie().sessionName().equals(name)
-          && !properties.auth().cookie().userIdName().equals(name)) {
-        continue;
-      }
-      if (values.putIfAbsent(name, cookie.getValue()) != null) {
-        throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-      }
-    }
-    String session = values.get(properties.auth().cookie().sessionName());
-    String userId = values.get(properties.auth().cookie().userIdName());
-    if (session == null || session.isBlank() || userId == null || userId.isBlank()) {
-      throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-    }
-    try {
-      long id = Long.parseLong(userId);
-      if (id > 0) {
-        return new NewApiSession(session, id);
-      }
-    } catch (NumberFormatException ignored) {
-    }
-    throw new PortalException(PortalErrorCode.UNAUTHENTICATED);
-  }
 }

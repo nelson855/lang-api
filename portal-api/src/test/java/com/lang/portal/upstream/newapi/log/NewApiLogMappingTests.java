@@ -34,6 +34,18 @@ class NewApiLogMappingTests {
   }
 
   @Test
+  void mapsLiveV0132CreatedAtForSuccessAndErrorLogs() throws Exception {
+    for (NewApiLogResult result : NewApiLogResult.values()) {
+      String data = successBody().replace("created_time", "created_at")
+          .replace("\"type\":2", "\"type\":" + result.upstreamType());
+      NewApiLogPage page = parse("{\"success\":true,\"data\":" + data + "}", result);
+      assertThat(page.items().get(0).occurredAt())
+          .isEqualTo(java.time.Instant.ofEpochSecond(1789180800));
+      assertThat(page.items().get(0).result()).isEqualTo(result);
+    }
+  }
+
+  @Test
   void mapsSuccessWithSecondsToMillis() throws Exception {
     NewApiLogPage page = parse(
         "{\"success\":true,\"message\":\"\",\"data\":" + successBody() + "}", NewApiLogResult.SUCCESS);

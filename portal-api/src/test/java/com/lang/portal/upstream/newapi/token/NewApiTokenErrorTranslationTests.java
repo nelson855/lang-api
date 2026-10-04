@@ -70,6 +70,31 @@ class NewApiTokenErrorTranslationTests extends NewApiContractTestBase {
         .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.NOT_FOUND);
   }
 
+  @org.junit.jupiter.params.ParameterizedTest
+  @org.junit.jupiter.params.provider.ValueSource(strings = {"get", "reveal", "delete", "status"})
+  void frozenBusinessNotFoundBecomesNotFound(String operation) {
+    server.enqueue(json("{\"success\":false,\"message\":\"record not found\",\"data\":null}"));
+    assertThatThrownBy(() -> {
+      switch (operation) {
+        case "get" -> client().getToken(SESSION, 999L);
+        case "reveal" -> client().revealToken(SESSION, 999L);
+        case "delete" -> client().deleteToken(SESSION, 999L);
+        case "status" -> client().updateStatus(SESSION, 999L, false);
+        default -> throw new IllegalArgumentException();
+      }
+    }).isInstanceOf(PortalException.class)
+        .matches(e -> ((PortalException) e).errorCode() == PortalErrorCode.NOT_FOUND)
+        .hasMessageNotContaining("record not found");
+  }
+
+  @Test
+  void unrelatedBusinessReadFailureRemainsUpstreamError() {
+    server.enqueue(json("{\"success\":false,\"message\":\"storage unavailable\",\"data\":null}"));
+    assertThatThrownBy(() -> client().getToken(SESSION, 999L))
+        .isInstanceOf(UpstreamException.class)
+        .matches(e -> ((UpstreamException) e).errorCode() == PortalErrorCode.UPSTREAM_ERROR);
+  }
+
   @Test
   void readDisconnectPropagatesUnavailable() {
     server.enqueue(disconnect());

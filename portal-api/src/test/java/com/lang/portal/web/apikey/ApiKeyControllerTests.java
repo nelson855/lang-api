@@ -15,6 +15,7 @@ import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.PortalException;
 import com.lang.portal.base.response.PageData;
 import com.lang.portal.base.security.PortalAuthenticatedUser;
+import com.lang.portal.base.security.PortalSessionAuthenticationFilter;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.auth.NewApiSession;
 import com.lang.portal.web.auth.AuthCsrfService;
@@ -47,6 +48,8 @@ class ApiKeyControllerTests {
         new Cookie("XSRF-TOKEN", "csrf-token"));
     request.addHeader("X-XSRF-TOKEN", "csrf-token");
     request.addHeader("Origin", "http://portal.test");
+    // 上游凭证只来自已通过校验的会话记录，不再由浏览器 Cookie 提供。
+    request.setAttribute(PortalSessionAuthenticationFilter.UPSTREAM_SESSION_ATTRIBUTE, SESSION);
     return request;
   }
 

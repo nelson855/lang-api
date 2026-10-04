@@ -34,6 +34,26 @@ beforeEach(() => {
     if (path.includes('/portal/api/usage/timeseries')) {
       return { data: { granularity: 'HOUR', points: [] }, requestId: 'req-pages' };
     }
+    if (path.includes('/portal/api/dashboard/stats')) {
+      return {
+        data: {
+          baselineVersion: 'p2-2026-09-22-a',
+          range: { startTime: '2026-09-01T00:00:00.000Z', endTime: '2026-09-01T01:00:00.000Z', timezone: 'UTC', granularity: 'HOUR' },
+          metrics: {
+            requestTotal: { value: null, unit: 'requests', availability: 'UNAVAILABLE', reasonCode: 'BASELINE_NOT_VERIFIED' },
+            tokenUsage: { value: 90, unit: 'tokens', availability: 'AVAILABLE', reasonCode: null },
+            spend: { value: null, currency: null, availability: 'UNAVAILABLE', reasonCode: 'BASELINE_NOT_VERIFIED' },
+            activeKeys: { value: 2, unit: 'keys', availability: 'AVAILABLE', reasonCode: null },
+            successRate: { value: null, unit: 'ratio', availability: 'UNAVAILABLE', reasonCode: 'BASELINE_NOT_VERIFIED' },
+            averageLatency: { value: null, unit: 'ms', availability: 'UNAVAILABLE', reasonCode: 'NO_DATA' },
+          },
+          requestTrend: { availability: 'UNAVAILABLE', reasonCode: 'BASELINE_NOT_VERIFIED', unit: 'requests', points: [] },
+          spendTrend: { availability: 'UNAVAILABLE', reasonCode: 'BASELINE_NOT_VERIFIED', currency: null, points: [] },
+          recentRequests: { availability: 'PARTIAL', reasonCode: 'PARTIAL_SOURCE_COVERAGE', items: [] },
+        },
+        requestId: 'req-pages',
+      };
+    }
     return {
       data: { siteName: '测试站', apiBaseUrls: [] },
       requestId: 'req-pages',
@@ -124,8 +144,10 @@ describe('阶段占位页诚实表达', () => {
       authProfile: { id: 42, username: 'ordinary', displayName: 'Ordinary', email: null },
     });
     await screen.findByText(/当前余额/);
-    expect(await screen.findByText(/区间消费/)).toBeInTheDocument();
-    expect(await screen.findByText(/小时趋势/)).toBeInTheDocument();
+    // 新版控制台展示最近请求区块与六指标；趋势不可用时显示原因文案
+    expect(await screen.findByText(/最近请求/)).toBeInTheDocument();
+    expect(screen.getAllByText(/趋势暂不可用/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/请求总数/)).toBeInTheDocument();
     for (const fake of FAKE_MODELS.filter((item) => item !== '余额')) {
       expect(container.textContent).not.toContain(fake);
     }

@@ -26,7 +26,9 @@ export function isPortalApiPath(rawPath: string): boolean {
   if (pathPart.includes('@')) {
     return false;
   }
-  if (ENCODED_RISK.test(rawPath)) {
+  // 编码风险字符只检查路径部分:查询值经 URL 编码后天然含有 %2F(如 IANA 时区)、
+  // %20 等,它们是服务端按值解码的数据,不参与路径解析,不得误杀。
+  if (ENCODED_RISK.test(pathPart)) {
     return false;
   }
   const segments = pathPart.split('/');

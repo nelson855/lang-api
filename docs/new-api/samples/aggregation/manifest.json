@@ -1,0 +1,144 @@
+{
+  "baselineVersion" : "p2-2026-09-22-a",
+  "measuredAt" : "2026-09-22T08:51:59.490037Z",
+  "environment" : {
+    "network" : "本机回环 127.0.0.1",
+    "description" : "本地 Docker Compose 隔离环境"
+  },
+  "files" : [ {
+    "file" : "data-self.bad-time.json",
+    "sha256" : "ce1746274bb33d2b40a9139704b61f145f6d21aac6a337a80066b5e04b2d8fbd",
+    "scenario" : "data-self.bad-time",
+    "interface" : "data-self"
+  }, {
+    "file" : "data-self.empty.json",
+    "sha256" : "ce1746274bb33d2b40a9139704b61f145f6d21aac6a337a80066b5e04b2d8fbd",
+    "scenario" : "data-self.empty",
+    "interface" : "data-self"
+  }, {
+    "file" : "data-self.hourly-edge.json",
+    "sha256" : "ce1746274bb33d2b40a9139704b61f145f6d21aac6a337a80066b5e04b2d8fbd",
+    "scenario" : "data-self.hourly-edge",
+    "interface" : "data-self"
+  }, {
+    "file" : "data-self.latency.json",
+    "sha256" : "ce1746274bb33d2b40a9139704b61f145f6d21aac6a337a80066b5e04b2d8fbd",
+    "scenario" : "data-self.latency",
+    "interface" : "data-self"
+  }, {
+    "file" : "data-self.nonempty.json",
+    "sha256" : "ce1746274bb33d2b40a9139704b61f145f6d21aac6a337a80066b5e04b2d8fbd",
+    "scenario" : "data-self.nonempty",
+    "interface" : "data-self"
+  }, {
+    "file" : "data-self.unauth.json",
+    "sha256" : "8ecacc501aa307e373f73b8b4e59f63979b0ce83d301d9f301ca5f41ac7cd4e2",
+    "scenario" : "data-self.unauth",
+    "interface" : "data-self"
+  }, {
+    "file" : "log-self-stat.adjacent.json",
+    "sha256" : "cc23e7b31cad9358189a07df7b5843e208ce392dfdc3fc30715825b98d83944f",
+    "scenario" : "log-self-stat.adjacent",
+    "interface" : "log-self-stat"
+  }, {
+    "file" : "log-self-stat.bad-time.json",
+    "sha256" : "c0173c30867fe5fdac5926ff4c0723894acfaad146fd927235b3d6572a53862a",
+    "scenario" : "log-self-stat.bad-time",
+    "interface" : "log-self-stat"
+  }, {
+    "file" : "log-self-stat.empty.json",
+    "sha256" : "c0173c30867fe5fdac5926ff4c0723894acfaad146fd927235b3d6572a53862a",
+    "scenario" : "log-self-stat.empty",
+    "interface" : "log-self-stat"
+  }, {
+    "file" : "log-self-stat.nonempty.json",
+    "sha256" : "c0173c30867fe5fdac5926ff4c0723894acfaad146fd927235b3d6572a53862a",
+    "scenario" : "log-self-stat.nonempty",
+    "interface" : "log-self-stat"
+  }, {
+    "file" : "log-self-stat.unauth.json",
+    "sha256" : "8ecacc501aa307e373f73b8b4e59f63979b0ce83d301d9f301ca5f41ac7cd4e2",
+    "scenario" : "log-self-stat.unauth",
+    "interface" : "log-self-stat"
+  }, {
+    "file" : "log-self.bad-page.json",
+    "sha256" : "9c0707636f950b2192f47f57e5893efaedd6016161532cd3e0dd214541db1e33",
+    "scenario" : "log-self.bad-page",
+    "interface" : "log-self"
+  }, {
+    "file" : "log-self.empty.json",
+    "sha256" : "8950cd4b4b9f102e777e99320c7bb03efaebf86d93758c7ec78e41d83d4d6f19",
+    "scenario" : "log-self.empty",
+    "interface" : "log-self"
+  }, {
+    "file" : "log-self.nonempty.json",
+    "sha256" : "73959c1d2ccb657982b986d96634c150292eb632115ab175bf9dd39367b73a93",
+    "scenario" : "log-self.nonempty",
+    "interface" : "log-self"
+  }, {
+    "file" : "log-self.time-edge.json",
+    "sha256" : "8950cd4b4b9f102e777e99320c7bb03efaebf86d93758c7ec78e41d83d4d6f19",
+    "scenario" : "log-self.time-edge",
+    "interface" : "log-self"
+  }, {
+    "file" : "log-self.type-1.json",
+    "sha256" : "8950cd4b4b9f102e777e99320c7bb03efaebf86d93758c7ec78e41d83d4d6f19",
+    "scenario" : "log-self.type-1",
+    "interface" : "log-self"
+  }, {
+    "file" : "log-self.type-2.json",
+    "sha256" : "bd5d275dd923b833533b73d20cedc05513a8562b3e6a2cf3cd9ec70d22a435c0",
+    "scenario" : "log-self.type-2",
+    "interface" : "log-self"
+  }, {
+    "file" : "log-self.type-5.json",
+    "sha256" : "8950cd4b4b9f102e777e99320c7bb03efaebf86d93758c7ec78e41d83d4d6f19",
+    "scenario" : "log-self.type-5",
+    "interface" : "log-self"
+  }, {
+    "file" : "log-self.unauth.json",
+    "sha256" : "8ecacc501aa307e373f73b8b4e59f63979b0ce83d301d9f301ca5f41ac7cd4e2",
+    "scenario" : "log-self.unauth",
+    "interface" : "log-self"
+  }, {
+    "file" : "pricing.anon.json",
+    "sha256" : "ca8e1e352986ab2da246021c227f5f4bae8a4e457c78bb02959a104ef9e24727",
+    "scenario" : "pricing.anon",
+    "interface" : "pricing"
+  }, {
+    "file" : "pricing.auth.json",
+    "sha256" : "ca8e1e352986ab2da246021c227f5f4bae8a4e457c78bb02959a104ef9e24727",
+    "scenario" : "pricing.auth",
+    "interface" : "pricing"
+  }, {
+    "file" : "pricing.nonempty.json",
+    "sha256" : "ca8e1e352986ab2da246021c227f5f4bae8a4e457c78bb02959a104ef9e24727",
+    "scenario" : "pricing.nonempty",
+    "interface" : "pricing"
+  }, {
+    "file" : "topup.bad-page.json",
+    "sha256" : "9fb91be36d4838d666c2be5ba80c9cd703fca865879f0fb7fea753a4f48d4fc3",
+    "scenario" : "topup.bad-page",
+    "interface" : "topup"
+  }, {
+    "file" : "topup.empty.json",
+    "sha256" : "9f71b7a791816e4292cdc4bc92f243f3f67788873e47010953b7db04b71f3b08",
+    "scenario" : "topup.empty",
+    "interface" : "topup"
+  }, {
+    "file" : "topup.unauth.json",
+    "sha256" : "8ecacc501aa307e373f73b8b4e59f63979b0ce83d301d9f301ca5f41ac7cd4e2",
+    "scenario" : "topup.unauth",
+    "interface" : "topup"
+  }, {
+    "file" : "user-self.unauth.json",
+    "sha256" : "8ecacc501aa307e373f73b8b4e59f63979b0ce83d301d9f301ca5f41ac7cd4e2",
+    "scenario" : "user-self.unauth",
+    "interface" : "user-self"
+  }, {
+    "file" : "user-self.valid.json",
+    "sha256" : "9f726b07e2252718d52ed001d7c3e5c10acba21064e8ffe2405e950b8c8c21dd",
+    "scenario" : "user-self.valid",
+    "interface" : "user-self"
+  } ]
+}

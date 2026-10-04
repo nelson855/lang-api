@@ -1,0 +1,18 @@
+{
+  "data" : {
+    "aff_count" : 0,
+    "aff_history_quota" : 0,
+    "aff_quota" : 0,
+    "display_name" : "<DISPLAY_1>",
+    "email" : "",
+    "group" : "default",
+    "id" : "<USER_1>",
+    "quota" : 500000,
+    "role" : 1,
+    "status" : 1,
+    "used_quota" : 0,
+    "username" : "<USERNAME_1>"
+  },
+  "message" : "",
+  "success" : true
+}

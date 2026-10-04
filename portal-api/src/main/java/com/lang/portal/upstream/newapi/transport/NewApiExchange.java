@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lang.portal.base.exception.PortalErrorCode;
 import com.lang.portal.base.exception.UpstreamException;
 import com.lang.portal.base.response.RequestIds;
+import com.lang.portal.infrastructure.aggregation.AggregationMetrics;
+import com.lang.portal.infrastructure.aggregation.AggregationSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.lang.portal.config.PortalCommonProperties;
 import com.lang.portal.upstream.newapi.dto.NewApiEnvelope;
 import com.lang.portal.upstream.newapi.operation.NewApiOperation;
@@ -37,8 +40,16 @@ public class NewApiExchange {
   private final PortalCommonProperties properties;
   private final NewApiErrorTranslator translator;
   private final ObjectMapper mapper;
+  private final AggregationMetrics metrics;
 
   public NewApiExchange(RestClient newApiRestClient, PortalCommonProperties properties, NewApiErrorTranslator translator) {
+    this(newApiRestClient, properties, translator, null);
+  }
+
+  @Autowired
+  public NewApiExchange(RestClient newApiRestClient, PortalCommonProperties properties,
+      NewApiErrorTranslator translator, AggregationMetrics metrics) {
+    this.metrics = metrics;
     this.restClient = newApiRestClient;
     this.properties = properties;
     this.translator = translator;
@@ -78,6 +89,15 @@ public class NewApiExchange {
       headers.forEach(spec::header);
       if (requestBody != null) {
         spec.body(requestBody);
+      }
+      // log-self 的所有 HTTP 执行尝试，包括请求日志页面；区别于聚合逻辑读取次数。
+      if (metrics != null && operation.name().equals("log-self")) {
+        String query = target.getRawQuery();
+        if (query != null && java.util.Arrays.asList(query.split("&")).contains("type=2")) {
+          metrics.recordHttpAttempt(AggregationSource.SUCCESS_LOG);
+        } else if (query != null && java.util.Arrays.asList(query.split("&")).contains("type=5")) {
+          metrics.recordHttpAttempt(AggregationSource.ERROR_LOG);
+        }
       }
       NewApiRawResponse<T> response = spec.exchange((request, upstream) -> {
         int status = upstream.getStatusCode().value();

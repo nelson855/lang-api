@@ -5,7 +5,7 @@
   "canonicalMap": "UX-CONTRACT.md",
   "requiredCapabilities": ["Form", "Select/Listbox", "Date", "Scrollbar", "Toast", "CRUD"],
   "ownership": {
-    "Select/Listbox": "native",
+    "Select/Listbox": "shared-radix-select",
     "Date": "native"
   },
   "requiredCommands": ["unit", "e2e", "accessibility", "premium"],

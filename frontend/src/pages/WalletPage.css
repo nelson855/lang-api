@@ -9,6 +9,21 @@
   margin: 1rem 0;
 }
 
+.wallet-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+/* 账本轨迹:连接余额、汇总与流水三层的克制纵线,仅用既有令牌。 */
+.wallet-ledger-rail {
+  width: 2px;
+  height: 1.5rem;
+  margin: 0.25rem 0 0.25rem 1rem;
+  background: var(--color-accent);
+}
+
 .wallet-cards {
   display: none;
 }
@@ -32,5 +47,10 @@
 
   .wallet-cards {
     display: block;
+  }
+
+  .wallet-ledger-rail {
+    height: 0.75rem;
+    margin-left: 0.5rem;
   }
 }

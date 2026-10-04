@@ -18,8 +18,15 @@ coverage
 *.log
 surefire-reports
 
-# 文档与变更记录（运行不需要）
-docs
+# 文档与变更记录；仅允许完整测试必需的冻结脱敏证据
+docs/**
+!docs/new-api/
+docs/new-api/**
+!docs/new-api/aggregation-baseline.json
+!docs/new-api/samples/
+docs/new-api/samples/**
+!docs/new-api/samples/aggregation/
+!docs/new-api/samples/aggregation/**
 openspec
 integration-tests
 
